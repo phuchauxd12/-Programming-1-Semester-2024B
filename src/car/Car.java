@@ -166,18 +166,18 @@ public class Car {
     @Override
     public String toString() {
         return "Car{" +
-                "carID='" + carID + '\'' +
-                ", carMake='" + carMake + '\'' +
-                ", carModel='" + carModel + '\'' +
-                ", carYear=" + carYear +
-                ", color='" + color + '\'' +
-                ", mileage=" + mileage +
-                ", price=" + price +
-                ", status=" + status +
-                ", addNotes='" + addNotes + '\'' +
-                ", soldDate=" + soldDate +
-                ", isDeleted=" + isDeleted +
-                ", serviceHistory=" + serviceHistory +
+                "carID ='" + carID + '\'' +
+                ", carMake ='" + carMake + '\'' +
+                ", carModel ='" + carModel + '\'' +
+                ", carYear =" + carYear +
+                ", color ='" + color + '\'' +
+                ", mileage =" + mileage +
+                ", price =" + price +
+                ", status =" + status +
+                ", addNotes ='" + addNotes + '\'' +
+                ", soldDate =" + soldDate +
+                ", isDeleted =" + isDeleted +
+                ", serviceHistory =" + serviceHistory +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import autoPart.autoPart;
 import car.Car;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class CarAndAutoPartMenu {
     private static ArrayList<Car> carsList = new ArrayList<>();
@@ -34,5 +35,42 @@ public class CarAndAutoPartMenu {
         }
         return null;
     }
-    
+
+    public static void menu() {
+        System.out.println("Welcome to the Car and Auto Part Menu!");
+        System.out.println("1. Add a car");
+        System.out.println("2. Add an auto part");
+        System.out.println("3. Show all cars");
+        System.out.println("4. Show all auto parts");
+        System.out.println("5. Exit");
+    }
+
+    public static void main(String[] args) {
+        int option = 0;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            menu();
+            System.out.println("Enter an option:");
+            option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    Car.createCar();
+                    break;
+                case 2:
+                    autoPart.createPart();
+                    break;
+                case 3:
+                    Car.displayAllCars();
+                    break;
+                case 4:
+                    autoPart.displayAllParts();
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        } while (option != 5);
+    }
 }

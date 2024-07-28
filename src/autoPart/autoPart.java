@@ -155,16 +155,16 @@ public class autoPart {
     @Override
     public String toString() {
         return "autoPart{" +
-                "partID='" + partID + '\'' +
-                ", partName='" + partName + '\'' +
-                ", partManufacturer='" + partManufacturer + '\'' +
-                ", condition=" + condition +
-                ", warrantyMonths=" + warrantyMonths +
-                ", price=" + price +
-                ", addNotes='" + addNotes + '\'' +
-                ", status=" + status +
-                ", soldDate=" + soldDate +
-                ", isDeleted=" + isDeleted +
+                "partID ='" + partID + '\'' +
+                ", partName ='" + partName + '\'' +
+                ", partManufacturer ='" + partManufacturer + '\'' +
+                ", condition =" + condition +
+                ", warrantyMonths =" + warrantyMonths +
+                ", price =" + price +
+                ", addNotes ='" + addNotes + '\'' +
+                ", status =" + status +
+                ", soldDate =" + soldDate +
+                ", isDeleted =" + isDeleted +
                 '}';
     }
 }
