@@ -148,8 +148,9 @@ public class Car {
         double mileage = input.nextDouble();
         System.out.println("Please input the car's price:");
         double price = input.nextDouble();
+        input.nextLine();
         System.out.println("Please input any additional notes:");
-        String addNotes = input.next();
+        String addNotes = input.nextLine();
         Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes);
         System.out.println("Car created successfully!");
         System.out.println(newCar);
@@ -165,19 +166,19 @@ public class Car {
 
     @Override
     public String toString() {
-        return "Car{" +
-                "carID ='" + carID + '\'' +
-                ", carMake ='" + carMake + '\'' +
-                ", carModel ='" + carModel + '\'' +
-                ", carYear =" + carYear +
+        return "{" +
+                "carID ='" + carID + "'" +
+                ", carMake ='" + carMake + "'" +
+                ", carModel ='" + carModel + "'" +
+                ", carYear = " + carYear +
                 ", color ='" + color + '\'' +
-                ", mileage =" + mileage +
-                ", price =" + price +
-                ", status =" + status +
+                ", mileage = " + mileage +
+                ", price = " + price +
+                ", status = " + status +
                 ", addNotes ='" + addNotes + '\'' +
-                ", soldDate =" + soldDate +
-                ", isDeleted =" + isDeleted +
-                ", serviceHistory =" + serviceHistory +
+                ", soldDate = " + soldDate +
+                ", isDeleted = " + isDeleted +
+                ", serviceHistory = " + serviceHistory +
                 '}';
     }
 }

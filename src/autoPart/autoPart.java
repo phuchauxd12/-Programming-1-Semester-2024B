@@ -138,8 +138,9 @@ public class autoPart {
         int warrantyMonths = input.nextInt();
         System.out.println("Enter price: ");
         double price = input.nextDouble();
+        input.nextLine();
         System.out.println("Enter additional notes: ");
-        String addNotes = input.next();
+        String addNotes = input.nextLine();
         autoPart part = new autoPart(partName, partManufacturer, condition, warrantyMonths, price, addNotes);
         System.out.println("Part created successfully.");
         System.out.println(part);
@@ -154,17 +155,17 @@ public class autoPart {
 
     @Override
     public String toString() {
-        return "autoPart{" +
+        return "{" +
                 "partID ='" + partID + '\'' +
                 ", partName ='" + partName + '\'' +
                 ", partManufacturer ='" + partManufacturer + '\'' +
-                ", condition =" + condition +
-                ", warrantyMonths =" + warrantyMonths +
-                ", price =" + price +
+                ", condition = " + condition +
+                ", warrantyMonths = " + warrantyMonths +
+                ", price = " + price +
                 ", addNotes ='" + addNotes + '\'' +
-                ", status =" + status +
-                ", soldDate =" + soldDate +
-                ", isDeleted =" + isDeleted +
+                ", status = " + status +
+                ", soldDate = " + soldDate +
+                ", isDeleted = " + isDeleted +
                 '}';
     }
 }
