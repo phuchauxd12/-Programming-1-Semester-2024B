@@ -42,7 +42,9 @@ public class CarAndAutoPartMenu {
         System.out.println("2. Add an auto part");
         System.out.println("3. Show all cars");
         System.out.println("4. Show all auto parts");
-        System.out.println("5. Exit");
+        System.out.println("5. Delete a car");
+        System.out.println("6. Delete an auto part");
+        System.out.println("7. Exit");
     }
 
     public static void main(String[] args) {
@@ -66,11 +68,22 @@ public class CarAndAutoPartMenu {
                     autoPart.displayAllParts();
                     break;
                 case 5:
+                    Car.displayAllCars();
+                    Car.deleteCar();
+                    Car.displayAllCars();
+                    break;
+                case 6:
+                    autoPart.displayAllParts();
+                    autoPart.deletePart();
+                    autoPart.displayAllParts();
+                    break;
+                case 7:
                     System.out.println("Exiting...");
                     break;
+
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-        } while (option != 5);
+        } while (option != 7);
     }
 }

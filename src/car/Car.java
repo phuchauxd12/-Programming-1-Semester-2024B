@@ -157,6 +157,19 @@ public class Car {
         CarAndAutoPartMenu.getCarsList().add(newCar);
     }
 
+    public static void deleteCar() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please input the car's ID to delete:");
+        String carID = input.next();
+        Car car = CarAndAutoPartMenu.findCarByID(carID);
+        if (car != null) {
+            car.setDeleted(true);
+            System.out.println("Car deleted successfully!");
+        } else {
+            System.out.println("Car not found.");
+        }
+    }
+
     public static void displayAllCars() {
         System.out.println("Displaying all cars:");
         for (Car car : CarAndAutoPartMenu.getCarsList()) {

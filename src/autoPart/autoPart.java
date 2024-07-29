@@ -147,6 +147,19 @@ public class autoPart {
         CarAndAutoPartMenu.getAutoPartsList().add(part);
     }
 
+    public static void deletePart() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter the part ID of the part you want to delete: ");
+        String partID = input.next();
+        autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
+        if (part == null) {
+            System.out.println("Part not found.");
+            return;
+        }
+        part.setDeleted(true);
+        System.out.println("Part deleted successfully.");
+    }
+
     public static void displayAllParts() {
         for (autoPart part : CarAndAutoPartMenu.getAutoPartsList()) {
             System.out.println(part);
