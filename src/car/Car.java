@@ -198,6 +198,115 @@ public class Car {
         }
     }
 
+    public static void updateCar() {
+        Car car = null;
+        Scanner input = new Scanner(System.in);
+        while (car == null) {
+            System.out.println("Please input the car's ID to update:");
+            String carID = input.next();
+            car = CarAndAutoPartMenu.findCarByID(carID);
+            if (car == null) {
+                System.out.println("Not found/invalid car ID. Please try again.");
+            }
+        }
+        int option = 0;
+        do {
+            System.out.println("What would you like to update?");
+            System.out.println("1. Car Make");
+            System.out.println("2. Car Model");
+            System.out.println("3. Car Year");
+            System.out.println("4. Car Color");
+            System.out.println("5. Car Mileage");
+            System.out.println("6. Car Price");
+            System.out.println("7. Additional Notes");
+            System.out.println("8. Exit");
+            System.out.println("Enter an option:");
+            option = input.nextInt();
+            switch (option) {
+                case 1:
+                    System.out.println("Please input the car's make:");
+                    String newCarMake = input.next();
+                    car.setCarMake(newCarMake);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 2:
+                    System.out.println("Please input the car's model:");
+                    String newCarModel = input.next();
+                    car.setCarModel(newCarModel);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 3:
+                    int carYear;
+                    while (true) {
+                        try {
+                            System.out.println("Please input the car's year:");
+                            carYear = input.nextInt();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please input a valid year");
+                            input.nextLine();
+                        }
+                    }
+                    car.setCarYear(carYear);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 4:
+                    System.out.println("Please input the car's color:");
+                    car.setColor(input.next());
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 5:
+                    double mileage;
+                    while (true) {
+                        try {
+                            System.out.println("Please input the car's mileage:");
+                            mileage = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please input a valid mileage");
+                            input.nextLine();
+                        }
+                    }
+                    car.setMileage(mileage);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 6:
+                    double price;
+                    while (true) {
+                        try {
+                            System.out.println("Please input the car's price:");
+                            price = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please input a valid price");
+                            input.nextLine();
+                        }
+                    }
+                    car.setPrice(price);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 7:
+                    System.out.println("Please input any additional notes:");
+                    car.setAddNotes(input.nextLine());
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 8:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+                    break;
+            }
+        } while (option != 8);
+    }
+
     public static void displayAllCars() {
         System.out.println("Displaying all cars:");
         for (Car car : CarAndAutoPartMenu.getCarsList()) {

@@ -179,6 +179,103 @@ public class autoPart {
         System.out.println("Part deleted successfully.");
     }
 
+    public static void updatePart() {
+        autoPart part = null;
+        Scanner input = new Scanner(System.in);
+        while (part == null) {
+            System.out.println("Enter the part ID of the part you want to update: ");
+            String partID = input.next();
+            part = CarAndAutoPartMenu.findAutoPartByID(partID);
+            if (part == null) {
+                System.out.println("Not found/invalid part ID. Please try again.");
+            }
+        }
+        int option = 0;
+        while (option != 7) {
+            System.out.println("What would you like to update?");
+            System.out.println("1. Part Name");
+            System.out.println("2. Part Manufacturer");
+            System.out.println("3. Condition");
+            System.out.println("4. Warranty Duration");
+            System.out.println("5. Price");
+            System.out.println("6. Additional Notes");
+            System.out.println("7. Exit");
+            System.out.println("Enter an option:");
+            option = input.nextInt();
+            switch (option) {
+                case 1:
+                    System.out.println("Enter new part name: ");
+                    part.setPartName(input.next());
+                    System.out.println("Part name updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 2:
+                    System.out.println("Enter new part manufacturer: ");
+                    part.setPartManufacturer(input.next());
+                    System.out.println("Part manufacturer updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 3:
+                    System.out.println("Enter new part condition (NEW, USED, REFURBISHED): ");
+                    Condition condition;
+                    try {
+                        condition = Condition.valueOf(input.next().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid condition. Please enter NEW, USED, or REFURBISHED.");
+                        condition = Condition.valueOf(input.next().toUpperCase());
+                    }
+                    part.setCondition(condition);
+                    System.out.println("Part condition updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 4:
+                    System.out.println("Enter new warranty duration (in months): ");
+                    int warrantyMonths;
+                    while (true) {
+                        try {
+                            warrantyMonths = input.nextInt();
+                            break; // Exit loop if input is valid
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            input.next(); // Clear the invalid input from the scanner buffer
+                        }
+                    }
+                    part.setWarrantyMonths(warrantyMonths);
+                    System.out.println("Warranty duration updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 5:
+                    System.out.println("Enter new price: ");
+                    double price;
+                    while (true) {
+                        try {
+                            price = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            input.next();
+                        }
+                    }
+                    part.setPrice(price);
+                    System.out.println("Price updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 6:
+                    input.nextLine();
+                    System.out.println("Enter new additional notes: ");
+                    part.setAddNotes(input.nextLine());
+                    System.out.println("Additional notes updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 7:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
     public static void displayAllParts() {
         System.out.println("Displaying all Auto Parts:");
         for (autoPart part : CarAndAutoPartMenu.getAutoPartsList()) {
