@@ -5,6 +5,7 @@ import utils.CarAndAutoPartMenu;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Car {
@@ -140,14 +141,41 @@ public class Car {
         String carMake = input.next();
         System.out.println("Please input the car's model:");
         String carModel = input.next();
-        System.out.println("Please input the car's year:");
-        int carYear = input.nextInt();
+        int carYear;
+        while (true) {
+            try {
+                System.out.println("Please input the car's year:");
+                carYear = input.nextInt();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid year");
+                input.nextLine();
+            }
+        }
         System.out.println("Please input the car's color:");
         String color = input.next();
-        System.out.println("Please input the car's mileage:");
-        double mileage = input.nextDouble();
-        System.out.println("Please input the car's price:");
-        double price = input.nextDouble();
+        double mileage;
+        while (true) {
+            try {
+                System.out.println("Please input the car's mileage:");
+                mileage = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid mileage");
+                input.nextLine();
+            }
+        }
+        double price;
+        while (true) {
+            try {
+                System.out.println("Please input the car's price:");
+                price = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid price");
+                input.nextLine();
+            }
+        }
         input.nextLine();
         System.out.println("Please input any additional notes:");
         String addNotes = input.nextLine();
@@ -175,6 +203,7 @@ public class Car {
         for (Car car : CarAndAutoPartMenu.getCarsList()) {
             System.out.println(car);
         }
+        System.out.println("----------------");
     }
 
     @Override

@@ -4,6 +4,7 @@ package autoPart;
 import utils.CarAndAutoPartMenu;
 
 import java.time.LocalDateTime;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class autoPart {
@@ -135,9 +136,27 @@ public class autoPart {
             condition = Condition.valueOf(input.next().toUpperCase());
         }
         System.out.println("Enter warranty duration (in months): ");
-        int warrantyMonths = input.nextInt();
+        int warrantyMonths;
+        while (true) {
+            try {
+                warrantyMonths = input.nextInt();
+                break; // Exit loop if input is valid
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        double price;
         System.out.println("Enter price: ");
-        double price = input.nextDouble();
+        while (true) {
+            try {
+                price = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                input.next();
+            }
+        }
         input.nextLine();
         System.out.println("Enter additional notes: ");
         String addNotes = input.nextLine();
@@ -161,9 +180,11 @@ public class autoPart {
     }
 
     public static void displayAllParts() {
+        System.out.println("Displaying all Auto Parts:");
         for (autoPart part : CarAndAutoPartMenu.getAutoPartsList()) {
             System.out.println(part);
         }
+        System.out.println("----------------");
     }
 
     @Override
