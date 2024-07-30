@@ -70,21 +70,15 @@ public class CarAndAutoPartMenu {
                     autoPart.displayAllParts();
                     break;
                 case 5:
-                    Car.displayAllCars();
                     Car.deleteCar();
-                    Car.displayAllCars();
                     break;
                 case 6:
-                    autoPart.displayAllParts();
                     autoPart.deletePart();
-                    autoPart.displayAllParts();
                     break;
                 case 7:
-                    Car.displayAllCars();
                     Car.updateCar();
                     break;
                 case 8:
-                    autoPart.displayAllParts();
                     autoPart.updatePart();
                     break;
                 case 9:

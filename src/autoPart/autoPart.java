@@ -167,6 +167,7 @@ public class autoPart {
     }
 
     public static void deletePart() {
+        autoPart.displayAllParts();
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
         String partID = input.next();
@@ -177,9 +178,11 @@ public class autoPart {
         }
         part.setDeleted(true);
         System.out.println("Part deleted successfully.");
+        System.out.println(part);
     }
 
     public static void updatePart() {
+        autoPart.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);
         while (part == null) {

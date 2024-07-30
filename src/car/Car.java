@@ -186,6 +186,7 @@ public class Car {
     }
 
     public static void deleteCar() {
+        Car.displayAllCars();
         Scanner input = new Scanner(System.in);
         System.out.println("Please input the car's ID to delete:");
         String carID = input.next();
@@ -196,9 +197,11 @@ public class Car {
         } else {
             System.out.println("Car not found.");
         }
+        System.out.println(car);
     }
 
     public static void updateCar() {
+        Car.displayAllCars();
         Car car = null;
         Scanner input = new Scanner(System.in);
         while (car == null) {
