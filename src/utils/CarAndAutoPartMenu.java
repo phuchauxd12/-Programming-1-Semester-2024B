@@ -53,6 +53,21 @@ public class CarAndAutoPartMenu {
         System.out.println("----------------");
     }
 
+    public static int getOption(int option, Scanner input) {
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.println("Enter an option:");
+                option = input.nextInt();
+                validInput = true; // If input is valid, exit the loop
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        return option;
+    }
+
     public static void menu() {
         System.out.println("Welcome to the Car and Auto Part Menu!");
         System.out.println("1. Add a car");
@@ -106,18 +121,5 @@ public class CarAndAutoPartMenu {
         } while (option != 8);
     }
 
-    public static int getOption(int option, Scanner input) {
-        boolean validInput = false;
-        while (!validInput) {
-            try {
-                System.out.println("Enter an option:");
-                option = input.nextInt();
-                validInput = true; // If input is valid, exit the loop
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid number");
-                input.next(); // Clear the invalid input from the scanner buffer
-            }
-        }
-        return option;
-    }
+
 }
