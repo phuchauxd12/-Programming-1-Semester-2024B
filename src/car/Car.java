@@ -2,6 +2,7 @@ package car;
 
 import services.Service;
 import utils.CarAndAutoPartMenu;
+import utils.Status;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,10 +24,6 @@ public class Car {
     private ArrayList<Service> serviceHistory;
     private static long carCounter = 0;
 
-    public enum Status {
-        AVAILABLE,
-        SOLD
-    }
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes) {
         this.carID = generateCarID();
@@ -135,7 +132,7 @@ public class Car {
         this.serviceHistory = serviceHistory;
     }
 
-    public static void createCar() {
+    public static Car createCar() {
         Scanner input = new Scanner(System.in);
         System.out.println("Please input the car's make:");
         String carMake = input.next();
@@ -182,11 +179,16 @@ public class Car {
         Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes);
         System.out.println("Car created successfully!");
         System.out.println(newCar);
-        CarAndAutoPartMenu.getCarsList().add(newCar);
+        return newCar;
+    }
+
+    public static void addCarToList() {
+        Car car = createCar();
+        CarAndAutoPartMenu.getCarsList().add(car);
     }
 
     public static void deleteCar() {
-        Car.displayAllCars();
+        CarAndAutoPartMenu.displayAllCars();
         Scanner input = new Scanner(System.in);
         System.out.println("Please input the car's ID to delete:");
         String carID = input.next();
@@ -201,7 +203,7 @@ public class Car {
     }
 
     public static void updateCar() {
-        Car.displayAllCars();
+        CarAndAutoPartMenu.displayAllCars();
         Car car = null;
         Scanner input = new Scanner(System.in);
         while (car == null) {
@@ -223,8 +225,7 @@ public class Car {
             System.out.println("6. Car Price");
             System.out.println("7. Additional Notes");
             System.out.println("8. Exit");
-            System.out.println("Enter an option:");
-            option = input.nextInt();
+            option = CarAndAutoPartMenu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("Please input the car's make:");
@@ -295,13 +296,14 @@ public class Car {
                     System.out.println(car);
                     break;
                 case 7:
+                    input.nextLine();
                     System.out.println("Please input any additional notes:");
                     car.setAddNotes(input.nextLine());
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
                 case 8:
-                    System.out.println("Exiting...");
+                    CarAndAutoPartMenu.MainMenu();
                     break;
                 default:
                     System.out.println("Invalid option.");
@@ -310,13 +312,6 @@ public class Car {
         } while (option != 8);
     }
 
-    public static void displayAllCars() {
-        System.out.println("Displaying all cars:");
-        for (Car car : CarAndAutoPartMenu.getCarsList()) {
-            System.out.println(car);
-        }
-        System.out.println("----------------");
-    }
 
     @Override
     public String toString() {

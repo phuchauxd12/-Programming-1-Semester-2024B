@@ -2,6 +2,7 @@ package autoPart;
 
 
 import utils.CarAndAutoPartMenu;
+import utils.Status;
 
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
@@ -26,10 +27,6 @@ public class autoPart {
         REFURBISHED
     }
 
-    public enum Status {
-        SOLD,
-        AVAILABLE
-    }
 
     public autoPart(String partName, String partManufacturer, Condition condition, int warrantyMonths, double price, String addNotes) {
         this.partID = generatePartID();
@@ -121,7 +118,7 @@ public class autoPart {
         isDeleted = deleted;
     }
 
-    public static void createPart() {
+    public static autoPart createPart() {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter part name: ");
         String partName = input.next();
@@ -163,11 +160,16 @@ public class autoPart {
         autoPart part = new autoPart(partName, partManufacturer, condition, warrantyMonths, price, addNotes);
         System.out.println("Part created successfully.");
         System.out.println(part);
+        return part;
+    }
+
+    public static void addPartToList() {
+        autoPart part = createPart();
         CarAndAutoPartMenu.getAutoPartsList().add(part);
     }
 
     public static void deletePart() {
-        autoPart.displayAllParts();
+        CarAndAutoPartMenu.displayAllParts();
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
         String partID = input.next();
@@ -182,7 +184,7 @@ public class autoPart {
     }
 
     public static void updatePart() {
-        autoPart.displayAllParts();
+        CarAndAutoPartMenu.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);
         while (part == null) {
@@ -203,8 +205,7 @@ public class autoPart {
             System.out.println("5. Price");
             System.out.println("6. Additional Notes");
             System.out.println("7. Exit");
-            System.out.println("Enter an option:");
-            option = input.nextInt();
+            option = CarAndAutoPartMenu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("Enter new part name: ");
@@ -271,7 +272,7 @@ public class autoPart {
                     System.out.println(part);
                     break;
                 case 7:
-                    System.out.println("Exiting...");
+                    CarAndAutoPartMenu.MainMenu();
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -279,13 +280,6 @@ public class autoPart {
         }
     }
 
-    public static void displayAllParts() {
-        System.out.println("Displaying all Auto Parts:");
-        for (autoPart part : CarAndAutoPartMenu.getAutoPartsList()) {
-            System.out.println(part);
-        }
-        System.out.println("----------------");
-    }
 
     @Override
     public String toString() {

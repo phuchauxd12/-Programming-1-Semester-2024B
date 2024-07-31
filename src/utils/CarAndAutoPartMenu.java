@@ -4,6 +4,7 @@ import autoPart.autoPart;
 import car.Car;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CarAndAutoPartMenu {
@@ -36,6 +37,22 @@ public class CarAndAutoPartMenu {
         return null;
     }
 
+    public static void displayAllCars() {
+        System.out.println("Displaying all cars:");
+        for (Car car : getCarsList()) {
+            System.out.println(car);
+        }
+        System.out.println("----------------");
+    }
+
+    public static void displayAllParts() {
+        System.out.println("Displaying all Auto Parts:");
+        for (autoPart part : getAutoPartsList()) {
+            System.out.println(part);
+        }
+        System.out.println("----------------");
+    }
+
     public static void menu() {
         System.out.println("Welcome to the Car and Auto Part Menu!");
         System.out.println("1. Add a car");
@@ -49,25 +66,24 @@ public class CarAndAutoPartMenu {
         System.out.println("9. Exit");
     }
 
-    public static void main(String[] args) {
+    public static void MainMenu() {
         int option = 0;
-        Scanner scanner = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
         do {
             menu();
-            System.out.println("Enter an option:");
-            option = scanner.nextInt();
+            option = getOption(option, input);
             switch (option) {
                 case 1:
-                    Car.createCar();
+                    Car.addCarToList();
                     break;
                 case 2:
-                    autoPart.createPart();
+                    autoPart.addPartToList();
                     break;
                 case 3:
-                    Car.displayAllCars();
+                    displayAllCars();
                     break;
                 case 4:
-                    autoPart.displayAllParts();
+                    displayAllParts();
                     break;
                 case 5:
                     Car.deleteCar();
@@ -88,5 +104,20 @@ public class CarAndAutoPartMenu {
                     System.out.println("Invalid option. Please try again.");
             }
         } while (option != 8);
+    }
+
+    public static int getOption(int option, Scanner input) {
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.println("Enter an option:");
+                option = input.nextInt();
+                validInput = true; // If input is valid, exit the loop
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        return option;
     }
 }
