@@ -182,9 +182,9 @@ public class Car {
         return newCar;
     }
 
-    public static void addCarToList() {
-        Car car = createCar();
+    public static void addCarToList(Car car) {
         CarAndAutoPartMenu.getCarsList().add(car);
+        System.out.println("Car successfully added to list!");
     }
 
     public static void deleteCar() {

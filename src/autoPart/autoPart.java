@@ -163,9 +163,9 @@ public class autoPart {
         return part;
     }
 
-    public static void addPartToList() {
-        autoPart part = createPart();
+    public static void addPartToList(autoPart part) {
         CarAndAutoPartMenu.getAutoPartsList().add(part);
+        System.out.println("Part successfully added to list!");
     }
 
     public static void deletePart() {

@@ -89,10 +89,12 @@ public class CarAndAutoPartMenu {
             option = getOption(option, input);
             switch (option) {
                 case 1:
-                    Car.addCarToList();
+                    Car car = Car.createCar();
+                    Car.addCarToList(car);
                     break;
                 case 2:
-                    autoPart.addPartToList();
+                    autoPart part = autoPart.createPart();
+                    autoPart.addPartToList(part);
                     break;
                 case 3:
                     displayAllCars();
