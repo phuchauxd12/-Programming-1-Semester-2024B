@@ -6,7 +6,6 @@ import transaction.SaleTransactionList;
 import user.*;
 
 import java.time.LocalDate;
-
 public class Main {
     public static void main(String[] args) throws Exception {
 //        Membership membership = new Membership();
@@ -47,9 +46,7 @@ public class Main {
 
         /* Add to database.txt file*/
 
-//        UserDatabase.createDatabase();
-//        UserDatabase.addUser(client);
-//        var listUser = UserDatabase.loadUsers();
-//        System.out.println(listUser);
+
     }
+
 }
