@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Service {
     private String serviceId;
@@ -18,11 +19,11 @@ public class Service {
     private String carId;
     private double serviceCost;
     private String additionalNotes;
-    private static int serviceCounter = 1;
+
 
     // Constructor
     public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, ServiceBy serviceBy, String carId, double serviceCost) {
-        this.serviceId = "s-" + serviceCounter++;
+        this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
         this.mechanicId = mechanicId;
@@ -33,7 +34,9 @@ public class Service {
         this.serviceCost = serviceCost;
         this.additionalNotes = "";
     }
-
+    private String generateServiceId() {
+        return "s-" + UUID.randomUUID().toString();
+    }
     // Getters
     public String getServiceId() { return serviceId; }
     public LocalDate getServiceDate() { return serviceDate; }
