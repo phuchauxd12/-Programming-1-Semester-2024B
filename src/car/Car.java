@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Car {
     private String carID;
@@ -22,7 +23,7 @@ public class Car {
     private LocalDateTime soldDate = null;
     private boolean isDeleted = false;
     private ArrayList<Service> serviceHistory;
-    private static long carCounter = 0;
+
 
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
@@ -37,8 +38,8 @@ public class Car {
         this.status = status;
     }
 
-    public String generateCarID() {
-        return "c-" + (++carCounter);
+   private String generateCarID() {
+        return "c-" + UUID.randomUUID().toString();
     }
 
     public String getCarID() {

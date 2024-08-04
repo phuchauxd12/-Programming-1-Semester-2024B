@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -16,11 +17,11 @@ public class SaleTransaction implements Serializable {
     private double discount;
     private double totalAmount;
     private String additionalNotes;
-    private static int transactionCounter = 1;
+
 
     // Constructor
     public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, double discount, double totalAmount) {
-        this.transactionId = "t-" + transactionCounter++;
+        this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
@@ -30,6 +31,9 @@ public class SaleTransaction implements Serializable {
         this.additionalNotes = "";
     }
 
+    private String generateSaleTransactionID() {
+        return "t-" + UUID.randomUUID().toString();
+    }
     public String getTransactionId() { return transactionId; }
     public LocalDate getTransactionDate() { return transactionDate; }
     public String getClientId() { return clientId; }
