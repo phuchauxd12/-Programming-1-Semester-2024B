@@ -70,15 +70,17 @@ public class CarAndAutoPartMenu {
 
     public static void menu() {
         System.out.println("Welcome to the Car and Auto Part Menu!");
+        System.out.println("---------------------");
         System.out.println("1. Add a car");
-        System.out.println("2. Add an auto part");
-        System.out.println("3. Display all cars");
+        System.out.println("2. Display all cars");
+        System.out.println("3. Add an auto part");
         System.out.println("4. Display all auto parts");
         System.out.println("5. Delete a car");
         System.out.println("6. Delete an auto part");
         System.out.println("7. Update a car");
         System.out.println("8. Update an auto part");
         System.out.println("9. Exit");
+        System.out.println("---------------------");
     }
 
     public static void MainMenu() {
@@ -93,11 +95,11 @@ public class CarAndAutoPartMenu {
                     Car.addCarToList(car);
                     break;
                 case 2:
-                    autoPart part = autoPart.createPart();
-                    autoPart.addPartToList(part);
+                    displayAllCars();
                     break;
                 case 3:
-                    displayAllCars();
+                    autoPart part = autoPart.createPart();
+                    autoPart.addPartToList(part);
                     break;
                 case 4:
                     displayAllParts();
@@ -116,6 +118,7 @@ public class CarAndAutoPartMenu {
                     break;
                 case 9:
                     System.out.println("Exiting...");
+                    Menu.mainMenu();
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");

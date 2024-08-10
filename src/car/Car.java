@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Car {
     private String carID;
@@ -17,15 +18,15 @@ public class Car {
     private String color;
     private double mileage;
     private double price;
-    private Status status = Status.AVAILABLE;
+    private Status status;
     private String addNotes;
     private LocalDateTime soldDate = null;
     private boolean isDeleted = false;
     private ArrayList<Service> serviceHistory;
-    private static long carCounter = 0;
 
 
-    public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes) {
+
+    public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
         this.carID = generateCarID();
         this.carMake = carMake;
         this.carModel = carModel;
@@ -34,10 +35,11 @@ public class Car {
         this.mileage = mileage;
         this.price = price;
         this.addNotes = addNotes;
+        this.status = status;
     }
 
-    public String generateCarID() {
-        return "c-" + (++carCounter);
+   private String generateCarID() {
+        return "c-" + UUID.randomUUID().toString();
     }
 
     public String getCarID() {
@@ -134,6 +136,31 @@ public class Car {
 
     public static Car createCar() {
         Scanner input = new Scanner(System.in);
+        Status status;
+
+        int option = 0;
+        while (true) {
+            System.out.println("Car for sale or a customer car for repair?");
+            System.out.println("1. New Car for Sale");
+            System.out.println("2. Car for Repair");
+            try {
+                System.out.println("Enter an option: ");
+                option = input.nextInt();
+                if (option == 1 || option == 2) {
+                    break;
+                } else {
+                    System.out.println("Invalid option. Please input 1 or 2.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input 1 or 2.");
+                input.nextLine(); // Clear the invalid input
+            }
+        }
+        status = switch (option) {
+            case 1 -> Status.AVAILABLE;
+            case 2 -> Status.WALK_IN;
+            default -> throw new IllegalStateException("Unexpected value: " + option);
+        };
         System.out.println("Please input the car's make:");
         String carMake = input.next();
         System.out.println("Please input the car's model:");
@@ -143,14 +170,18 @@ public class Car {
             try {
                 System.out.println("Please input the car's year:");
                 carYear = input.nextInt();
-                break;
+                if (carYear > 1900) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. The year must be over 1900.");
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please input a valid year");
                 input.nextLine();
             }
         }
         System.out.println("Please input the car's color:");
-        String color = input.next();
+        String color = input.next().toUpperCase();
         double mileage;
         while (true) {
             try {
@@ -176,7 +207,7 @@ public class Car {
         input.nextLine();
         System.out.println("Please input any additional notes:");
         String addNotes = input.nextLine();
-        Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes);
+        Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
         System.out.println("Car created successfully!");
         System.out.println(newCar);
         return newCar;
@@ -242,56 +273,60 @@ public class Car {
                     System.out.println(car);
                     break;
                 case 3:
-                    int carYear;
+                    int newCarYear;
                     while (true) {
                         try {
                             System.out.println("Please input the car's year:");
-                            carYear = input.nextInt();
-                            break;
+                            newCarYear = input.nextInt();
+                            if (newCarYear > 1900) {
+                                break;
+                            } else {
+                                System.out.println("Invalid input. The year must be over 1900.");
+                            }
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input. Please input a valid year");
                             input.nextLine();
                         }
                     }
-                    car.setCarYear(carYear);
+                    car.setCarYear(newCarYear);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
                 case 4:
                     System.out.println("Please input the car's color:");
-                    car.setColor(input.next());
+                    car.setColor(input.next().toUpperCase());
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
                 case 5:
-                    double mileage;
+                    double newMileage;
                     while (true) {
                         try {
                             System.out.println("Please input the car's mileage:");
-                            mileage = input.nextDouble();
+                            newMileage = input.nextDouble();
                             break;
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input. Please input a valid mileage");
                             input.nextLine();
                         }
                     }
-                    car.setMileage(mileage);
+                    car.setMileage(newMileage);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
                 case 6:
-                    double price;
+                    double newPrice;
                     while (true) {
                         try {
                             System.out.println("Please input the car's price:");
-                            price = input.nextDouble();
+                            newPrice = input.nextDouble();
                             break;
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input. Please input a valid price");
                             input.nextLine();
                         }
                     }
-                    car.setPrice(price);
+                    car.setPrice(newPrice);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
