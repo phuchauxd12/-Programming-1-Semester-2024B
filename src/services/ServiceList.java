@@ -5,7 +5,9 @@ import user.Client;
 import user.User;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class ServiceList {
     private List<Service> services;
@@ -14,9 +16,6 @@ public class ServiceList {
         this.services = new ArrayList<>();
     }
 
-    public void addService(Service service) {
-        services.add(service);
-    }
 
     public void addService(String mechanicId) {
         Scanner scanner = new Scanner(System.in);
@@ -249,7 +248,7 @@ public class ServiceList {
         return new double[]{totalServiceRevenue, serviceCount};
     }
 
-    public double calculateSalespersonRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
+    public double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
         double totalServiceRevenue = 0.0;
 
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
@@ -264,31 +263,32 @@ public class ServiceList {
         return totalServiceRevenue;
     }
 
-    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
-        double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
-        double totalServiceRevenue = serviceRevenueAndCount[0];
-        int serviceCount = (int) serviceRevenueAndCount[1];
-        int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
-        Map<String, Double> clientRevenue = new HashMap<>();
-
-        for (Service service : getServicesBetween(startDate, endDate)) {
-
-            clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
-        }
-
-        // Statistics info
-        System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Services Revenue: $%.2f\n", totalServiceRevenue);
-        System.out.printf("Total Number of Services: %d\n", serviceCount);
-        System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
-
-        // Revenue by client
-        System.out.println("Revenue by Client:");
-        for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
-            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
-        }
-    }
+//    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
+//        double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
+//        double totalServiceRevenue = serviceRevenueAndCount[0];
+//        int serviceCount = (int) serviceRevenueAndCount[1];
+//        int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
+//
+//        Map<String, Double> clientRevenue = new HashMap<>();
+//
+//        for (Service service : getServicesBetween(startDate, endDate)) {
+//
+//            clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
+//        }
+//
+//        // Statistics info
+//        System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
+//        System.out.printf("Total Services Revenue: $%.2f\n", totalServiceRevenue);
+//        System.out.printf("Total Number of Services: %d\n", serviceCount);
+//        System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
+//
+//        // Revenue by client
+//        System.out.println("Revenue by Client:");
+//        for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
+//            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+//        }
+//    }
 
     public void viewServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
@@ -297,7 +297,7 @@ public class ServiceList {
                 .filter(service -> service.getMechanicId().equals(mechanicId))
                 .toList();
 
-        double totalServiceRevenue = calculateSalespersonRevenue(mechanicId, startDate, endDate);
+        double totalServiceRevenue = calculateMechanicRevenue(mechanicId, startDate, endDate);
         int serviceCount = filteredService.size();
 
         System.out.println("Sales Transactions for Salesperson ID: " + mechanicId);

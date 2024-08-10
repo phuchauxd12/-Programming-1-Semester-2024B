@@ -1,9 +1,13 @@
 package user;
 
 
+import services.Service;
 import services.ServiceList;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Scanner;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
@@ -65,6 +69,70 @@ public class Mechanic extends Employee {
 //            }
 //        }
 //    }
+    public double getRevenueInASpecificPeriod() {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate startDate;
+        LocalDate endDate;
+        double totalServiceRevenue = 0.0;
+
+
+        // Get start date
+        while (true) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            try {
+                startDate = LocalDate.parse(scanner.nextLine());
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid start date format. Please try again.");
+            }
+        }
+
+        // Get end date
+        while (true) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            try {
+                endDate = LocalDate.parse(scanner.nextLine());
+                if (!endDate.isBefore(startDate)) {
+                    break;
+                }
+                System.out.println("End date cannot be before start date. Please try again.");
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid end date format. Please try again.");
+            }
+        }
+
+        // Calculate total service revenue
+        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+        String finalMechanicId = this.userID;
+        List<Service> filteredServices = servicesInRange.stream()
+                .filter(service -> service.getMechanicId().equals(finalMechanicId))
+                .toList();
+
+        totalServiceRevenue = filteredServices.stream()
+                .mapToDouble(Service::getTotalCost)
+                .sum();
+
+        return totalServiceRevenue;
+    }
+
+    public double getAllRevenue() {
+        double totalServiceRevenue = 0.0;
+
+        // Retrieve all services
+        List<Service> allServices = serviceList.getAllServices();
+
+        // Filter services by mechanic ID
+        List<Service> filteredServices = allServices.stream()
+                .filter(service -> service.getMechanicId().equals(this.userID))
+                .toList();
+
+        // Calculate total service revenue
+        totalServiceRevenue = filteredServices.stream()
+                .mapToDouble(Service::getTotalCost)
+                .sum();
+
+        return totalServiceRevenue;
+    }
 
     public void addService() {
         serviceList.addService(this.getUserName());
