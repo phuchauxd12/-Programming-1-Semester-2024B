@@ -67,11 +67,12 @@ public class StatisticsMenu {
             option = getOption(option, input);
             switch (option) {
                 case 1:
-
+//                    (Client Menu)
+//                    Client client = (Client) User.getUserById(clientId);
+//                    client.viewServiceHistory();
                     break;
                 case 2:
                     // (Manager menu)
-
 //                    User.displayAllMechanics();
 //                    String mechanicId;
 //                    Mechanic mechanic;
@@ -91,6 +92,9 @@ public class StatisticsMenu {
 //                    double result = mechanic.getRevenueInASpecificPeriod();
 //                    System.out.println("Total Revenue of Sales by " + mechanicId + ": " + result);
 
+                    // (Client menu)
+//                    Client client;
+//                    client.viewServiceHistoryInSpecificPeriod();
 
                     break;
                 case 3:
@@ -120,7 +124,9 @@ public class StatisticsMenu {
 //                    double result = ServiceList.getRevenueByMechanic();
 //                    System.out.println("Total Revenue of Sales by " + mechanicId + ": " + result);
 
-
+//                    // (Client menu)
+//                    Client client;
+//                    client.viewTransactionsHistory();
                     break;
                 case 4:
 //                    // (Mechanic menu)
@@ -128,7 +134,10 @@ public class StatisticsMenu {
 //                    Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);
 //                    double result = mechanic.getRevenueInASpecificPeriod();
 //                    System.out.println("Revenue of Sales by " + mechanicId + ": " + result);
-
+                    
+//                    (Client menu)
+//                    Client client;
+//                    client.viewSalesTransactionsInSpecificPeriod();
 
                     break;
                 case 5:
