@@ -9,7 +9,7 @@ public class StatisticsMenu {
     public static void managerMenu() {
         System.out.println("Statistics Menu");
         System.out.println("----------------");
-        System.out.println("1. Revenue of All Cars Sold");
+        System.out.println("1. Number of Cars sold (in specific period)");
         System.out.println("2. Revenue of Services by a mechanic (in specific period)");
         System.out.println("3. Revenue of Sales by a salesperson (in specific period)");
         System.out.println("4. Revenue of Shop (in specific period)");
@@ -67,7 +67,10 @@ public class StatisticsMenu {
             option = getOption(option, input);
             switch (option) {
                 case 1:
-////                    (Mechanic menu)
+////                    (Manager menu)
+//                    CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod();
+
+//                    (Mechanic menu)
 //                    Mechanic mechanic;
 //                    mechanic.getAllServices();
 
@@ -133,6 +136,8 @@ public class StatisticsMenu {
 //                    client.viewTransactionsHistory();
                     break;
                 case 4:
+//                    (Manager menu)
+//                    CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod();
 //                    // (Mechanic menu)
 //                    String mechanicId;
 //                    Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);

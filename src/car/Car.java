@@ -4,7 +4,7 @@ import services.Service;
 import utils.CarAndAutoPartMenu;
 import utils.Status;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -20,10 +20,9 @@ public class Car {
     private double price;
     private Status status;
     private String addNotes;
-    private LocalDateTime soldDate = null;
+    private LocalDate soldDate = null;
     private boolean isDeleted = false;
     private ArrayList<Service> serviceHistory;
-
 
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
@@ -38,7 +37,7 @@ public class Car {
         this.status = status;
     }
 
-   private String generateCarID() {
+    private String generateCarID() {
         return "c-" + UUID.randomUUID().toString();
     }
 
@@ -110,11 +109,11 @@ public class Car {
         this.addNotes = addNotes;
     }
 
-    public LocalDateTime getSoldDate() {
+    public LocalDate getSoldDate() {
         return soldDate;
     }
 
-    public void setSoldDate(LocalDateTime soldDate) {
+    public void setSoldDate(LocalDate soldDate) {
         this.soldDate = soldDate;
     }
 
