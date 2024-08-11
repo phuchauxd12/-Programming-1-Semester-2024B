@@ -27,6 +27,45 @@ public class Mechanic extends Employee {
         }
     }
 
+    public void getAllServicesBetween(String mechanicId) {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate startDate;
+        LocalDate endDate;
+
+        // Get start date
+        while (true) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            try {
+                startDate = LocalDate.parse(scanner.nextLine());
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid start date format. Please try again.");
+            }
+        }
+
+        // Get end date
+        while (true) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            try {
+                endDate = LocalDate.parse(scanner.nextLine());
+                if (!endDate.isBefore(startDate)) {
+                    break;
+                }
+                System.out.println("End date cannot be before start date. Please try again.");
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid end date format. Please try again.");
+            }
+        }
+
+        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+        for (Service service : servicesInRange) {
+            if (service.getMechanicId().equals(mechanicId)) {
+                System.out.println(service.getFormattedServiceDetails());
+                System.out.println("--------------------------------------------------");
+            }
+        }
+    }
+
     // View overall service statistics within a date range
 //    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
 //        List<Service> filteredServices = serviceList.getServicesBetween(startDate, endDate);

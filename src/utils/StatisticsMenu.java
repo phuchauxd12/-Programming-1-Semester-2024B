@@ -98,7 +98,9 @@ public class StatisticsMenu {
 //                    }
 //                    double result = mechanic.getRevenueInASpecificPeriod();
 //                    System.out.println("Total Revenue of Sales by " + mechanicId + ": " + result);
-
+//                    (Mechanic menu)
+//                    Mechanic mechanic;
+//                    mechanic.getAllServicesBetween(mechanic.getUserId());
                     // (Client menu)
 //                    Client client;
 //                    client.viewServiceHistoryInSpecificPeriod();
