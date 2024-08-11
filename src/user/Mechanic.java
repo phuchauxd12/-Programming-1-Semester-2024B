@@ -17,6 +17,16 @@ public class Mechanic extends Employee {
         this.serviceList = serviceList;
     }
 
+    public void getAllServices() {
+        List<Service> allServices = serviceList.getAllServices();
+        for (Service service : allServices) {
+            if (service.getMechanicId().equals(this.userID)) {
+                System.out.println(service.getFormattedServiceDetails());
+                System.out.println("--------------------------------------------------");
+            }
+        }
+    }
+
     // View overall service statistics within a date range
 //    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
 //        List<Service> filteredServices = serviceList.getServicesBetween(startDate, endDate);
@@ -133,6 +143,7 @@ public class Mechanic extends Employee {
 
         return totalServiceRevenue;
     }
+
 
     public void addService() {
         serviceList.addService(this.getUserName());

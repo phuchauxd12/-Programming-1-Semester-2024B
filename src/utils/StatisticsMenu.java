@@ -67,6 +67,10 @@ public class StatisticsMenu {
             option = getOption(option, input);
             switch (option) {
                 case 1:
+////                    (Mechanic menu)
+//                    Mechanic mechanic;
+//                    mechanic.getAllServices();
+
 //                    (Client Menu)
 //                    Client client = (Client) User.getUserById(clientId);
 //                    client.viewServiceHistory();
@@ -134,7 +138,7 @@ public class StatisticsMenu {
 //                    Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);
 //                    double result = mechanic.getRevenueInASpecificPeriod();
 //                    System.out.println("Revenue of Sales by " + mechanicId + ": " + result);
-                    
+
 //                    (Client menu)
 //                    Client client;
 //                    client.viewSalesTransactionsInSpecificPeriod();
@@ -161,7 +165,24 @@ public class StatisticsMenu {
 //                    System.out.println("Revenue of Sales by " + salespersonId + ": " + result);
                     break;
                 case 9:
-
+//                    (Manager menu)
+//                    User.displayAllMechanics();
+//                    String mechanicId;
+//                    Mechanic mechanic;
+//                    while (true) {
+//                        System.out.print("Enter mechanic ID: ");
+//                        mechanicId = input.nextLine();
+//                        if (!mechanicId.isEmpty()) {
+//                            mechanic = (Mechanic) User.getUserById(mechanicId);
+//                            if (mechanic != null) {
+//                                break;
+//                            } else {
+//                                System.out.println("Mechanic not found. Please try again.");
+//                            }
+//                            System.out.println("Mechanic ID cannot be empty. Please try again.");
+//                        }
+//                    }
+//                    System.out.println(mechanic.getAllServices());
                     break;
                 case 10:
                     System.out.println("Exiting...");
