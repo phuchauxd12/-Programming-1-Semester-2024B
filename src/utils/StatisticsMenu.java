@@ -29,10 +29,8 @@ public class StatisticsMenu {
         System.out.println("2. List Transactions by me (Day/week/month)");
         System.out.println("3. List All Cars sold by me");
         System.out.println("4. List Cars sold by me (Day/week/month)");
-        System.out.println("5. List All AutoPart sold by me");
-        System.out.println("6. List AutoPart sold by me (Day/week/month)");
-        System.out.println("7. Revenue of Sales by me");
-        System.out.println("8. Revenue of Sales by me (specific period)");
+        System.out.println("5. Revenue of Sales by me");
+        System.out.println("6. Revenue of Sales by me (specific period)");
         System.out.println("10. Exit");
         System.out.println("----------------");
     }
@@ -152,24 +150,24 @@ public class StatisticsMenu {
 
                     break;
                 case 5:
-
-                    break;
-                case 6:
-
-                    break;
-                case 7:
 //                    // (Salesperson menu)
 //                    String salespersonId;
 //                    Salesperson salesperson = (Salesperson) User.getUserById(salespersonId);
 //                    double result = salesperson.getAllRevenue();
 //                    System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
                     break;
-                case 8:
+                case 6:
                     // (Salesperson menu)
 //                    String salespersonId;
 //                    Salesperson salesperson = (Salesperson) User.getUserById(salespersonId);
 //                    double result = salesperson.getRevenueInSpecificPeriod();
 //                    System.out.println("Revenue of Sales by " + salespersonId + ": " + result);
+                    break;
+                case 7:
+
+                    break;
+                case 8:
+
                     break;
                 case 9:
 //                    (Manager menu)
