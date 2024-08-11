@@ -5,6 +5,7 @@ import utils.LoginMenu;
 import utils.Menu;
 
 import java.time.LocalDate;
+import utils.ServiceMenu;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -61,7 +62,13 @@ public class Main {
 //        UserDatabase.addUser(client);
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser);
-        LoginMenu.displayLoginMenu();
-        Menu.mainMenu();
+          LoginMenu.displayLoginMenu();
+          Menu.mainMenu();
+//        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
+//        transactionMenu.mainMenu();
+//
+//        ServiceMenu serviceMenu = new ServiceMenu();
+//        serviceMenu.mainMenu();
+
     }
 }
