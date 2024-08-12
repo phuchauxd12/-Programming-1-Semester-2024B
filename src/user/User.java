@@ -126,6 +126,25 @@ public class User implements Serializable {
         return mechanicList.toString();
     }
 
+    public static List<Salesperson> getAllSalespersons() {
+        List<Salesperson> salespersons = new ArrayList<>();
+        for (User user : userList) {
+            if (user instanceof Salesperson) {
+                salespersons.add((Salesperson) user);
+            }
+        }
+        return salespersons;
+    }
+
+    public static String displayAllSalespersons() {
+        List<Salesperson> salespersons = getAllSalespersons();
+        StringBuilder salepersonsList = new StringBuilder();
+        for (Salesperson saleperson : salespersons) {
+            salepersonsList.append(saleperson.toString()).append("\n");
+        }
+        return salepersonsList.toString();
+    }
+
     public static void deleteUser(String userID) {
         userList.removeIf(user -> user.getUserID().equals(userID));
         System.out.println("User deleted with ID: " + userID);

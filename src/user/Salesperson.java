@@ -4,9 +4,7 @@ import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Scanner;
 
 public class Salesperson extends Employee {
 
@@ -53,60 +51,35 @@ public class Salesperson extends Employee {
 //    }
 //
 //    // Transactions done by this salesperson in specific date range
-//    public void viewTransactionsBySalesperson(LocalDate startDate, LocalDate endDate) {
-//        String salespersonId = this.getUserName(); // Get the salesperson ID
-//
-//        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
-//
-//        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
-//                .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
-//                .toList();
-//
-//        double totalSalesRevenue = filteredTransactions.stream()
-//                .mapToDouble(SaleTransaction::getTotalAmount)
-//                .sum();
-//        int transactionCount = filteredTransactions.size();
-//
-//        System.out.println("Sales Transactions for Salesperson ID: " + salespersonId);
-//        System.out.println("Total Sales Revenue: $" + String.format("%.2f", totalSalesRevenue));
-//        System.out.println("Total Number of Transactions: " + transactionCount);
-//
-//        if (!filteredTransactions.isEmpty()) {
-//            System.out.println("\nTransaction Details:");
-//            for (SaleTransaction transaction : filteredTransactions) {
-//                System.out.println(transaction.getFormattedSaleTransactionDetails());
-//                System.out.println("--------------------------------------------------");
-//            }
-//        }
-//    }
-    public double getRevenueInSpecificPeriod() {
-        Scanner scanner = new Scanner(System.in);
-        LocalDate startDate;
-        LocalDate endDate;
-        double totalServiceRevenue = 0.0;
-        // Get start date
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
+    public void viewTransactionsBySalesperson(LocalDate startDate, LocalDate endDate) {
+        String salespersonId = this.getUserID(); // Get the salesperson ID
+
+        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
+
+        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
+                .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
+                .toList();
+
+        double totalSalesRevenue = filteredTransactions.stream()
+                .mapToDouble(SaleTransaction::getTotalAmount)
+                .sum();
+        int transactionCount = filteredTransactions.size();
+
+        System.out.println("Sales Transactions for Salesperson ID: " + salespersonId);
+        System.out.println("Total Sales Revenue: $" + String.format("%.2f", totalSalesRevenue));
+        System.out.println("Total Number of Transactions: " + transactionCount);
+
+        if (!filteredTransactions.isEmpty()) {
+            System.out.println("\nTransaction Details:");
+            for (SaleTransaction transaction : filteredTransactions) {
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+                System.out.println("--------------------------------------------------");
             }
         }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
+    }
+
+    public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
+
         double totalSalesRevenue = 0.0;
 
         List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
@@ -121,12 +94,6 @@ public class Salesperson extends Employee {
         return totalSalesRevenue;
     }
 
-    public double getAllRevenue() {
-        return transactionList.getAllSaleTransactions().stream()
-                .filter(transaction -> transaction.getSalespersonId().equals(this.userID))
-                .mapToDouble(SaleTransaction::getTotalAmount)
-                .sum();
-    }
 
     public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {
         String salespersonId = this.getUserName();

@@ -4,7 +4,6 @@ import autoPart.autoPart;
 import car.Car;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -55,35 +54,8 @@ public class CarAndAutoPartMenu {
         System.out.println("----------------");
     }
 
-    public static void getNumberOfCarsSoldInSpecificPeriod() {
-        Scanner scanner = new Scanner(System.in);
-        LocalDate startDate;
-        LocalDate endDate;
+    public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
-        // Get start date
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-
         for (Car car : getCarsList()) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 carSold += 1;
@@ -92,34 +64,7 @@ public class CarAndAutoPartMenu {
         System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
     }
 
-    public static void getAllCarsSoldInSpecificPeriod() {
-        Scanner scanner = new Scanner(System.in);
-        LocalDate startDate;
-        LocalDate endDate;
-        int carSold = 0;
-        // Get start date
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
+    public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         for (Car car : getCarsList()) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 System.out.println(car);

@@ -34,7 +34,7 @@ public class Menu {
                     System.out.println("Transaction Menu");
                     break;
                 case 4:
-                    StatisticsMenu.mainMenu();
+                    
                     break;
                 case 5:
                     System.out.println("Goodbye!");

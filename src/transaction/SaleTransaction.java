@@ -41,6 +41,9 @@ public class SaleTransaction implements Serializable {
         this.isDeleted = false;
     }
 
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
+    }
+
 
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not

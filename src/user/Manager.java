@@ -98,10 +98,9 @@ public class Manager extends User {
     }
 
 
-
     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
         return CarAndAutoPartMenu.getCarsList().stream()
-                .filter(car -> !car.getSoldDate().isBefore(startDate.atStartOfDay()) && !car.getSoldDate().isAfter(endDate.atStartOfDay()))
+                .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
                 .collect(Collectors.toList());
     }
 
