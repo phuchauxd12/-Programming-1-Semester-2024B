@@ -47,6 +47,8 @@ public class StatisticsMenu {
                 menuActions.put(2, this::ManagerProcessMechanicRevenue);
                 menuActions.put(3, this::ManagerProcessSalespersonRevenue);
                 menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
+                menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
+                menuActions.put(7, this::getAllServicesInSpecificPeriod);
                 menuActions.put(8, this::getAllSalespersonSales);
                 menuActions.put(9, this::getAllMechanicServices);
                 menuActions.put(10, this::exit);
@@ -62,8 +64,8 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add salesperson-specific actions here
-                menuActions.put(1, this::getAllTransactions);
-                menuActions.put(2, this::getAllTransactionsInSpecificPeriod);
+                menuActions.put(1, this::getAllTransactionsByMe);
+                menuActions.put(2, this::getAllTransactionsByMeInSpecificPeriod);
                 menuActions.put(3, this::getAllCarsSoldBySalesperson);
                 menuActions.put(4, this::getAllCarsSoldBySalespersonInSpecificPeriod);
                 menuActions.put(5, this::SalespersonRevenue);
@@ -183,6 +185,24 @@ public class StatisticsMenu {
         CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
     }
 
+    private void getAllTransactionsInSpecificPeriod(Scanner scanner) {
+        // TODO: Implement this method (current implementation quick and dirty)
+        for (User user : User.userList) {
+            if (user instanceof Salesperson salesperson) {
+                salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
+            }
+        }
+    }
+
+    private void getAllServicesInSpecificPeriod(Scanner scanner) {
+        // TODO: Implement this method (current implementation quick and dirty)
+        for (User user : User.userList) {
+            if (user instanceof Mechanic mechanic) {
+                mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
+            }
+        }
+    }
+
     private void getAllMechanicServices(Scanner s) {
 //        if (loggedInUser instanceof Mechanic) {
 //            Mechanic mechanic = (Mechanic) loggedInUser;
@@ -235,12 +255,12 @@ public class StatisticsMenu {
 
 
     // Salesperson functions
-    private void getAllTransactions(Scanner scanner) {
+    private void getAllTransactionsByMe(Scanner scanner) {
         Salesperson salesperson = null; // TODO: Get the current salesperson
         salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
     }
 
-    private void getAllTransactionsInSpecificPeriod(Scanner scanner) {
+    private void getAllTransactionsByMeInSpecificPeriod(Scanner scanner) {
         Salesperson salesperson = null; // TODO: Get the current salesperson
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
