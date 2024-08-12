@@ -5,7 +5,6 @@ import user.Salesperson;
 import user.User;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -81,6 +80,9 @@ public class StatisticsMenu {
 
                 // Add mechanic-specific actions here
                 menuActions.put(1, this::getAllMechanicServices);
+                menuActions.put(2, this::getAllMechanicServicesInSpecificPeriod);
+                menuActions.put(3, this::getRevenueOfServices);
+                menuActions.put(4, this::getRevenueOfServicesInSpecificPeriod);
                 menuActions.put(10, this::exit);
                 break;
 
@@ -92,6 +94,10 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add client-specific actions here
+                menuActions.put(1, this::getAllClientServices);
+                menuActions.put(2, this::getAllClientServicesInSpecificPeriod);
+                menuActions.put(3, this::getAllClientSalesTransactions);
+                menuActions.put(4, this::getAllClientTransactionsInSpecificPeriod);
                 menuActions.put(10, this::exit);
                 break;
 
@@ -124,109 +130,57 @@ public class StatisticsMenu {
         }
     }
 
-    private void getAllTransactions(Scanner scanner) {
-        Salesperson salesperson = null; // TODO: Get the current salesperson
-        salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
+    public static void main(String[] args) {
+        StatisticsMenu menu = new StatisticsMenu(MenuOption.MANAGER);
+        menu.mainMenu();
+        Menu.mainMenu();
     }
 
-    private void getAllTransactionsInSpecificPeriod(Scanner scanner) {
-        Salesperson salesperson = null; // TODO: Get the current salesperson
-        LocalDate startDate;
-        LocalDate endDate;
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-        salesperson.saleTransactionMadeByMe(startDate, endDate);
+    // Manager functions
+    private void getNumberOfCarsSoldInSpecificPeriod(Scanner s) {
+        System.out.println("Fetching number of cars sold in a specific period...");
+        // Add logic to fetch the number of cars sold
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
     }
 
-
-    private void SalespersonRevenue(Scanner scanner) {
-        Salesperson salesperson = null;  // TODO: Get the current salesperson
-        double result = salesperson.getRevenueInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
-        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
+    private void ManagerProcessMechanicRevenue(Scanner s) {
+        User.displayAllMechanics();
+        String mechanicId = promptForUserId("mechanic");
+        Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);
+        if (mechanic != null) {
+            LocalDate startDate = Menu.getStartDate();
+            LocalDate endDate = Menu.getEndDate(startDate);
+            double result = mechanic.getRevenueInASpecificPeriod(startDate, endDate);
+            System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
+        } else {
+            System.out.println("Mechanic not found. Please try again.");
+        }
     }
 
-    private void SalespersonRevenueInSpecificPeriod(Scanner scanner) {
-        Salesperson salesperson = null;  // TODO: Get the current salesperson
-        LocalDate startDate;
-        LocalDate endDate;
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
+    private void ManagerProcessSalespersonRevenue(Scanner s) {
+        User.displayAllSalespersons();
+        String salespersonId = promptForUserId("salesperson");
+        Salesperson salesperson = (Salesperson) User.getUserById(salespersonId);
+        if (salesperson != null) {
+            LocalDate startDate = Menu.getStartDate();
+            LocalDate endDate = Menu.getEndDate(startDate);
+            // Get start date
+
+            double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
+            System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
+        } else {
+            System.out.println("Salesperson not found. Please try again.");
         }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-        double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
-        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
-    private void getAllCarsSoldBySalesperson(Scanner scanner) {
-        Salesperson salesperson = null; // TODO: Get the current salesperson
-        salesperson.viewCarsSoldByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-    }
-
-    private void getAllCarsSoldBySalespersonInSpecificPeriod(Scanner scanner) {
-        Salesperson salesperson = null; // TODO: Get the current salesperson
-        LocalDate startDate;
-        LocalDate endDate;
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-        salesperson.viewCarsSoldByMe(startDate, endDate);
+    private void getAllCarsSoldInSpecificPeriod(Scanner s) {
+        System.out.println("Fetching all cars sold in a specific period...");
+        // Add logic to fetch all cars sold
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
     }
 
     private void getAllMechanicServices(Scanner s) {
@@ -279,141 +233,66 @@ public class StatisticsMenu {
 //        }
     }
 
-    private void getNumberOfCarsSoldInSpecificPeriod(Scanner s) {
-        System.out.println("Fetching number of cars sold in a specific period...");
-        // Add logic to fetch the number of cars sold
-        Scanner scanner = new Scanner(System.in);
-        LocalDate startDate;
-        LocalDate endDate;
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-        CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
+
+    // Salesperson functions
+    private void getAllTransactions(Scanner scanner) {
+        Salesperson salesperson = null; // TODO: Get the current salesperson
+        salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
     }
 
-    private void getAllCarsSoldInSpecificPeriod(Scanner s) {
-        System.out.println("Fetching all cars sold in a specific period...");
-        // Add logic to fetch all cars sold
-        Scanner scanner = new Scanner(System.in);
-        LocalDate startDate;
-        LocalDate endDate;
-        while (true) {
-            System.out.print("Enter start date (YYYY-MM-DD): ");
-            try {
-                startDate = LocalDate.parse(scanner.nextLine());
-                break;
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid start date format. Please try again.");
-            }
-        }
-        // Get end date
-        while (true) {
-            System.out.print("Enter end date (YYYY-MM-DD): ");
-            try {
-                endDate = LocalDate.parse(scanner.nextLine());
-                if (!endDate.isBefore(startDate)) {
-                    break;
-                }
-                System.out.println("End date cannot be before start date. Please try again.");
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid end date format. Please try again.");
-            }
-        }
-        CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
+    private void getAllTransactionsInSpecificPeriod(Scanner scanner) {
+        Salesperson salesperson = null; // TODO: Get the current salesperson
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        salesperson.saleTransactionMadeByMe(startDate, endDate);
     }
 
-    private void ManagerProcessMechanicRevenue(Scanner s) {
-        User.displayAllMechanics();
-        String mechanicId = promptForUserId("mechanic");
-        Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);
-        if (mechanic != null) {
-            LocalDate startDate;
-            LocalDate endDate;
-            // Get start date
-            while (true) {
-                System.out.print("Enter start date (YYYY-MM-DD): ");
-                try {
-                    startDate = LocalDate.parse(s.nextLine());
-                    break;
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid start date format. Please try again.");
-                }
-            }
-
-            // Get end date
-            while (true) {
-                System.out.print("Enter end date (YYYY-MM-DD): ");
-                try {
-                    endDate = LocalDate.parse(s.nextLine());
-                    if (!endDate.isBefore(startDate)) {
-                        break;
-                    }
-                    System.out.println("End date cannot be before start date. Please try again.");
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid end date format. Please try again.");
-                }
-            }
-            double result = mechanic.getRevenueInASpecificPeriod(startDate, endDate);
-            System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
-        } else {
-            System.out.println("Mechanic not found. Please try again.");
-        }
+    private void SalespersonRevenue(Scanner scanner) {
+        Salesperson salesperson = null;  // TODO: Get the current salesperson
+        double result = salesperson.getRevenueInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
-    private void ManagerProcessSalespersonRevenue(Scanner s) {
-        User.displayAllSalespersons();
-        String salespersonId = promptForUserId("salesperson");
-        Salesperson salesperson = (Salesperson) User.getUserById(salespersonId);
-        if (salesperson != null) {
-            LocalDate startDate;
-            LocalDate endDate;
-            // Get start date
-            while (true) {
-                System.out.print("Enter start date (YYYY-MM-DD): ");
-                try {
-                    startDate = LocalDate.parse(s.nextLine());
-                    break;
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid start date format. Please try again.");
-                }
-            }
-            // Get end date
-            while (true) {
-                System.out.print("Enter end date (YYYY-MM-DD): ");
-                try {
-                    endDate = LocalDate.parse(s.nextLine());
-                    if (!endDate.isBefore(startDate)) {
-                        break;
-                    }
-                    System.out.println("End date cannot be before start date. Please try again.");
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid end date format. Please try again.");
-                }
-            }
-            double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
-            System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
-        } else {
-            System.out.println("Salesperson not found. Please try again.");
-        }
+    private void SalespersonRevenueInSpecificPeriod(Scanner scanner) {
+        Salesperson salesperson = null;  // TODO: Get the current salesperson
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
+        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
+    }
+
+    private void getAllCarsSoldBySalesperson(Scanner scanner) {
+        Salesperson salesperson = null; // TODO: Get the current salesperson
+        salesperson.viewCarsSoldByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
+    }
+
+    private void getAllCarsSoldBySalespersonInSpecificPeriod(Scanner scanner) {
+        Salesperson salesperson = null; // TODO: Get the current salesperson
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        salesperson.viewCarsSoldByMe(startDate, endDate);
+    }
+
+    // Mechanic functions
+    private void getAllMechanicServicesInSpecificPeriod(Scanner s) {
+//            Mechanic mechanic = (Mechanic) loggedInUser;
+//        LocalDate startDate = Menu.getStartDate(s);
+//        LocalDate endDate = Menu.getEndDate(startDate, s);
+//            mechanic.servicesMadeByMe(startDate, endDate);
+    }
+
+    private void getRevenueOfServicesInSpecificPeriod(Scanner scanner) {
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        Mechanic mechanic = null; // TODO: get Mechanic
+        double result = mechanic.getRevenueInASpecificPeriod(startDate, endDate);
+        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
+    }
+
+    private void getRevenueOfServices(Scanner scanner) {
+        Mechanic mechanic = null; // TODO: get Mechanic
+        double result = mechanic.getRevenueInASpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
     private String promptForUserId(String role) {
@@ -431,13 +310,34 @@ public class StatisticsMenu {
         return userId;
     }
 
+    // Client functions
+    private void getAllClientTransactionsInSpecificPeriod(Scanner scanner) {
+//        LocalDate startDate = Menu.getStartDate();
+//        LocalDate endDate = Menu.getEndDate(startDate);
+//        Client client = null; // TODO: Get the current client
+//        client.viewTransactionsHistoryInSpecificPeriod(startDate, endDate);
+    }
+
+    private void getAllClientSalesTransactions(Scanner scanner) {
+//        Client client = null; // TODO: Get the current client
+//        client.viewTransactionsHistoryInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+    }
+
+    private void getAllClientServicesInSpecificPeriod(Scanner scanner) {
+//        Client client = null; // TODO: Get the current client
+//        LocalDate startDate = Menu.getStartDate();
+//        LocalDate endDate = Menu.getEndDate(startDate);
+//        client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
+    }
+
+    private void getAllClientServices(Scanner scanner) {
+//        Client client = null; // TODO: Get the current client
+//        client.viewServiceHistoryInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+    }
+
     private void exit(Scanner s) {
         System.out.println("Exiting...");
     }
 
-    public static void main(String[] args) {
-        StatisticsMenu menu = new StatisticsMenu(MenuOption.MANAGER);
-        menu.mainMenu();
-        Menu.mainMenu();
-    }
+
 }
