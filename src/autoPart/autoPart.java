@@ -1,7 +1,9 @@
 package autoPart;
 
 
+import user.User;
 import utils.CarAndAutoPartMenu;
+import utils.Menu;
 import utils.Status;
 
 import java.time.LocalDateTime;
@@ -183,7 +185,7 @@ public class autoPart {
         System.out.println(part);
     }
 
-    public static void updatePart() {
+    public static void updatePart(User user) {
         CarAndAutoPartMenu.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);
@@ -205,7 +207,7 @@ public class autoPart {
             System.out.println("5. Price");
             System.out.println("6. Additional Notes");
             System.out.println("7. Exit");
-            option = CarAndAutoPartMenu.getOption(option, input);
+            option = Menu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("Enter new part name: ");
@@ -272,7 +274,8 @@ public class autoPart {
                     System.out.println(part);
                     break;
                 case 7:
-                    CarAndAutoPartMenu.MainMenu();
+                    CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
+                    menu.mainMenu(user);
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");

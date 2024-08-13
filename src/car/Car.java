@@ -1,7 +1,11 @@
 package car;
 
 import services.Service;
+import user.Manager;
+import user.Mechanic;
+import user.User;
 import utils.CarAndAutoPartMenu;
+import utils.Menu;
 import utils.Status;
 
 import java.time.LocalDate;
@@ -133,52 +137,43 @@ public class Car {
         this.serviceHistory = serviceHistory;
     }
 
-    public static Car createCar() {
+    public static Car createCar(User user) {
         Scanner input = new Scanner(System.in);
         Status status;
-
-        int option = 0;
-        while (true) {
-            System.out.println("Car for sale or a customer car for repair?");
-            System.out.println("1. New Car for Sale");
-            System.out.println("2. Car for Repair");
-            try {
-                System.out.println("Enter an option: ");
-                option = input.nextInt();
-                if (option == 1 || option == 2) {
-                    break;
-                } else {
-                    System.out.println("Invalid option. Please input 1 or 2.");
+        if (user instanceof Manager) {
+            int option = 0;
+            while (true) {
+                System.out.println("Car for sale or a customer car for repair?");
+                System.out.println("1. New Car for Sale");
+                System.out.println("2. Car for Repair");
+                try {
+                    System.out.println("Enter an option: ");
+                    option = input.nextInt();
+                    if (option == 1 || option == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option. Please input 1 or 2.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please input 1 or 2.");
+                    input.nextLine(); // Clear the invalid input
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please input 1 or 2.");
-                input.nextLine(); // Clear the invalid input
             }
+            status = switch (option) {
+                case 1 -> Status.AVAILABLE;
+                case 2 -> Status.WALK_IN;
+                default -> throw new IllegalStateException("Unexpected value: " + option);
+            };
+        } else if (user instanceof Mechanic) {
+            status = Status.WALK_IN;
+        } else {
+            status = Status.AVAILABLE;
         }
-        status = switch (option) {
-            case 1 -> Status.AVAILABLE;
-            case 2 -> Status.WALK_IN;
-            default -> throw new IllegalStateException("Unexpected value: " + option);
-        };
         System.out.println("Please input the car's make:");
         String carMake = input.next();
         System.out.println("Please input the car's model:");
         String carModel = input.next();
-        int carYear;
-        while (true) {
-            try {
-                System.out.println("Please input the car's year:");
-                carYear = input.nextInt();
-                if (carYear > 1900) {
-                    break;
-                } else {
-                    System.out.println("Invalid input. The year must be over 1900.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please input a valid year");
-                input.nextLine();
-            }
-        }
+        int carYear = getNewCarYear(input);
         System.out.println("Please input the car's color:");
         String color = input.next().toUpperCase();
         double mileage;
@@ -232,7 +227,7 @@ public class Car {
         System.out.println(car);
     }
 
-    public static void updateCar() {
+    public static void updateCar(User user) {
         CarAndAutoPartMenu.displayAllCars();
         Car car = null;
         Scanner input = new Scanner(System.in);
@@ -255,7 +250,7 @@ public class Car {
             System.out.println("6. Car Price");
             System.out.println("7. Additional Notes");
             System.out.println("8. Exit");
-            option = CarAndAutoPartMenu.getOption(option, input);
+            option = Menu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("Please input the car's make:");
@@ -273,20 +268,7 @@ public class Car {
                     break;
                 case 3:
                     int newCarYear;
-                    while (true) {
-                        try {
-                            System.out.println("Please input the car's year:");
-                            newCarYear = input.nextInt();
-                            if (newCarYear > 1900) {
-                                break;
-                            } else {
-                                System.out.println("Invalid input. The year must be over 1900.");
-                            }
-                        } catch (InputMismatchException e) {
-                            System.out.println("Invalid input. Please input a valid year");
-                            input.nextLine();
-                        }
-                    }
+                    newCarYear = getNewCarYear(input);
                     car.setCarYear(newCarYear);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
@@ -337,13 +319,33 @@ public class Car {
                     System.out.println(car);
                     break;
                 case 8:
-                    CarAndAutoPartMenu.MainMenu();
+                    CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
+                    menu.mainMenu(user);
                     break;
                 default:
                     System.out.println("Invalid option.");
                     break;
             }
         } while (option != 8);
+    }
+
+    private static int getNewCarYear(Scanner input) {
+        int newCarYear;
+        while (true) {
+            try {
+                System.out.println("Please input the car's year:");
+                newCarYear = input.nextInt();
+                if (newCarYear > 1900) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. The year must be over 1900.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid year");
+                input.nextLine();
+            }
+        }
+        return newCarYear;
     }
 
 

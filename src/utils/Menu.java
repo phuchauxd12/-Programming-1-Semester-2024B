@@ -1,10 +1,11 @@
 package utils;
 
+import user.User;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
-
-import static utils.CarAndAutoPartMenu.getOption;
 
 public class Menu {
     public static void menu() {
@@ -52,8 +53,22 @@ public class Menu {
         return endDate;
     }
 
-    public static void mainMenu() {
+    public static int getOption(int option, Scanner input) {
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.println("Enter an option:");
+                option = input.nextInt();
+                validInput = true; // If input is valid, exit the loop
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        return option;
+    }
 
+    public static void mainMenu(User user) {
         int option = 0;
         Scanner input = new Scanner(System.in);
         do {
@@ -64,13 +79,15 @@ public class Menu {
                     UserMenu.mainMenu();
                     break;
                 case 2:
-                    CarAndAutoPartMenu.MainMenu();
+                    CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(user);
+                    carAndAutoPartMenu.mainMenu(user);
                     break;
                 case 3:
                     System.out.println("Transaction Menu");
                     break;
                 case 4:
-
+                    StatisticsMenu statisticsMenu = new StatisticsMenu(user);
+                    statisticsMenu.mainMenu(user);
                     break;
                 case 5:
                     System.out.println("Goodbye!");

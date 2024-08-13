@@ -1,14 +1,14 @@
 package utils;
 
-import user.Mechanic;
-import user.Salesperson;
-import user.User;
+import user.*;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Consumer;
+
+import static utils.Menu.getOption;
 
 public class StatisticsMenu {
 
@@ -17,17 +17,17 @@ public class StatisticsMenu {
     private final Map<Integer, String> menuItems = new LinkedHashMap<>();
     private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
 
-    public enum MenuOption {
-        MANAGER,
-        SALESPERSON,
-        MECHANIC,
-        CLIENT,
+
+    public StatisticsMenu(User user) {
+        switch (user) {
+            case Manager manager -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson salesperson -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic mechanic -> initializeMenu(MenuOption.MECHANIC);
+            case Client client -> initializeMenu(MenuOption.CLIENT);
+            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+        }
     }
 
-
-    public StatisticsMenu(MenuOption menuOption) {
-        initializeMenu(menuOption);
-    }
 
     private void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
@@ -114,28 +114,15 @@ public class StatisticsMenu {
         System.out.println("----------------");
     }
 
-    private int getOption() {
-        System.out.print("Enter your choice: ");
-        while (!StatisticsMenu.input.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            StatisticsMenu.input.next();
-        }
-        return StatisticsMenu.input.nextInt();
-    }
 
-    public void mainMenu() {
+    public void mainMenu(User user) {
         int option = 0;
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();
-            option = getOption();
+            option = getOption(option, input);
             menuActions.getOrDefault(option, s -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
-    }
-
-    public static void main(String[] args) {
-        StatisticsMenu menu = new StatisticsMenu(MenuOption.MANAGER);
-        menu.mainMenu();
-        Menu.mainMenu();
+        Menu.mainMenu(user);
     }
 
     // Manager functions
