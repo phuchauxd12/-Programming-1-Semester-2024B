@@ -4,7 +4,8 @@ import user.User;
 
 import java.util.Scanner;
 
-import static utils.CarAndAutoPartMenu.getOption;
+import static utils.Menu.getOption;
+
 
 public class UserMenu {
     public static void menu() {
@@ -48,6 +49,6 @@ public class UserMenu {
                     System.out.println("Invalid option");
             }
         } while (option != 6);
-        Menu.mainMenu();
+//        Menu.mainMenu();
     }
 }

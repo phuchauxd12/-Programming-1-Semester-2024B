@@ -39,6 +39,7 @@ public class Manager extends User {
     public void viewServices(LocalDate startDate, LocalDate endDate) {
         List<Service> services = serviceList.getServicesBetween(startDate, endDate);
         services.forEach(service -> System.out.println(service.getFormattedServiceDetails()));
+
     }
 
     public void searchService(String serviceId) {
@@ -97,6 +98,11 @@ public class Manager extends User {
                 .sum();
     }
 
+
+//     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
+//         return CarAndAutoPartMenu.getCarsList().stream()
+//                 .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
+//                 .collect(Collectors.toList());
 
 
     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
