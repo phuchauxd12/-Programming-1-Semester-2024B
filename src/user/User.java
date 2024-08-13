@@ -42,6 +42,7 @@ public class User implements Serializable {
         this.email = email;
         this.userType = userType;
         this.status = status;
+        addUser(this);
     }
 
     private String generateUserId() {
@@ -89,7 +90,7 @@ public class User implements Serializable {
     }
 
     // Static methods for managing users
-    private static List<User> userList = new ArrayList<>();
+    public static List<User> userList = new ArrayList<>();
 
     public static void addUser(User user) {
         userList.add(user);
