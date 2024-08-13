@@ -18,50 +18,7 @@ public class ServiceList {
     }
 
 
-    public void addService(String mechanicId) {
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter transaction date (YYYY-MM-DD): ");
-        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
-
-        System.out.print("Enter client ID: ");
-        String clientId = scanner.nextLine();
-
-        System.out.print("Enter serviceType: ");
-        String serviceType = scanner.nextLine();
-
-        System.out.println("Enter name of replaced parts (seperated by space): ");
-        String partNamesInput = scanner.nextLine();
-        List<String> partNames = List.of(partNamesInput.split("\\s+"));
-
-        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
-        int serviceByInput = Integer.parseInt(scanner.nextLine());
-        ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
-
-        System.out.print("Enter car ID: ");
-        String carId = scanner.nextLine();
-
-        System.out.print("Enter service cost: ");
-        double serviceCost = scanner.nextDouble();
-
-        Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
-        services.add(service);
-
-
-        User user = User.userList.stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
-            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
-        }
-
-        System.out.println("Sale transaction added successfully:");
-        System.out.println(service.getFormattedServiceDetails());
-
-    }
 
     public void addService(String mechanicId) {
         Scanner scanner = new Scanner(System.in);

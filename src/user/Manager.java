@@ -1,7 +1,7 @@
 package user;
 
-import car.Car;
 import autoPart.autoPart;
+import car.Car;
 import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
@@ -99,17 +99,17 @@ public class Manager extends User {
     }
 
 
-//     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
-//         return CarAndAutoPartMenu.getCarsList().stream()
-//                 .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
-//                 .collect(Collectors.toList());
+     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
+         return CarAndAutoPartMenu.getCarsList().stream()
+                 .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
+                 .collect(Collectors.toList());
 
-
-    public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
-        return CarAndAutoPartMenu.getCarsList().stream()
-                .filter(car -> !car.getSoldDate().isBefore(startDate.atStartOfDay()) && !car.getSoldDate().isAfter(endDate.atStartOfDay()))
-                .collect(Collectors.toList());
-    }
+     }
+//    public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
+//        return CarAndAutoPartMenu.getCarsList().stream()
+//                .filter(car -> !car.getSoldDate().isBefore(startDate.atStartOfDay()) && !car.getSoldDate().isAfter(endDate.atStartOfDay()))
+//                .collect(Collectors.toList());
+//    }
 
     public List<SaleTransaction> listTransactions(LocalDate startDate, LocalDate endDate) {
         return saleTransactionList.getSaleTransactionsBetween(startDate, endDate);

@@ -1,5 +1,6 @@
 package user;
 
+import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
@@ -7,7 +8,6 @@ import java.util.List;
 
 
 public class Salesperson extends Employee {
-
     private SaleTransactionList transactionList;
 
     public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) {

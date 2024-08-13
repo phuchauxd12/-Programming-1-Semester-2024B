@@ -10,7 +10,6 @@ import java.util.*;
 
 public class SaleTransactionList {
     private List<SaleTransaction> transactions;
-
     public SaleTransactionList() {
         transactions = new ArrayList<>();
     }

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Optional;
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -28,7 +27,7 @@ public class SaleTransaction implements Serializable {
 
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, double discount, double totalAmount, List<String> carIds) {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
