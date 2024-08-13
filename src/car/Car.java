@@ -4,13 +4,14 @@ import services.Service;
 import utils.CarAndAutoPartMenu;
 import utils.Status;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.UUID;
 
-public class Car {
+public class Car implements Serializable {
     private String carID;
     private String carMake;
     private String carModel;

@@ -7,6 +7,7 @@ import utils.Menu;
 import java.time.LocalDate;
 import utils.ServiceMenu;
 
+
 public class Main {
     public static void main(String[] args) throws Exception {
         Membership membership = new Membership();
@@ -70,5 +71,7 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
 
+
     }
+
 }
