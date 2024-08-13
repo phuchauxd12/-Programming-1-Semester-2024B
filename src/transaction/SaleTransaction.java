@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.Optional;
 
@@ -28,26 +29,22 @@ public class SaleTransaction implements Serializable {
 
     // Constructor
     public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, double discount, double totalAmount, List<String> carIds) {
+
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
-        this.purchasedItems = retrieveCars(carIds);
-        ;
+        this.purchasedItems = retrieveCars(carIds);;
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedItems, discount);
-        ;
+        this.totalAmount = calculateTotalAmount(purchasedItems, discount);;
         this.additionalNotes = "";
         this.isDeleted = false;
-    }
-
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
     }
 
 
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
-        for (String carId : carIds) {
+        for (String carId :carIds) {
             Optional<Car> carOpt = CarAndAutoPartMenu.getCarsList().stream()
                     .filter(car -> car.getCarID().equalsIgnoreCase(carId))
                     .findFirst();
@@ -157,6 +154,7 @@ public class SaleTransaction implements Serializable {
     public void setNotes(String additionalNotes) {
         this.additionalNotes = additionalNotes;
     }
+
 
     public String getFormattedSaleTransactionDetails() {
         StringBuilder sb = new StringBuilder();

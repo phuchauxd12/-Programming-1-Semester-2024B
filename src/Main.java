@@ -4,6 +4,8 @@ import user.User;
 import utils.Menu;
 
 import java.time.LocalDate;
+import utils.ServiceMenu;
+
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -59,8 +61,16 @@ public class Main {
 //        UserDatabase.createDatabase();
 //        UserDatabase.addUser(client);
 //        var listUser = UserDatabase.loadUsers();
-//        System.out.println(listUser);
+//        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
         Menu.mainMenu(client);
+
+//        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
+//        transactionMenu.mainMenu();
+//
+//        ServiceMenu serviceMenu = new ServiceMenu();
+//        serviceMenu.mainMenu();
+
     }
+
 }

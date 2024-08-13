@@ -9,12 +9,13 @@ import utils.Menu;
 import utils.Status;
 
 import java.time.LocalDate;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.UUID;
 
-public class Car {
+public class Car implements Serializable {
     private String carID;
     private String carMake;
     private String carModel;

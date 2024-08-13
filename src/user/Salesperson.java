@@ -1,10 +1,10 @@
 package user;
 
-import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
 import java.util.List;
+
 
 public class Salesperson extends Employee {
 
@@ -77,6 +77,7 @@ public class Salesperson extends Employee {
             }
         }
     }
+
 
     public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
 

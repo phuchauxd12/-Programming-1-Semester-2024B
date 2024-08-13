@@ -6,12 +6,13 @@ import utils.CarAndAutoPartMenu;
 import utils.Menu;
 import utils.Status;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.UUID;
 
-public class autoPart {
+public class autoPart implements Serializable {
     private String partID;
     private String partName;
     private String partManufacturer;

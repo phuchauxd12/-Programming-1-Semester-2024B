@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.*;
 
 public class ServiceList {
     private List<Service> services;
@@ -16,6 +17,51 @@ public class ServiceList {
         this.services = new ArrayList<>();
     }
 
+
+    public void addService(String mechanicId) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter transaction date (YYYY-MM-DD): ");
+        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Enter client ID: ");
+        String clientId = scanner.nextLine();
+
+        System.out.print("Enter serviceType: ");
+        String serviceType = scanner.nextLine();
+
+        System.out.println("Enter name of replaced parts (seperated by space): ");
+        String partNamesInput = scanner.nextLine();
+        List<String> partNames = List.of(partNamesInput.split("\\s+"));
+
+        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
+        int serviceByInput = Integer.parseInt(scanner.nextLine());
+        ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
+
+        System.out.print("Enter car ID: ");
+        String carId = scanner.nextLine();
+
+        System.out.print("Enter service cost: ");
+        double serviceCost = scanner.nextDouble();
+
+        Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
+        services.add(service);
+
+
+        User user = User.userList.stream()
+                .filter(u -> u.getUserID().equals(clientId))
+                .findFirst()
+                .orElse(null);
+
+        if (user != null && user instanceof Client) {
+            Client client = (Client) user;
+            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
+        }
+
+        System.out.println("Sale transaction added successfully:");
+        System.out.println(service.getFormattedServiceDetails());
+
+    }
 
     public void addService(String mechanicId) {
         Scanner scanner = new Scanner(System.in);
@@ -249,6 +295,7 @@ public class ServiceList {
     }
 
     public double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
+
         double totalServiceRevenue = 0.0;
 
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
@@ -263,32 +310,31 @@ public class ServiceList {
         return totalServiceRevenue;
     }
 
+    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
+        double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
+        double totalServiceRevenue = serviceRevenueAndCount[0];
+        int serviceCount = (int) serviceRevenueAndCount[1];
+        int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
-//    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
-//        double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
-//        double totalServiceRevenue = serviceRevenueAndCount[0];
-//        int serviceCount = (int) serviceRevenueAndCount[1];
-//        int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
-//
-//        Map<String, Double> clientRevenue = new HashMap<>();
-//
-//        for (Service service : getServicesBetween(startDate, endDate)) {
-//
-//            clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
-//        }
-//
-//        // Statistics info
-//        System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
-//        System.out.printf("Total Services Revenue: $%.2f\n", totalServiceRevenue);
-//        System.out.printf("Total Number of Services: %d\n", serviceCount);
-//        System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
-//
-//        // Revenue by client
-//        System.out.println("Revenue by Client:");
-//        for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
-//            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
-//        }
-//    }
+        Map<String, Double> clientRevenue = new HashMap<>();
+
+        for (Service service : getServicesBetween(startDate, endDate)) {
+
+            clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
+        }
+
+        // Statistics info
+        System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
+        System.out.printf("Total Services Revenue: $%.2f\n", totalServiceRevenue);
+        System.out.printf("Total Number of Services: %d\n", serviceCount);
+        System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
+
+        // Revenue by client
+        System.out.println("Revenue by Client:");
+        for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
+            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+    }
 
     public void viewServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
@@ -298,6 +344,7 @@ public class ServiceList {
                 .toList();
 
         double totalServiceRevenue = calculateMechanicRevenue(mechanicId, startDate, endDate);
+
         int serviceCount = filteredService.size();
 
         System.out.println("Sales Transactions for Salesperson ID: " + mechanicId);

@@ -1,11 +1,9 @@
 package user;
 
 
-import services.Service;
 import services.ServiceList;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
@@ -89,6 +87,7 @@ public class Mechanic extends Employee {
     public void addService() {
         serviceList.addService(this.getUserName());
     }
+
 
     public void servicesMadeByMe(LocalDate startDate, LocalDate endDate) {
         String mechanicId = this.getUserName();
