@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Optional;
 
 public class Service {
     private String serviceId;
@@ -57,45 +56,10 @@ public class Service {
         return parts;
     }
 
-    double calculateDiscount(String clientId) {
-        // find membership of that specific clientId
-        User user = User.userList.stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
 
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;  // Cast to Client
-            Membership membership = client.getMembership();  // Access getMembership
-            if (membership != null) {
-                return membership.getDiscount();  // Assuming discount rate is a fraction (e.g., 0.15 for 15%)
-            }
-        }
-        return 0;
-    }
 
-    double calculateTotalAmount(List<autoPart> replacedParts, double discount, double serviceCost) {
-        double total = 0;
-        for (autoPart part : replacedParts) {
-            total += part.getPrice();
-        }
-        return (total + serviceCost) * (1 - discount);
-    }
 
-    public void markAsDeleted() {
-        this.isDeleted = true;
-    }
 
-    List<autoPart> retrieveParts(List<String> partNames) {
-        List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
-        for (String partName : partNames) {
-            Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
-                    .filter(part -> part.getPartName().equalsIgnoreCase(partName))
-                    .findFirst();
-            partOpt.ifPresent(parts::add);
-        }
-        return parts;
-    }
 
     double calculateDiscount(String clientId) {
         // find membership of that specific clientId

@@ -1,13 +1,14 @@
 package user;
 
 
+import services.Service;
 import services.ServiceList;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
-
     public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, ServiceList serviceList) {
         super(userName, password, name, dob, address, phoneNum, email, userType, status, null, serviceList);
         this.serviceList = serviceList;
