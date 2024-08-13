@@ -2,12 +2,185 @@ package utils;
 
 import autoPart.autoPart;
 import car.Car;
+import user.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Consumer;
+
+import static utils.Menu.getOption;
 
 public class CarAndAutoPartMenu {
+    private static final Scanner input = new Scanner(System.in);
+    private final Map<Integer, String> menuItems = new LinkedHashMap<>();
+    private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
+
+
+    public CarAndAutoPartMenu(User user) {
+        switch (user) {
+            case Manager manager -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson salesperson -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic mechanic -> initializeMenu(MenuOption.MECHANIC);
+            case Client client -> initializeMenu(MenuOption.CLIENT);
+            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+        }
+    }
+
+    private void initializeMenu(MenuOption menuOption) {
+        switch (menuOption) {
+            case MANAGER -> {
+                menuItems.put(1, "Add a car");
+                menuItems.put(2, "Display all cars");
+                menuItems.put(3, "Add an auto part");
+                menuItems.put(4, "Display all auto parts");
+                menuItems.put(5, "Delete a car");
+                menuItems.put(6, "Delete an auto part");
+                menuItems.put(7, "Update a car");
+                menuItems.put(8, "Update an auto part");
+                menuItems.put(10, "Exit");
+
+                menuActions.put(1, this::addCar);
+                menuActions.put(2, this::displayAllCars);
+                menuActions.put(3, this::addAutoPart);
+                menuActions.put(4, this::displayAllParts);
+                menuActions.put(5, this::deleteCar);
+                menuActions.put(6, this::deletePart);
+                menuActions.put(7, this::updateCar);
+                menuActions.put(8, this::updatePart);
+                menuActions.put(10, this::exit);
+            }
+            case SALESPERSON -> {
+                menuItems.put(1, "Display all cars"); // that are for sale
+                menuItems.put(2, "Search for a car");
+                menuItems.put(3, "Display all auto parts"); // that are for sale
+                menuItems.put(4, "Search for an auto part");
+                menuItems.put(10, "Exit");
+
+                menuActions.put(1, s -> displayAllCarsForSale());
+                menuActions.put(3, s -> displayAllPartsForSale());
+                menuActions.put(10, this::exit);
+            }
+            case MECHANIC -> {
+                menuItems.put(1, "Display all cars"); // for walk in only (dunno yet)
+                menuItems.put(2, "Add car"); // for walk in only
+                menuItems.put(3, "Display all auto parts"); // that are available
+                menuItems.put(10, "Exit");
+
+                menuActions.put(1, s -> displayAllCars());
+                menuActions.put(2, this::addCar);
+                menuActions.put(3, s -> displayAllPartsForSale());
+                menuActions.put(10, this::exit);
+            }
+            case CLIENT -> {
+                menuItems.put(1, "Display all cars"); // Display cars that are for sale
+                menuItems.put(2, "Display all auto parts"); // Display auto parts that are for sale
+                menuItems.put(10, "Exit");
+
+                menuActions.put(1, s -> displayAllCarsForSale());
+                menuActions.put(2, s -> displayAllPartsForSale());
+                menuActions.put(10, this::exit);
+            }
+        }
+    }
+
+
+    // MANAGER Functions
+    private void addCar(Scanner scanner) {
+//        // TODO: get current user
+//        User user;
+//        Car car = Car.createCar();
+//        carsList.add(car);
+    }
+
+    private void displayAllCars(Scanner scanner) {
+        displayAllCars();
+    }
+
+    private void addAutoPart(Scanner scanner) {
+        autoPart part = autoPart.createPart();
+        autoPartsList.add(part);
+    }
+
+    private void displayAllParts(Scanner scanner) {
+        displayAllParts();
+    }
+
+    private void deleteCar(Scanner scanner) {
+        displayAllCars();
+        System.out.println("Enter the car ID to delete:");
+        String carID = scanner.next();
+        Car car = findCarByID(carID);
+        if (car != null) {
+            car.setDeleted(true);
+            System.out.println("Car with ID " + carID + " has been deleted.");
+        } else {
+            System.out.println("Car with ID " + carID + " not found.");
+        }
+    }
+
+    private void deletePart(Scanner scanner) {
+        displayAllParts();
+        System.out.println("Enter the part ID to delete:");
+        String partID = scanner.next();
+        autoPart part = findAutoPartByID(partID);
+        if (part != null) {
+            part.setDeleted(true);
+            System.out.println("Part with ID " + partID + " has been deleted.");
+        } else {
+            System.out.println("Part with ID " + partID + " not found.");
+        }
+    }
+
+    private void updateCar(Scanner scanner) {
+        // TODO: get current user
+//        displayAllCars();
+//        System.out.println("Enter the car ID to update:");
+//        String carID = scanner.next();
+//        Car car = findCarByID(carID);
+//        if (car != null) {
+//            car.updateCar(user);
+//            System.out.println("Car with ID " + carID + " has been updated.");
+//        } else {
+//            System.out.println("Car with ID " + carID + " not found.");
+//        }
+    }
+
+    private void updatePart(Scanner scanner) {
+//        // TODO: get current user
+//        displayAllParts();
+//        System.out.println("Enter the part ID to update:");
+//        String partID = scanner.next();
+//        autoPart part = findAutoPartByID(partID);
+//        if (part != null) {
+//            part.updatePart(user);
+//            System.out.println("Part with ID " + partID + " has been updated.");
+//        } else {
+//            System.out.println("Part with ID " + partID + " not found.");
+//        }
+    }
+
+    // Menu functions
+    public void displayMenu() {
+        System.out.println("Welcome to the Car and Auto Part Menu!");
+        System.out.println("---------------------");
+        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
+        System.out.println("---------------------");
+    }
+
+    public void mainMenu(User user) {
+        int option = 0;
+        do {
+            displayMenu();
+            option = getOption(option, input);
+            menuActions.getOrDefault(option, s -> System.out.println("Invalid option. Please try again.")).accept(input);
+        } while (option != 10);
+        Menu.mainMenu(user);
+    }
+
+    // Static helper functions
     private static ArrayList<Car> carsList = new ArrayList<>();
     private static ArrayList<autoPart> autoPartsList = new ArrayList<>();
 
@@ -39,7 +212,7 @@ public class CarAndAutoPartMenu {
 
     public static void displayAllCars() {
         System.out.println("Displaying all cars:");
-        for (Car car : getCarsList()) {
+        for (Car car : carsList) {
             System.out.println(car);
         }
         System.out.println("----------------");
@@ -53,78 +226,47 @@ public class CarAndAutoPartMenu {
         System.out.println("----------------");
     }
 
-    public static int getOption(int option, Scanner input) {
-        boolean validInput = false;
-        while (!validInput) {
-            try {
-                System.out.println("Enter an option:");
-                option = input.nextInt();
-                validInput = true; // If input is valid, exit the loop
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid number");
-                input.next(); // Clear the invalid input from the scanner buffer
+    public static void displayAllCarsForSale() {
+        System.out.println("Displaying all cars for sale:");
+        for (Car car : carsList) {
+            if (car.getStatus() == Status.AVAILABLE) {
+                System.out.println(car);
             }
         }
-        return option;
+        System.out.println("----------------");
     }
 
-    public static void menu() {
-        System.out.println("Welcome to the Car and Auto Part Menu!");
-        System.out.println("---------------------");
-        System.out.println("1. Add a car");
-        System.out.println("2. Display all cars");
-        System.out.println("3. Add an auto part");
-        System.out.println("4. Display all auto parts");
-        System.out.println("5. Delete a car");
-        System.out.println("6. Delete an auto part");
-        System.out.println("7. Update a car");
-        System.out.println("8. Update an auto part");
-        System.out.println("9. Exit");
-        System.out.println("---------------------");
-    }
-
-    public static void MainMenu() {
-        int option = 0;
-        Scanner input = new Scanner(System.in);
-        do {
-            menu();
-            option = getOption(option, input);
-            switch (option) {
-                case 1:
-                    Car car = Car.createCar();
-                    Car.addCarToList(car);
-                    break;
-                case 2:
-                    displayAllCars();
-                    break;
-                case 3:
-                    autoPart part = autoPart.createPart();
-                    autoPart.addPartToList(part);
-                    break;
-                case 4:
-                    displayAllParts();
-                    break;
-                case 5:
-                    Car.deleteCar();
-                    break;
-                case 6:
-                    autoPart.deletePart();
-                    break;
-                case 7:
-                    Car.updateCar();
-                    break;
-                case 8:
-                    autoPart.updatePart();
-                    break;
-                case 9:
-                    System.out.println("Exiting...");
-                    Menu.mainMenu();
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+    public static void displayAllPartsForSale() {
+        System.out.println("Displaying all Auto Parts for sale:");
+        for (autoPart part : getAutoPartsList()) {
+            if (part.getStatus() == Status.AVAILABLE) {
+                System.out.println(part);
             }
-        } while (option != 8);
+        }
+        System.out.println("----------------");
     }
 
+    public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
+        int carSold = 0;
+        for (Car car : getCarsList()) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+                carSold += 1;
+            }
+        }
+        System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
+    }
+
+    public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
+        for (Car car : getCarsList()) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+                System.out.println(car);
+            }
+        }
+    }
+
+
+    private void exit(Scanner s) {
+        System.out.println("Exiting...");
+    }
 
 }

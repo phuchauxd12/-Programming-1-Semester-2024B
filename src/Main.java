@@ -1,7 +1,6 @@
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.LoginMenu;
 import utils.Menu;
 
 import java.time.LocalDate;
@@ -62,15 +61,15 @@ public class Main {
 //        UserDatabase.createDatabase();
 //        UserDatabase.addUser(client);
 //        var listUser = UserDatabase.loadUsers();
-//        System.out.println(listUser);
-          LoginMenu.displayLoginMenu();
-          Menu.mainMenu();
+//        System.out.println(listUser
+//        LoginMenu.displayLoginMenu();
+        Menu.mainMenu(client);
+
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
 //
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
-
 
     }
 

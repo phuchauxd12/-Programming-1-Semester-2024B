@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Optional;
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -27,7 +28,8 @@ public class SaleTransaction implements Serializable {
 
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, double discount, double totalAmount, List<String> carIds) {
+
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
         this.clientId = clientId;
@@ -38,6 +40,7 @@ public class SaleTransaction implements Serializable {
         this.additionalNotes = "";
         this.isDeleted = false;
     }
+
 
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
@@ -82,25 +85,76 @@ public class SaleTransaction implements Serializable {
     private String generateSaleTransactionID() {
         return "t-" + UUID.randomUUID().toString();
     }
-    public String getTransactionId() { return transactionId; }
-    public LocalDate getTransactionDate() { return transactionDate; }
-    public String getClientId() { return clientId; }
-    public String getSalespersonId() { return salespersonId;}
-    public List<Car> getPurchasedItems() { return purchasedItems; }
-    public double getDiscount() { return discount; }
-    public double getTotalAmount() { return totalAmount; }
-    public boolean isDeleted() { return isDeleted; }
-    public String getNotes() { return additionalNotes; }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getSalespersonId() {
+        return salespersonId;
+    }
+
+    public List<Car> getPurchasedItems() {
+        return purchasedItems;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public String getNotes() {
+        return additionalNotes;
+    }
 
 
-    public void setTransactionId(String id) {  this.transactionId = id; }
-    public void setTransactionDate(LocalDate date) {  this.transactionDate = date; }
-    public void setClientId(String clientId) {  this.clientId = clientId; }
-    public void setSalespersonId(String salespersonId) {  this.salespersonId = salespersonId;}
-    public void setPurchasedItems(List<Car> purchasedItems) {  this.purchasedItems = purchasedItems; }
-    public void setDiscount(double discount) {  this.discount = discount; }
-    public void setTotalAmount(double totalAmount) {  this.totalAmount = totalAmount; }
-    public void setNotes(String additionalNotes) {  this.additionalNotes = additionalNotes; }
+    public void setTransactionId(String id) {
+        this.transactionId = id;
+    }
+
+    public void setTransactionDate(LocalDate date) {
+        this.transactionDate = date;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setSalespersonId(String salespersonId) {
+        this.salespersonId = salespersonId;
+    }
+
+    public void setPurchasedItems(List<Car> purchasedItems) {
+        this.purchasedItems = purchasedItems;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public void setNotes(String additionalNotes) {
+        this.additionalNotes = additionalNotes;
+    }
+
 
     public String getFormattedSaleTransactionDetails() {
         StringBuilder sb = new StringBuilder();

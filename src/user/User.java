@@ -19,7 +19,8 @@ public class User implements Serializable {
     protected ROLE userType;
     protected String status;
 
-    protected static long userCounter =0;
+    protected static long userCounter = 0;
+
     public User() {
 
     }
@@ -95,6 +96,53 @@ public class User implements Serializable {
     public static void addUser(User user) {
         userList.add(user);
         System.out.println("User added: " + user.getUserName());
+    }
+
+    public static User getUserById(String userId) {
+        for (User user : userList) {
+            if (user.getUserID().equals(userId)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public static List<Mechanic> getAllMechanics() {
+        List<Mechanic> mechanics = new ArrayList<>();
+        for (User user : userList) {
+            if (user instanceof Mechanic) {
+                mechanics.add((Mechanic) user);
+            }
+        }
+        return mechanics;
+    }
+
+    public static String displayAllMechanics() {
+        List<Mechanic> mechanics = getAllMechanics();
+        StringBuilder mechanicList = new StringBuilder();
+        for (Mechanic mechanic : mechanics) {
+            mechanicList.append(mechanic.toString()).append("\n");
+        }
+        return mechanicList.toString();
+    }
+
+    public static List<Salesperson> getAllSalespersons() {
+        List<Salesperson> salespersons = new ArrayList<>();
+        for (User user : userList) {
+            if (user instanceof Salesperson) {
+                salespersons.add((Salesperson) user);
+            }
+        }
+        return salespersons;
+    }
+
+    public static String displayAllSalespersons() {
+        List<Salesperson> salespersons = getAllSalespersons();
+        StringBuilder salepersonsList = new StringBuilder();
+        for (Salesperson saleperson : salespersons) {
+            salepersonsList.append(saleperson.toString()).append("\n");
+        }
+        return salepersonsList.toString();
     }
 
     public static void deleteUser(String userID) {

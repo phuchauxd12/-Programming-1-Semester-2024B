@@ -1,8 +1,11 @@
 package utils;
 
-import java.util.Scanner;
+import user.User;
 
-import static utils.CarAndAutoPartMenu.getOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class Menu {
     public static void menu() {
@@ -16,8 +19,56 @@ public class Menu {
         System.out.println("----------------");
     }
 
-    public static void mainMenu() {
+    public static LocalDate getStartDate() {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate startDate;
+        while (true) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            try {
+                startDate = LocalDate.parse(scanner.nextLine());
+                break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid start date format. Please try again.");
+            }
+        }
+        return startDate;
+    }
 
+    public static LocalDate getEndDate(LocalDate startDate) {
+        Scanner scanner = new Scanner(System.in);
+        LocalDate endDate;
+        while (true) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            try {
+                scanner.nextLine();
+                endDate = LocalDate.parse(scanner.nextLine());
+                if (!endDate.isBefore(startDate)) {
+                    break;
+                }
+                System.out.println("End date cannot be before start date. Please try again.");
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid end date format. Please try again.");
+            }
+        }
+        return endDate;
+    }
+
+    public static int getOption(int option, Scanner input) {
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.println("Enter an option:");
+                option = input.nextInt();
+                validInput = true; // If input is valid, exit the loop
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        return option;
+    }
+
+    public static void mainMenu(User user) {
         int option = 0;
         Scanner input = new Scanner(System.in);
         do {
@@ -28,13 +79,15 @@ public class Menu {
                     UserMenu.mainMenu();
                     break;
                 case 2:
-                    CarAndAutoPartMenu.MainMenu();
+                    CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(user);
+                    carAndAutoPartMenu.mainMenu(user);
                     break;
                 case 3:
                     System.out.println("Transaction Menu");
                     break;
                 case 4:
-                    StatisticsMenu.mainMenu();
+                    StatisticsMenu statisticsMenu = new StatisticsMenu(user);
+                    statisticsMenu.mainMenu(user);
                     break;
                 case 5:
                     System.out.println("Goodbye!");

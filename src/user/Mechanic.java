@@ -13,6 +13,7 @@ public class Mechanic extends Employee {
         this.serviceList = serviceList;
     }
 
+
     // View overall service statistics within a date range
 //    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
 //        List<Service> filteredServices = serviceList.getServicesBetween(startDate, endDate);
@@ -66,9 +67,27 @@ public class Mechanic extends Employee {
 //        }
 //    }
 
+    public double getRevenueInASpecificPeriod(LocalDate startDate, LocalDate endDate) {
+        double totalServiceRevenue = 0.0;
+        // Calculate total service revenue
+        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+        String finalMechanicId = this.userID;
+        List<Service> filteredServices = servicesInRange.stream()
+                .filter(service -> service.getMechanicId().equals(finalMechanicId))
+                .toList();
+
+        totalServiceRevenue = filteredServices.stream()
+                .mapToDouble(Service::getTotalCost)
+                .sum();
+
+        return totalServiceRevenue;
+    }
+
+
     public void addService() {
         serviceList.addService(this.getUserName());
     }
+
 
     public void servicesMadeByMe(LocalDate startDate, LocalDate endDate) {
         String mechanicId = this.getUserName();
