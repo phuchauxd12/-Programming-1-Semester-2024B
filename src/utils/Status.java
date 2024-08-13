@@ -2,5 +2,6 @@ package utils;
 
 public enum Status {
     AVAILABLE,
-    SOLD
+    SOLD,
+    WALK_IN;
 }

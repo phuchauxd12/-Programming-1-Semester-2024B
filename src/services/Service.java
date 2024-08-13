@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Service {
     private String serviceId;
@@ -25,11 +26,11 @@ public class Service {
     private double totalCost;
     private boolean isDeleted;
     private String additionalNotes;
-    private static int serviceCounter = 1;
+
 
     // Constructor
     public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partNames, ServiceBy serviceBy, String carId, double serviceCost) {
-        this.serviceId = "s-" + serviceCounter++;
+        this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
         this.mechanicId = mechanicId;
@@ -82,7 +83,9 @@ public class Service {
     public void markAsDeleted() {
         this.isDeleted = true;
     }
-
+    private String generateServiceId() {
+        return "s-" + UUID.randomUUID().toString();
+    }
     // Getters
     public String getServiceId() { return serviceId; }
     public LocalDate getServiceDate() { return serviceDate; }

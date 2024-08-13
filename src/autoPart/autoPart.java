@@ -7,6 +7,7 @@ import utils.Status;
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class autoPart {
     private String partID;
@@ -19,7 +20,6 @@ public class autoPart {
     private Status status = Status.AVAILABLE;
     private LocalDateTime soldDate = null;
     private boolean isDeleted = false;
-    private static long partCounter = 0;
 
     public enum Condition {
         NEW,
@@ -39,7 +39,7 @@ public class autoPart {
     }
 
     public String generatePartID() {
-        return "p-" + (++partCounter);
+        return "p-" + UUID.randomUUID().toString();
     }
 
     public String getPartID() {

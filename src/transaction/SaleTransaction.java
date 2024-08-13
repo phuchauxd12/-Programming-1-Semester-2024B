@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -23,11 +24,11 @@ public class SaleTransaction implements Serializable {
     private double totalAmount;
     private boolean isDeleted;
     private String additionalNotes;
-    private static int transactionCounter = 1;
+
 
     // Constructor
     public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
-        this.transactionId = "t-" + transactionCounter++;
+        this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
@@ -78,6 +79,9 @@ public class SaleTransaction implements Serializable {
         this.isDeleted = true;
     }
 
+    private String generateSaleTransactionID() {
+        return "t-" + UUID.randomUUID().toString();
+    }
     public String getTransactionId() { return transactionId; }
     public LocalDate getTransactionDate() { return transactionDate; }
     public String getClientId() { return clientId; }
