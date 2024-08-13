@@ -2,13 +2,16 @@ package data.car;
 
 import car.Car;
 import data.Database;
-import utils.Opinion;
+import utils.Menu;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class CarDatabase {
@@ -22,7 +25,7 @@ public class CarDatabase {
         if (!file.exists()) {
             // Initialize the list of users
             carList = new ArrayList<>();
-            Database.<Car>saveDatabase(path,carList,"Database file created","Error while creating the database file.");
+            Database.<Car>saveDatabase(path, carList, "Database file created", "Error while creating the database file.");
         } else {
             System.out.println("Database file already exists at " + path);
         }
@@ -49,8 +52,9 @@ public class CarDatabase {
         carList.add(newCar);
 
         // Save the updated list back to the file
-        Database.<Car>saveDatabase(path,carList,"Car had been created and stored in the database.","Error while saving the updated car list to the database file.");
+        Database.<Car>saveDatabase(path, carList, "Car had been created and stored in the database.", "Error while saving the updated car list to the database file.");
     }
+
     public static Car findCarByID(String carID) throws Exception {
         // Load the current list of users
         loadCars();
@@ -59,29 +63,31 @@ public class CarDatabase {
         var foundCar = carList.stream()
                 .filter(user -> user.getCarID().equals(carID))
                 .findFirst();
-        return  foundCar.orElse(null);
+        return foundCar.orElse(null);
     }
+
     public static void deleteCar(String carID) throws Exception {
         var foundCar = findCarByID(carID);
         // Add the new user to the list
-        if(foundCar!= null){
+        if (foundCar != null) {
             carList = carList.stream()
                     .filter(user -> !user.getCarID().equals(carID))
                     .collect(Collectors.toList());
 
-            Database.<Car>saveDatabase(path,carList,"Account had been deleted in the database.","Error while deleting the car in the database file.");
+            Database.<Car>saveDatabase(path, carList, "Account had been deleted in the database.", "Error while deleting the car in the database file.");
 
-        }
-        else {
+        } else {
             System.out.println("No carID match the account in the database.");
         }
     }
+
     public static void updateCar(String carID) throws Exception {
         var foundCar = findCarByID(carID);
-        if(foundCar!= null){
+        if (foundCar != null) {
             Scanner input = new Scanner(System.in);
             boolean continueUpdate = true;
-            do{
+            int option = 0;
+            do {
                 System.out.println("What would you like to update?");
                 System.out.println("1. Car Make");
                 System.out.println("2. Car Model");
@@ -91,7 +97,7 @@ public class CarDatabase {
                 System.out.println("6. Car Price");
                 System.out.println("7. Additional Notes");
                 System.out.println("8. Exit");
-                int option = Opinion.getOption(input);
+                option = Menu.getOption(option, input);
                 switch (option) {
                     case 1:
                         System.out.println("Please input the car's make:");
@@ -183,9 +189,8 @@ public class CarDatabase {
 
             } while ((continueUpdate));
 
-            Database.<Car>saveDatabase(path,carList,"Car had been updated in the database.","Error while updating the database file.");
-        }
-        else {
+            Database.<Car>saveDatabase(path, carList, "Car had been updated in the database.", "Error while updating the database file.");
+        } else {
             System.out.println("No carID match the account in the database.");
         }
     }

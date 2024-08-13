@@ -2,7 +2,7 @@ package data.autoPart;
 
 import autoPart.autoPart;
 import data.Database;
-import utils.Opinion;
+import utils.Menu;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,6 +83,7 @@ public class AutoPartDatabase {
         if (foundAutoPart != null) {
             Scanner input = new Scanner(System.in);
             boolean continueUpdate = true;
+            int option = 0;
             do {
                 System.out.println("What would you like to update?");
                 System.out.println("1. Part Name");
@@ -92,7 +93,8 @@ public class AutoPartDatabase {
                 System.out.println("5. Price");
                 System.out.println("6. Additional Notes");
                 System.out.println("7. Exit");
-                int option = Opinion.getOption(input);
+
+                option = Menu.getOption(option, input);
                 switch (option) {
                     case 1:
                         System.out.println("Enter new part name: ");

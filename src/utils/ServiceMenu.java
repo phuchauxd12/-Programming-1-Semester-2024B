@@ -41,7 +41,7 @@ public class ServiceMenu {
         int option = 0;
         while (option != 6) {
             displayMenu();
-            option = getOption(serviceMenuInput);
+            option = Menu.getOption(option, serviceMenuInput);
             Runnable action = menuActions.get(option);
             if (action != null) {
                 action.run();
@@ -52,14 +52,6 @@ public class ServiceMenu {
     }
 
     // Method to get the user's option
-    private int getOption(Scanner input) {
-        System.out.print("Enter your choice: ");
-        while (!input.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            input.next();
-        }
-        return input.nextInt();
-    }
 
     // Placeholder methods for menu actions
     private void displayAllServices() {
