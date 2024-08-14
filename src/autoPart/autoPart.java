@@ -186,7 +186,7 @@ public class autoPart implements Serializable {
         System.out.println(part);
     }
 
-    public static void updatePart(User user) {
+    public static void updatePart(User user) throws Exception {
         CarAndAutoPartMenu.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);

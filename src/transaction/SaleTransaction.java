@@ -27,7 +27,7 @@ public class SaleTransaction implements Serializable {
 
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) throws Exception {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
@@ -52,7 +52,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    double calculateDiscount(String clientId) {
+    double calculateDiscount(String clientId)  {
         // find membership of that specific clientId
         User user = User.userList.stream()
                 .filter(u -> u.getUserID().equals(clientId))

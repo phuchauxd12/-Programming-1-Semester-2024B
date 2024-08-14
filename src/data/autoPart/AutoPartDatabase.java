@@ -2,7 +2,6 @@ package data.autoPart;
 
 import autoPart.autoPart;
 import data.Database;
-import utils.Menu;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +14,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class AutoPartDatabase {
-    private static final String path = "src/data/autoPart/AutoPartAccount.txt";
+    private static final String path = "src/data/autoPart/AutoPart.txt";
     private static List<autoPart> autoPartList;
 
     public static void createDatabase() throws Exception {
@@ -44,7 +43,7 @@ public class AutoPartDatabase {
 
     // Method to add a new auto part to the database
     public static void addAutoPart(autoPart newAutoPart) throws Exception {
-        // Load the current list of auto parts
+
         loadAutoParts();
 
         // Add the new auto part to the list
@@ -55,7 +54,7 @@ public class AutoPartDatabase {
     }
 
     public static autoPart findAutoPartByID(String autoPartID) throws Exception {
-        // Load the current list of auto parts
+
         loadAutoParts();
 
         // Find the auto part with the given ID
@@ -78,23 +77,20 @@ public class AutoPartDatabase {
         }
     }
 
-    public static void updateAutoPart(String autoPartID) throws Exception {
+    public static void updateAutoPart(String autoPartID,int option) throws Exception {
         var foundAutoPart = findAutoPartByID(autoPartID);
         if (foundAutoPart != null) {
             Scanner input = new Scanner(System.in);
-            boolean continueUpdate = true;
-            int option = 0;
-            do {
-                System.out.println("What would you like to update?");
-                System.out.println("1. Part Name");
-                System.out.println("2. Part Manufacturer");
-                System.out.println("3. Condition");
-                System.out.println("4. Warranty Duration");
-                System.out.println("5. Price");
-                System.out.println("6. Additional Notes");
-                System.out.println("7. Exit");
 
-                option = Menu.getOption(option, input);
+//                System.out.println("What would you like to update?");
+//                System.out.println("1. Part Name");
+//                System.out.println("2. Part Manufacturer");
+//                System.out.println("3. Condition");
+//                System.out.println("4. Warranty Duration");
+//                System.out.println("5. Price");
+//                System.out.println("6. Additional Notes");
+//                System.out.println("7. Exit");
+
                 switch (option) {
                     case 1:
                         System.out.println("Enter new part name: ");
@@ -161,17 +157,15 @@ public class AutoPartDatabase {
                         System.out.println(foundAutoPart);
                         break;
                     case 7:
-                        System.out.println(autoPartList);
-                        continueUpdate = false;
+                        System.out.println(foundAutoPart);
                         break;
                     default:
                         System.out.println("Invalid option.");
-                        break;
+                        return; //End the method
                 }
 
-            } while (continueUpdate);
 
-            Database.<autoPart>saveDatabase(path, autoPartList, "Auto part has been updated in the database.", "Error while updating the database file.");
+                Database.<autoPart>saveDatabase(path, autoPartList, "Auto part has been updated in the database.", "Error while updating the database file.");
         } else {
             System.out.println("No autoPartID matches the account in the database.");
         }

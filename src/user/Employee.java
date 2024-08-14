@@ -15,7 +15,7 @@ public class Employee extends User {
     private SaleTransactionList saleTransactionList;
     private ServiceList serviceList;
 
-    public Employee(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList saleTransactionList, ServiceList serviceList) {
+    public Employee(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList saleTransactionList, ServiceList serviceList) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status);
         this.saleTransactionList = saleTransactionList;
         this.serviceList = serviceList;

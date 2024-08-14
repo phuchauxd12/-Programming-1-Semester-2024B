@@ -68,7 +68,7 @@ public class Menu {
         return option;
     }
 
-    public static void mainMenu(User user) {
+    public static void mainMenu(User user) throws Exception {
         int option = 0;
         Scanner input = new Scanner(System.in);
         do {

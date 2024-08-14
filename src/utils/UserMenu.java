@@ -20,7 +20,7 @@ public class UserMenu {
         System.out.println("----------------");
     }
 
-    public static void mainMenu() {
+    public static void mainMenu() throws Exception {
         int option = 0;
         Scanner input = new Scanner(System.in);
         do {
@@ -40,7 +40,34 @@ public class UserMenu {
                     System.out.println("Delete User");
                     break;
                 case 5:
+                    input.nextLine();// remove the /n in nextInt
                     System.out.println("Update User");
+                    System.out.println("Please input the user ID:");
+                    String userID = input.nextLine();
+                    var userUpdate =User.getUserById(userID);
+                    if(userUpdate!= null) {
+                        boolean continueUpdate = true;
+                        int updateOption = 0;
+                        do {
+                            System.out.println("What would you like to update?");
+                            System.out.println("1. User Name");
+                            System.out.println("2. Password");
+                            System.out.println("3. Name");
+                            System.out.println("4. Date of Birth");
+                            System.out.println("5. Address");
+                            System.out.println("6. Phone Number");
+                            System.out.println("7. Email");
+                            System.out.println("8. Exit");
+                            updateOption = Menu.getOption(updateOption, input);
+                            User.modifyUser(userID,updateOption);
+                            if (updateOption == 8) {
+                                continueUpdate = false;
+                            }
+                        } while (continueUpdate);
+                    }
+                    else {
+                        System.out.println("No userID match the account in the database.");
+                    }
                     break;
                 case 6:
                     System.out.println("Exiting User Menu");
