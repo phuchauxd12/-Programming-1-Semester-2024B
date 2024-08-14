@@ -1,16 +1,17 @@
 import user.Client;
+import user.Mechanic;
 import user.Membership;
 import user.User;
 import utils.Menu;
 
 import java.time.LocalDate;
-import utils.ServiceMenu;
 
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Membership membership = new Membership();
         Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
+        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", null);
         System.out.println("COSC2081 GROUP ASSIGNMENT");
         System.out.println("AUTO136 CAR DEALERSHIP MANAGEMENT SYSTEM");
         System.out.println("Instructor: Mr. Minh Vu & Mr. Dung Nguyen");
@@ -63,7 +64,7 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
-        Menu.mainMenu(client);
+        Menu.mainMenu(mechanic);
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();

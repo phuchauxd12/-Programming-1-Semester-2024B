@@ -21,15 +21,15 @@ public class CarAndAutoPartMenu {
 
     public CarAndAutoPartMenu(User user) {
         switch (user) {
-            case Manager manager -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson salesperson -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic mechanic -> initializeMenu(MenuOption.MECHANIC);
-            case Client client -> initializeMenu(MenuOption.CLIENT);
+            case Manager manager -> initializeMenu(MenuOption.MANAGER, user);
+            case Salesperson salesperson -> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic mechanic -> initializeMenu(MenuOption.MECHANIC, user);
+            case Client client -> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption) {
+    private void initializeMenu(MenuOption menuOption, User user) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Add a car");
@@ -42,14 +42,14 @@ public class CarAndAutoPartMenu {
                 menuItems.put(8, "Update an auto part");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, this::addCar);
+                menuActions.put(1, _ -> addCar(user));
                 menuActions.put(2, this::displayAllCars);
                 menuActions.put(3, this::addAutoPart);
                 menuActions.put(4, this::displayAllParts);
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
-                menuActions.put(7, this::updateCar);
-                menuActions.put(8, this::updatePart);
+                menuActions.put(7, _ -> updateCar(user));
+                menuActions.put(8, _ -> updatePart(user));
                 menuActions.put(10, this::exit);
             }
             case SALESPERSON -> {
@@ -70,7 +70,7 @@ public class CarAndAutoPartMenu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, s -> displayAllCars());
-                menuActions.put(2, this::addCar);
+                menuActions.put(2, _ -> addCar(user));
                 menuActions.put(3, s -> displayAllPartsForSale());
                 menuActions.put(10, this::exit);
             }
@@ -88,11 +88,9 @@ public class CarAndAutoPartMenu {
 
 
     // MANAGER Functions
-    private void addCar(Scanner scanner) {
-//        // TODO: get current user
-//        User user;
-//        Car car = Car.createCar();
-//        carsList.add(car);
+    private void addCar(User user) {
+        Car car = Car.createCar(user);
+        carsList.add(car);
     }
 
     private void displayAllCars(Scanner scanner) {
@@ -134,32 +132,32 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void updateCar(Scanner scanner) {
-        // TODO: get current user
-//        displayAllCars();
-//        System.out.println("Enter the car ID to update:");
-//        String carID = scanner.next();
-//        Car car = findCarByID(carID);
-//        if (car != null) {
-//            car.updateCar(user);
-//            System.out.println("Car with ID " + carID + " has been updated.");
-//        } else {
-//            System.out.println("Car with ID " + carID + " not found.");
-//        }
+    private void updateCar(User user) {
+        Scanner scanner = new Scanner(System.in);
+        displayAllCars();
+        System.out.println("Enter the car ID to update:");
+        String carID = scanner.next();
+        Car car = findCarByID(carID);
+        if (car != null) {
+            car.updateCar(user);
+            System.out.println("Car with ID " + carID + " has been updated.");
+        } else {
+            System.out.println("Car with ID " + carID + " not found.");
+        }
     }
 
-    private void updatePart(Scanner scanner) {
-//        // TODO: get current user
-//        displayAllParts();
-//        System.out.println("Enter the part ID to update:");
-//        String partID = scanner.next();
-//        autoPart part = findAutoPartByID(partID);
-//        if (part != null) {
-//            part.updatePart(user);
-//            System.out.println("Part with ID " + partID + " has been updated.");
-//        } else {
-//            System.out.println("Part with ID " + partID + " not found.");
-//        }
+    private void updatePart(User user) {
+        Scanner scanner = new Scanner(System.in);
+        displayAllParts();
+        System.out.println("Enter the part ID to update:");
+        String partID = scanner.next();
+        autoPart part = findAutoPartByID(partID);
+        if (part != null) {
+            part.updatePart(user);
+            System.out.println("Part with ID " + partID + " has been updated.");
+        } else {
+            System.out.println("Part with ID " + partID + " not found.");
+        }
     }
 
     // Menu functions
