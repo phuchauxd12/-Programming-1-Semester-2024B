@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SaleTransactionDatabase {
-    private static final String path = "src/data/transaction/SaleTransaction.txt";
+    public static final String path = "src/data/transaction/SaleTransaction.txt";
     private static List<SaleTransaction> saleTransactionList;
 
 
@@ -76,5 +76,8 @@ public class SaleTransactionDatabase {
         } else {
             System.out.println("No carID match the account in the database.");
         }
+    }
+    public  static  void saveSaleTransaction(List<SaleTransaction> dataList) throws Exception {
+        Database.<SaleTransaction>saveDatabase(path, dataList, "Sale Transaction had been updated in the database.", "Error while updating the database file.");
     }
 }
