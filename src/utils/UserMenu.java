@@ -59,7 +59,7 @@ public class UserMenu {
                             System.out.println("7. Email");
                             System.out.println("8. Exit");
                             updateOption = Menu.getOption(updateOption, input);
-                            User.modifyUser(userID,updateOption);
+//                            User.modifyUser(userID,updateOption,);
                             if (updateOption == 8) {
                                 continueUpdate = false;
                             }

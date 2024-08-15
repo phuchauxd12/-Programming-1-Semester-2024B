@@ -2,7 +2,6 @@ import autoPart.autoPart;
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.Menu;
 
 import java.time.LocalDate;
 
@@ -76,7 +75,8 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
-        Menu.mainMenu(client);
+//        Menu.mainMenu(client);
+
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
 //

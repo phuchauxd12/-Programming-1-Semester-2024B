@@ -59,10 +59,37 @@ public class User implements Serializable {
         System.out.println("Viewing profile for user: " + this.userName);
     }
 
-    public void modifyProfile(int option) throws Exception {
-    //Need to get the user in the database to use this method
-        UserDatabase.updateUser(userID,option);
-        userList = UserDatabase.loadUsers();
+    public void modifyProfile(int option, String newValue) throws Exception {
+        switch (option) {
+            case 1:
+                this.setUserName(newValue);
+                break;
+            case 2:
+                this.setPassword(newValue);
+                break;
+            case 3:
+                this.setName(newValue);
+                break;
+            case 4:
+                this.setAddress(newValue);
+                break;
+            case 5:
+                this.setPhoneNum(Integer.parseInt(newValue));
+                break;
+            case 6:
+                this.setEmail(newValue);
+                break;
+            case 7:
+                this.setDob(LocalDate.parse(newValue));
+
+                break;
+
+            default:
+                System.out.println("Invalid field specified.");
+                return;
+        };
+        UserDatabase.saveUsersData(userList);
+
     }
 
     // Static methods for managing users
@@ -81,8 +108,8 @@ public class User implements Serializable {
 
 
     public static void addUser(User user) throws Exception {
-        UserDatabase.addUser(user);
-        userList = UserDatabase.loadUsers();  // Load the data again when added a new user in the database
+        userList.add(user);
+        UserDatabase.saveUsersData(userList);
         System.out.println("User added: " + user.getUserName());
     }
 
@@ -138,9 +165,15 @@ public class User implements Serializable {
         System.out.println("User deleted with ID: " + userID);
     }
 
-    public static void modifyUser(String userID,int option) throws Exception {
-      UserDatabase.updateUser(userID,option);
-      userList = UserDatabase.loadUsers();
+    public static void modifyUser(String userID, int option, String newValue) throws Exception {
+        for (User user : userList) {
+            if (user.getUserID().equals(userID)) {
+                user.modifyProfile(option, newValue);
+                System.out.println("User modified with ID: " + userID);
+                return;
+            }
+        }
+        System.out.println("User not found with ID: " + userID);
     }
 
     public static void viewAllUsers() {
