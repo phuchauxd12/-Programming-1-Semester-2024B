@@ -29,7 +29,7 @@ public class Service {
 
 
     // Constructor
-    public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partNames, ServiceBy serviceBy, String carId, double serviceCost) {
+    public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partNames, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
         this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;

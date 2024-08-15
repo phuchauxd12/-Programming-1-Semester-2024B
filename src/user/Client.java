@@ -14,7 +14,7 @@ public class Client extends User {
     private SaleTransactionList saleTransactionList;
     private ServiceList serviceList;
 
-    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, Membership membership) {
+    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, Membership membership) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status);
         this.membership = membership;
         this.totalSpending = 0.0;

@@ -10,12 +10,12 @@ import java.util.List;
 public class Salesperson extends Employee {
     private SaleTransactionList transactionList;
 
-    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) {
+    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status, transactionList, null);
         this.transactionList = transactionList;
     }
 
-    public void addTransaction() {
+    public void addTransaction() throws Exception {
         transactionList.addSaleTransaction(this.getUserName());
     }
 

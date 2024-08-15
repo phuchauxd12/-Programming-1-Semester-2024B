@@ -115,7 +115,7 @@ public class StatisticsMenu {
     }
 
 
-    public void mainMenu(User user) {
+    public void mainMenu(User user) throws Exception {
         int option = 0;
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();

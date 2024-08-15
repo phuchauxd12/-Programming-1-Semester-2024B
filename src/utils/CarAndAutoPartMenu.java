@@ -168,7 +168,7 @@ public class CarAndAutoPartMenu {
         System.out.println("---------------------");
     }
 
-    public void mainMenu(User user) {
+    public void mainMenu(User user) throws Exception {
         int option = 0;
         do {
             displayMenu();

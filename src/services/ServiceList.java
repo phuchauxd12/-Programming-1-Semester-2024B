@@ -20,7 +20,7 @@ public class ServiceList {
 
 
 
-    public void addService(String mechanicId) {
+    public void addService(String mechanicId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -102,7 +102,7 @@ public class ServiceList {
         return filteredServices;
     }
 
-    public void updateService() {
+    public void updateService()  {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter service ID to update: ");

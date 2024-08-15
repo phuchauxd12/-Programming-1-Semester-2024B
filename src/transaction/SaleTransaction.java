@@ -4,7 +4,6 @@ import car.Car;
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.CarAndAutoPartMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ public class SaleTransaction implements Serializable {
 
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) throws Exception {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
@@ -44,7 +43,7 @@ public class SaleTransaction implements Serializable {
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         for (String carId :carIds) {
-            Optional<Car> carOpt = CarAndAutoPartMenu.getCarsList().stream()
+            Optional<Car> carOpt = Car.carList.stream()
                     .filter(car -> car.getCarID().equalsIgnoreCase(carId))
                     .findFirst();
             carOpt.ifPresent(cars::add);
@@ -52,7 +51,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    double calculateDiscount(String clientId) {
+    double calculateDiscount(String clientId)  {
         // find membership of that specific clientId
         User user = User.userList.stream()
                 .filter(u -> u.getUserID().equals(clientId))
