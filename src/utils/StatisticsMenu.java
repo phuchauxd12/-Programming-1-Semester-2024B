@@ -316,12 +316,12 @@ public class StatisticsMenu {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         Client client = (Client) loggedInUser;
-        client.viewTransactionsHistoryInSpecificPeriod(startDate, endDate);
+        client.viewTransactionsHistory(startDate, endDate);
     }
 
     private void getAllClientSalesTransactions(User loggedInUser) {
         Client client = (Client) loggedInUser;
-        client.viewTransactionsHistoryInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        client.viewTransactionsHistory(LocalDate.of(1970, 1, 1), LocalDate.now());
     }
 
     private void getAllClientServicesInSpecificPeriod(User loggedInUser) {
