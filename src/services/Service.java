@@ -1,19 +1,18 @@
 package services;
 
 import autoPart.autoPart;
+import data.Database;
+import data.service.ServiceDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.CarAndAutoPartMenu;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-public class Service {
+public class Service implements Serializable {
     private String serviceId;
     private LocalDate serviceDate;
     private String clientId;
@@ -44,22 +43,193 @@ public class Service {
         this.isDeleted = false;
 
     }
+    public static List<Service> serviceList;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(ServiceDatabase.path)){
+               ServiceDatabase.createDatabase();
+            };
+            serviceList = ServiceDatabase.loadService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+//    public static void addService(String mechanicId) throws Exception {
+//        Scanner scanner = new Scanner(System.in);
+//
+//        System.out.print("Enter transaction date (YYYY-MM-DD): ");
+//        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
+//
+//        System.out.print("Enter client ID: ");
+//        String clientId = scanner.nextLine();
+//
+//        System.out.print("Enter serviceType: ");
+//        String serviceType = scanner.nextLine();
+//
+//        System.out.println("Enter name of replaced parts (seperated by space): ");
+//        String partNamesInput = scanner.nextLine();
+//        List<String> partNames = List.of(partNamesInput.split("\\s+"));
+//
+//        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
+//        int serviceByInput = Integer.parseInt(scanner.nextLine());
+//        ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
+//
+//        System.out.print("Enter car ID: ");
+//        String carId = scanner.nextLine();
+//
+//        System.out.print("Enter service cost: ");
+//        double serviceCost = scanner.nextDouble();
+//
+//        Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
+//        Service.serviceList.add(service);
+//        ServiceDatabase.saveService(serviceList);
+//
+//        User user = User.userList.stream()
+//                .filter(u -> u.getUserID().equals(clientId))
+//                .findFirst()
+//                .orElse(null);
+//
+//        if (user != null && user instanceof Client) {
+//            Client client = (Client) user;
+//            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
+//        }
+//
+//        System.out.println("Service added successfully:");
+//        System.out.println(service.getFormattedServiceDetails());
+//
+//    }
+    public static void addService(Service service) throws Exception {
+        serviceList.add(service);
+        ServiceDatabase.saveService(serviceList);
+        System.out.println("Service added successfully:");
+    }
+    public static Service getServiceById(String serviceId) {
+        for (Service service : serviceList) {
+            if (service.getServiceId().equals(serviceId)) {
+                return service;
+            }
+        }
+        return null;
+    }
+
+    public static void updateService() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter service ID to update: ");
+        String serviceId = scanner.nextLine();
+
+        Service service = Service.getServiceById(serviceId);
+        if (service != null && !service.isDeleted()) {
+            System.out.println("Which field would you like to update?");
+            System.out.println("1. Service Date");
+            System.out.println("2. Service Type");
+            System.out.println("3. Service By");
+            System.out.println("4. Car ID");
+            System.out.println("5. Replaced Parts");
+            System.out.println("6. Service Cost");
+            System.out.println("7. Additional Notes");
+            System.out.print("Enter the number corresponding to the field (or multiple numbers separated by space): ");
+            String choiceInput = scanner.nextLine();
+            List<String> choices = List.of(choiceInput.split("\\s+"));
+
+            for (String choice : choices) {
+                switch (choice) {
+                    case "1":
+                        System.out.print("Enter new service date (YYYY-MM-DD): ");
+                        LocalDate newDate = LocalDate.parse(scanner.nextLine());
+                        service.setServiceDate(newDate);
+                        break;
+                    case "2":
+                        System.out.print("Enter new service type: ");
+                        String newType = scanner.nextLine();
+                        service.setServiceType(newType);
+                        break;
+                    case "3":
+                        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
+                        int serviceByInput = Integer.parseInt(scanner.nextLine());
+                        ServiceBy newServiceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
+                        service.setServiceBy(newServiceBy);
+                        break;
+                    case "4":
+                        System.out.print("Enter new car ID: ");
+                        String newCarId = scanner.nextLine();
+                        service.setCarId(newCarId);
+                        break;
+                    case "5":
+                        System.out.println("Enter new replaced parts (part IDs separated by space): ");
+                        String partIdsInput = scanner.nextLine();
+                        List<String> partIds = List.of(partIdsInput.split("\\s+"));
+
+                        // Retrieve and update replaced parts
+                        List<autoPart> newReplacedParts = service.retrieveParts(partIds);
+                        service.setReplacedParts(newReplacedParts);
+
+                        double newDiscount = service.calculateDiscount(service.getClientId());
+                        double newservice = service.calculateTotalAmount(newReplacedParts, newDiscount, service.getServiceCost());
+                        service.setTotalCost(newservice);
+
+                        // Update client's total spending
+                        Client client = (Client) User.userList.stream()
+                                .filter(u -> u.getUserID().equals(service.getClientId()))
+                                .findFirst()
+                                .orElse(null);
+                        if (client != null) {
+                            client.updateTotalSpending(service.getTotalCost());
+                        }
+
+                        break;
+                    case "6":
+                        System.out.print("Enter service cost: ");
+                        double serviceCost = scanner.nextDouble();
+                        service.setServiceCost(serviceCost);
+                        break;
+                    case "7":
+                        System.out.print("Enter additional notes (or leave blank): ");
+                        String additionalNotes = scanner.nextLine();
+                        service.setAdditionalNotes(additionalNotes);
+                        break;
+                    default:
+                        System.out.println("Invalid choice: " + choice);
+                }
+
+                ServiceDatabase.saveService(serviceList);
+            }
+
+            // Update the service in the list successfully
+            System.out.println("Service updated successfully:");
+            System.out.println(service.getFormattedServiceDetails());
+        } else {
+            System.out.println("Service not found or it has been deleted.");
+        }
+    }
+
+    public static void deleteService() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter transaction ID to delete: ");
+        String serviceId = scanner.nextLine();
+
+        Service service = Service.getServiceById(serviceId);
+        if (service != null) {
+            service.markAsDeleted();
+            ServiceDatabase.saveService(serviceList);
+            System.out.println("Sale transaction marked as deleted.");
+        } else {
+            System.out.println("Transaction not found.");
+        }
+    }
 
     List<autoPart> retrieveParts(List<String> partNames) {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         for (String partName :partNames) {
-            Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
+            Optional<autoPart> partOpt = autoPart.autoPartList.stream()
                     .filter(part -> part.getPartName().equalsIgnoreCase(partName))
                     .findFirst();
             partOpt.ifPresent(parts::add);
         }
         return parts;
     }
-
-
-
-
-
 
     double calculateDiscount(String clientId) {
         // find membership of that specific clientId

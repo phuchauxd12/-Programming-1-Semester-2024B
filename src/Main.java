@@ -1,9 +1,12 @@
 import autoPart.autoPart;
+import services.Service;
+import services.ServiceBy;
 import user.Client;
 import user.Membership;
 import user.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 
 public class Main {
@@ -64,6 +67,10 @@ public class Main {
         autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 9.99, "Compatible with various car models");
 
         autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 14.99, "High-performance spark plugs");
+        var partlist = new ArrayList<String>();
+        partlist.add(part1.getPartName());
+        partlist.add(part2.getPartName());
+        partlist.add(part3.getPartName());
 //        AutoPartDatabase.createDatabase();
 //        AutoPartDatabase.addAutoPart(part1);
 //        AutoPartDatabase.addAutoPart(part2);
@@ -76,7 +83,10 @@ public class Main {
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
 //        Menu.mainMenu(client);
-
+        Service service = new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change",partlist,ServiceBy.AUTO136, "car1", 29.99);
+//        Service.addService(service);
+        Service.serviceList.stream().forEach(service1 -> System.out.println(service1.getFormattedServiceDetails()));
+//        System.out.println(service.getFormattedServiceDetails());
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
 //

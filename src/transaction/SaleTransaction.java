@@ -1,17 +1,17 @@
 package transaction;
 
 import car.Car;
+import data.Database;
+import data.transaction.SaleTransactionDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
+import utils.Status;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -24,7 +24,18 @@ public class SaleTransaction implements Serializable {
     private boolean isDeleted;
     private String additionalNotes;
 
-
+    public static List<SaleTransaction> saleTransactionList;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(SaleTransactionDatabase.path)){
+               SaleTransactionDatabase.createDatabase();
+            };
+            saleTransactionList = SaleTransactionDatabase.loadSaleTransaction();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     // Constructor
     public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) throws Exception {
 
@@ -39,7 +50,109 @@ public class SaleTransaction implements Serializable {
         this.isDeleted = false;
     }
 
+    public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
+        saleTransactionList.add(saleTransaction);
+        SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+        System.out.println("sale transaction added: ");
+    }
 
+    public static SaleTransaction getSaleTransactionById(String saleTransactionId) {
+        for (SaleTransaction saleTransaction: SaleTransaction.saleTransactionList) {
+            if (saleTransaction.getTransactionId().equals(saleTransactionId)) {
+                return saleTransaction;
+            }
+        }
+        return null;
+    }
+    public static void updateSaleTransaction() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter transaction ID to update: ");
+        String transactionId = scanner.nextLine();
+
+        SaleTransaction transaction = SaleTransaction.getSaleTransactionById(transactionId);
+        if (transaction != null && !transaction.isDeleted()) {
+            System.out.println("Which field would you like to update?");
+            System.out.println("1. Transaction Date");
+            System.out.println("2. Purchased Items");
+            System.out.println("3. Additional Notes");
+            System.out.print("Enter the number corresponding to the field (or multiple numbers separated by space): ");
+            String choiceInput = scanner.nextLine();
+            List<String> choices = List.of(choiceInput.split("\\s+"));
+
+            for (String choice : choices) {
+                switch (choice) {
+                    case "1":
+                        System.out.print("Enter new transaction date (YYYY-MM-DD): ");
+                        LocalDate newDate = LocalDate.parse(scanner.nextLine());
+                        transaction.setTransactionDate(newDate);
+                        break;
+                    case "2":
+                        // Set old cars' status to "AVAILABLE"
+                        for (Car car : transaction.getPurchasedItems()) {
+                            car.setStatus(Status.AVAILABLE);
+                        }
+
+                        System.out.println("Enter new item IDs purchased (separated by space): ");
+                        String carIdsInput = scanner.nextLine();
+                        List<String> newCarIds = List.of(carIdsInput.split("\\s+"));
+
+                        List<Car> newPurchasedItems = transaction.retrieveCars(newCarIds);
+                        transaction.setPurchasedItems(newPurchasedItems);
+
+                        // Set new cars' status to "SOLD"
+                        for (Car car : newPurchasedItems) {
+                            car.setStatus(Status.SOLD);
+                        }
+
+                        // Update total amount and discount based on new cars
+                        double newDiscount = transaction.calculateDiscount(transaction.getClientId());
+                        transaction.setDiscount(newDiscount);
+                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedItems, newDiscount);
+                        transaction.setTotalAmount(newTotalAmount);
+
+                        // Update client's total spending
+                        Client client = (Client) User.userList.stream()
+                                .filter(u -> u.getUserID().equals(transaction.getClientId()))
+                                .findFirst()
+                                .orElse(null);
+                        if (client != null) {
+                            client.updateTotalSpending(transaction.getTotalAmount());
+                        }
+                        break;
+                    case "3":
+                        System.out.print("Enter additional notes (or leave blank): ");
+                        String additionalNotes = scanner.nextLine();
+                        transaction.setNotes(additionalNotes);
+                        break;
+                    default:
+                        System.out.println("Invalid choice: " + choice);
+                        return;
+                }
+                SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+            }
+
+            System.out.println("Sale transaction updated successfully:");
+            System.out.println(transaction.getFormattedSaleTransactionDetails());
+        } else {
+            System.out.println("Transaction not found or it has been deleted.");
+        }
+    }
+    public static void deleteSaleTransaction() throws Exception {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter transaction ID to delete: ");
+        String transactionId = scanner.nextLine();
+
+        SaleTransaction transaction = SaleTransaction.getSaleTransactionById(transactionId);
+        if (transaction != null) {
+            transaction.markAsDeleted();
+            SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+            System.out.println("Sale transaction marked as deleted.");
+        } else {
+            System.out.println("Transaction not found.");
+        }
+    }
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         for (String carId :carIds) {
