@@ -1,6 +1,5 @@
 package car;
 
-import data.Database;
 import data.car.CarDatabase;
 import services.Service;
 import user.Manager;
@@ -28,17 +27,6 @@ public class Car implements Serializable {
     private boolean isDeleted = false;
     private ArrayList<Service> serviceHistory;
 
-    public static List<Car> carList;
-    static {
-        try {
-            if(!Database.isDatabaseExist(CarDatabase.path)){
-                CarDatabase.createDatabase();
-            };
-            carList = CarDatabase.loadCars();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
         this.carID = generateCarID();
@@ -53,7 +41,7 @@ public class Car implements Serializable {
     }
 
     private String generateCarID() {
-        return "c-" + UUID.randomUUID().toString();
+        return "c-" + UUID.randomUUID();
     }
 
     public String getCarID() {
@@ -147,20 +135,13 @@ public class Car implements Serializable {
     public void setServiceHistory(ArrayList<Service> serviceHistory) {
         this.serviceHistory = serviceHistory;
     }
-    public static Car getCarById(String carID) {
-        for (Car car : carList) {
-            if (car.getCarID().equals(carID)) {
-                return car;
-            }
-        }
-        return null;
-    }
+
 
     public static Car createCar(User user) {
         Scanner input = new Scanner(System.in);
         Status status;
         if (user instanceof Manager) {
-            int option = 0;
+            int option;
             while (true) {
                 System.out.println("Car for sale or a customer car for repair?");
                 System.out.println("1. New Car for Sale");
@@ -227,6 +208,7 @@ public class Car implements Serializable {
     }
 
     public static void addCarToList(Car car) throws Exception {
+        List<Car> carList = CarAndAutoPartMenu.getCarsList();
         carList.add(car);
         CarDatabase.saveCarData(carList);
         System.out.println("Car successfully added to list!");
@@ -237,10 +219,10 @@ public class Car implements Serializable {
         Scanner input = new Scanner(System.in);
         System.out.println("Please input the car's ID to delete:");
         String carID = input.next();
-        Car car = Car.getCarById(carID);
+        Car car = CarAndAutoPartMenu.findCarByID(carID);
         if (car != null) {
             car.setDeleted(true);
-            CarDatabase.saveCarData(carList);
+            CarDatabase.saveCarData(CarDatabase.loadCars());
             System.out.println("Car deleted successfully!");
         } else {
             System.out.println("Car not found.");
@@ -255,7 +237,7 @@ public class Car implements Serializable {
         while (car == null) {
             System.out.println("Please input the car's ID to update:");
             String carID = input.next();
-            car = Car.getCarById(carID);
+            car = CarAndAutoPartMenu.findCarByID(carID);
             if (car == null) {
                 System.out.println("Not found/invalid car ID. Please try again.");
             }
@@ -340,7 +322,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 8:
-                    CarDatabase.saveCarData(carList);// Save into database
+                    CarDatabase.saveCarData(CarDatabase.loadCars());// Save into database
                     CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
                     menu.mainMenu(user);
                     break;

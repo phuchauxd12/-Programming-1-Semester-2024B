@@ -1,6 +1,7 @@
 package transaction;
 
 import car.Car;
+import data.car.CarDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
@@ -32,18 +33,20 @@ public class SaleTransaction implements Serializable {
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
-        this.purchasedItems = retrieveCars(carIds);;
+        this.purchasedItems = retrieveCars(carIds);
+        ;
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedItems, discount);;
+        this.totalAmount = calculateTotalAmount(purchasedItems, discount);
+        ;
         this.additionalNotes = "";
         this.isDeleted = false;
     }
 
 
-    List<Car> retrieveCars(List<String> carIds) {
+    List<Car> retrieveCars(List<String> carIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
-        for (String carId :carIds) {
-            Optional<Car> carOpt = Car.carList.stream()
+        for (String carId : carIds) {
+            Optional<Car> carOpt = CarDatabase.loadCars().stream()
                     .filter(car -> car.getCarID().equalsIgnoreCase(carId))
                     .findFirst();
             carOpt.ifPresent(cars::add);
@@ -51,7 +54,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    double calculateDiscount(String clientId)  {
+    double calculateDiscount(String clientId) {
         // find membership of that specific clientId
         User user = User.userList.stream()
                 .filter(u -> u.getUserID().equals(clientId))
