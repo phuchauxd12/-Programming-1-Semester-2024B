@@ -122,7 +122,8 @@ public class StatisticsMenu {
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
-        Menu.mainMenu(user);
+        Menu mainMenu = new Menu(user);
+        mainMenu.mainMenu();
     }
 
     // Manager functions

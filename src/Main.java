@@ -77,8 +77,8 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
-        Menu.mainMenu(mechanic);
-//        Menu.mainMenu(client);
+        Menu mainMenu = new Menu(mechanic);
+        mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
