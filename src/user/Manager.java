@@ -1,24 +1,20 @@
 package user;
 
-import autoPart.autoPart;
-import car.Car;
 import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
-import utils.CarAndAutoPartMenu;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Manager extends User {
 
     private SaleTransactionList saleTransactionList;
     private ServiceList serviceList;
 
-    public Manager(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList saleTransactionList, ServiceList serviceList) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, status);
+    public Manager(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, SaleTransactionList saleTransactionList, ServiceList serviceList) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType);
         this.saleTransactionList = saleTransactionList;
         this.serviceList = serviceList;
     }
@@ -68,11 +64,11 @@ public class Manager extends User {
 
 
     // Statistics
-    public long calculateCarsSoldInMonth(LocalDate month) {
-        return CarAndAutoPartMenu.getCarsList().stream()
-                .filter(car -> car.getSoldDate().getMonth().equals(month.getMonth()) && car.getSoldDate().getYear() == month.getYear())
-                .count();
-    }
+//    public long calculateCarsSoldInMonth(LocalDate month) {
+//        return CarAndAutoPartMenu.getCarsList().stream()
+//                .filter(car -> car.getSoldDate().getMonth().equals(month.getMonth()) && car.getSoldDate().getYear() == month.getYear())
+//                .count();
+//    }
 
     public double calculateRevenue(LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = saleTransactionList.getSaleTransactionsBetween(startDate, endDate).stream()
@@ -99,12 +95,12 @@ public class Manager extends User {
     }
 
 
-     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
-         return CarAndAutoPartMenu.getCarsList().stream()
-                 .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
-                 .collect(Collectors.toList());
-
-     }
+//     public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
+//         return CarAndAutoPartMenu.getCarsList().stream()
+//                 .filter(car -> !car.getSoldDate().isBefore(startDate) && !car.getSoldDate().isAfter(endDate))
+//                 .collect(Collectors.toList());
+//
+//     }
 //    public List<Car> listCarsSold(LocalDate startDate, LocalDate endDate) {
 //        return CarAndAutoPartMenu.getCarsList().stream()
 //                .filter(car -> !car.getSoldDate().isBefore(startDate.atStartOfDay()) && !car.getSoldDate().isAfter(endDate.atStartOfDay()))
@@ -119,9 +115,9 @@ public class Manager extends User {
         return serviceList.getServicesBetween(startDate, endDate);
     }
 
-    public List<autoPart> listAutoPartsSold(LocalDate startDate, LocalDate endDate) {
-        return CarAndAutoPartMenu.getAutoPartsList().stream()
-                .filter(part -> !part.getSoldDate().isBefore(startDate.atStartOfDay()) && !part.getSoldDate().isAfter(endDate.atStartOfDay()))
-                .collect(Collectors.toList());
-    }
+//    public List<autoPart> listAutoPartsSold(LocalDate startDate, LocalDate endDate) {
+//        return CarAndAutoPartMenu.getAutoPartsList().stream()
+//                .filter(part -> !part.getSoldDate().isBefore(startDate.atStartOfDay()) && !part.getSoldDate().isAfter(endDate.atStartOfDay()))
+//                .collect(Collectors.toList());
+//    }
 }

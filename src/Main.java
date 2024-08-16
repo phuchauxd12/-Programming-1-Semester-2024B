@@ -1,19 +1,25 @@
 import autoPart.autoPart;
+import data.autoPart.AutoPartDatabase;
+import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import user.Client;
-import user.Mechanic;
-import user.Membership;
-import user.User;
-import utils.UserMenu;
+import services.Service;
+import services.ServiceBy;
+import user.*;
+import utils.LoginMenu;
+import utils.Menu;
+import utils.UserSession;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Membership membership = new Membership();
-        Client client = new Client("john_doe", "password1234", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", null);
+        Manager manager = new Manager("manager1", "pass123", "Johnny Stack",LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER, null, null );
+        Client client = new Client("john_doe", "password1234", "Timmy Toe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.CLIENT, membership);
+        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
+        Salesperson sale1 = new Salesperson("salesperson1", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE, null);
         System.out.println("COSC2081 GROUP ASSIGNMENT");
         System.out.println("AUTO136 CAR DEALERSHIP MANAGEMENT SYSTEM");
         System.out.println("Instructor: Mr. Minh Vu & Mr. Dung Nguyen");
@@ -28,6 +34,7 @@ public class Main {
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") ,ServiceBy.AUTO136, "car1", 2000000000);
 
 //        ServiceList serviceList = new ServiceList();
 //        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
@@ -66,25 +73,37 @@ public class Main {
         autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 9.99, "Compatible with various car models");
 
         autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 14.99, "High-performance spark plugs");
-//        AutoPartDatabase.createDatabase();
-//        AutoPartDatabase.addAutoPart(part1);
-//        AutoPartDatabase.addAutoPart(part2);
-//        AutoPartDatabase.addAutoPart(part3);
-//        AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
+//        var partlist = new ArrayList<String>();
+////        partlist.add(part1.getPartName());
+////        partlist.add(part2.getPartName());
+////        partlist.add(part3.getPartName());
+        AutoPartDatabase.createDatabase();
+        autoPart.addPartToList(part1);
+        autoPart.addPartToList(part2);
+        autoPart.addPartToList(part3);
+        AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
 //        AutoPartDatabase.updateAutoPart("p-e383be13-38ff-4cce-8650-04f8a194329f",1);
         UserDatabase.createDatabase();
-        UserDatabase.addUser(client);
-        UserDatabase.addUser(mechanic);
+        User.addUser(client);
+        User.addUser(manager);
+        User.addUser(sale1);
+        User.addUser(mechanic);
         var listUser = UserDatabase.loadUsers();
         System.out.println(listUser);
-        UserMenu.mainMenu();
-//        LoginMenu.displayLoginMenu();
 
-//        System.out.println(UserSession.getCurrentUser());
+        ServiceDatabase.createDatabase();
+        Service.addService(service1);
+
+        var listUser2 = UserDatabase.loadUsers();
+        System.out.println(listUser2);
+//        UserMenu.mainMenu();
+        LoginMenu.displayLoginMenu();
+
+        System.out.println(UserSession.getCurrentUser());
 //        UserProfileMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-//        Menu.mainMenu(mechanic);
+        Menu.mainMenu(UserSession.getCurrentUser());
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();

@@ -14,8 +14,8 @@ public class Client extends User {
     private SaleTransactionList saleTransactionList;
     private ServiceList serviceList;
 
-    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, Membership membership) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, status);
+    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, Membership membership) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType);
         this.membership = membership;
         this.totalSpending = 0.0;
     }
@@ -50,6 +50,7 @@ public class Client extends User {
         } else {
             membership.setMembershipType(Membership.MembershipType.Platinum);
         }
+
     }
 
     public void updateTotalSpending(double amount) {

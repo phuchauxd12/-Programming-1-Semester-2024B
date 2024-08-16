@@ -5,16 +5,14 @@ import user.Client;
 import user.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceList {
     private List<Service> services;
 
     public ServiceList() {
-        this.services = new ArrayList<>();
+        this.services = Service.serviceList;
     }
 
 
@@ -32,9 +30,12 @@ public class ServiceList {
         System.out.print("Enter serviceType: ");
         String serviceType = scanner.nextLine();
 
-        System.out.println("Enter name of replaced parts (seperated by space): ");
+        System.out.println("Enter name of replaced parts (separate by comma): ");
         String partNamesInput = scanner.nextLine();
-        List<String> partNames = List.of(partNamesInput.split("\\s+"));
+        List<String> partNames = Arrays.stream(partNamesInput.split(","))
+                                        .map(String::trim)
+                                        .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
+                                        .collect(Collectors.toList());
 
         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
         int serviceByInput = Integer.parseInt(scanner.nextLine());
@@ -47,21 +48,7 @@ public class ServiceList {
         double serviceCost = scanner.nextDouble();
 
         Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
-        services.add(service);
-
-
-        User user = User.userList.stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
-            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
-        }
-
-        System.out.println("Sale transaction added successfully:");
-        System.out.println(service.getFormattedServiceDetails());
+        Service.addService(service);
 
     }
 

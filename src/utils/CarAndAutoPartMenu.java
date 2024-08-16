@@ -5,7 +5,6 @@ import car.Car;
 import user.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,7 +16,6 @@ public class CarAndAutoPartMenu {
     private static final Scanner input = new Scanner(System.in);
     private final Map<Integer, String> menuItems = new LinkedHashMap<>();
     private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
-
 
     public CarAndAutoPartMenu(User user) {
         switch (user) {
@@ -42,9 +40,21 @@ public class CarAndAutoPartMenu {
                 menuItems.put(8, "Update an auto part");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, _ -> addCar(user));
+                menuActions.put(1, _ -> {
+                    try {
+                        addCar(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 menuActions.put(2, this::displayAllCars);
-                menuActions.put(3, this::addAutoPart);
+                menuActions.put(3, scanner -> {
+                    try {
+                        addAutoPart(scanner);
+                    } catch (Exception e) {
+                        e.printStackTrace(); // Handle the exception (e.g., log it or display a message)
+                    }
+                });
                 menuActions.put(4, this::displayAllParts);
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
@@ -82,7 +92,13 @@ public class CarAndAutoPartMenu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, s -> displayAllCars());
-                menuActions.put(2, _ -> addCar(user));
+                menuActions.put(2, _ -> {
+                    try {
+                        addCar(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 menuActions.put(3, s -> displayAllPartsForSale());
                 menuActions.put(10, this::exit);
             }
@@ -100,18 +116,18 @@ public class CarAndAutoPartMenu {
 
 
     // MANAGER Functions
-    private void addCar(User user) {
+    private void addCar(User user) throws Exception {
         Car car = Car.createCar(user);
-        carsList.add(car);
+        Car.addCarToList(car);
     }
 
     private void displayAllCars(Scanner scanner) {
         displayAllCars();
     }
 
-    private void addAutoPart(Scanner scanner) {
+    private void addAutoPart(Scanner scanner) throws Exception {
         autoPart part = autoPart.createPart();
-        autoPartsList.add(part);
+        autoPart.addPartToList(part);
     }
 
     private void displayAllParts(Scanner scanner) {
@@ -190,31 +206,30 @@ public class CarAndAutoPartMenu {
         Menu.mainMenu(user);
     }
 
-    // Static helper functions
-    private static ArrayList<Car> carsList = new ArrayList<>();
-    private static ArrayList<autoPart> autoPartsList = new ArrayList<>();
-
-    public static ArrayList<Car> getCarsList() {
-        return carsList;
-    }
-
-    public static ArrayList<autoPart> getAutoPartsList() {
-        return autoPartsList;
-    }
 
     public static Car findCarByID(String carID) {
-        for (Car car : carsList) {
-            if (car.getCarID().equals(carID)) {
-                return car;
+        System.out.println("Display car by ID:");
+        if(Car.carList.isEmpty()){
+            System.out.println("No cars available.");
+        } else {
+            for (Car car : Car.carList) {
+                if (car.getCarID().equals(carID)) {
+                    return car;
+                }
             }
         }
         return null;
     }
 
     public static autoPart findAutoPartByID(String partID) {
-        for (autoPart autoPart : autoPartsList) {
-            if (autoPart.getPartID().equals(partID)) {
-                return autoPart;
+        System.out.println("Displaying autoPart by ID:");
+        if (autoPart.autoPartList.isEmpty()) {
+            System.out.println("No parts available.");
+        } else {
+            for (autoPart part : autoPart.autoPartList) {
+                if (part.getPartID().equals(partID)) {
+                    return part;
+                }
             }
         }
         return null;
@@ -222,35 +237,55 @@ public class CarAndAutoPartMenu {
 
     public static void displayAllCars() {
         System.out.println("Displaying all cars:");
-        for (Car car : carsList) {
-            System.out.println(car);
+        if (Car.carList.isEmpty()) {
+            System.out.println("No cars available.");
+        } else {
+            for (Car car : Car.carList) {
+                if (!car.isDeleted()) { // Skip deleted cars
+                    System.out.println(car);
+                }
+            }
         }
         System.out.println("----------------");
     }
 
     public static void displayAllParts() {
-        System.out.println("Displaying all Auto Parts:");
-        for (autoPart part : getAutoPartsList()) {
-            System.out.println(part);
+        System.out.println("Displaying all autoPart:");
+        if (autoPart.autoPartList.isEmpty()) {
+            System.out.println("No parts available.");
+        } else {
+            for (autoPart part : autoPart.autoPartList) {
+                if (!part.isDeleted()) { // Skip part
+                    System.out.println(part);
+                }
+            }
         }
         System.out.println("----------------");
     }
 
     public static void displayAllCarsForSale() {
         System.out.println("Displaying all cars for sale:");
-        for (Car car : carsList) {
-            if (car.getStatus() == Status.AVAILABLE) {
-                System.out.println(car);
+        if (Car.carList.isEmpty()) {
+            System.out.println("No cars available.");
+        } else {
+            for (Car car : Car.carList) {
+                if (car.getStatus() == Status.AVAILABLE) {
+                    System.out.println(car);
+                }
             }
         }
         System.out.println("----------------");
     }
 
     public static void displayAllPartsForSale() {
-        System.out.println("Displaying all Auto Parts for sale:");
-        for (autoPart part : getAutoPartsList()) {
-            if (part.getStatus() == Status.AVAILABLE) {
-                System.out.println(part);
+        System.out.println("Displaying all autoPart:");
+        if (autoPart.autoPartList.isEmpty()) {
+            System.out.println("No parts available.");
+        } else {
+            for (autoPart part : autoPart.autoPartList) {
+                if (part.getStatus() == Status.AVAILABLE) {
+                    System.out.println(part);
+                }
             }
         }
         System.out.println("----------------");
@@ -258,18 +293,27 @@ public class CarAndAutoPartMenu {
 
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
-        for (Car car : getCarsList()) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
-                carSold += 1;
+        if (Car.carList.isEmpty()) {
+            System.out.println("No cars available.");
+        } else {
+            for (Car car : Car.carList) {
+                if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+                    carSold += 1;
+                }
             }
         }
         System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
     }
 
     public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        for (Car car : getCarsList()) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
-                System.out.println(car);
+        System.out.println("Displaying all cars for sale:");
+        if (Car.carList.isEmpty()) {
+            System.out.println("No cars available.");
+        } else {
+            for (Car car : Car.carList) {
+                if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+                    System.out.println(car);
+                }
             }
         }
     }

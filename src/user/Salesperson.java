@@ -10,8 +10,8 @@ import java.util.List;
 public class Salesperson extends Employee {
     private SaleTransactionList transactionList;
 
-    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, status, transactionList, null);
+    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, SaleTransactionList transactionList) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType, transactionList, null);
         this.transactionList = transactionList;
     }
 
@@ -97,6 +97,7 @@ public class Salesperson extends Employee {
 
 
     public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {
+
         String salespersonId = this.getUserName();
         transactionList.viewTransactionsBySalesperson(salespersonId, startDate, endDate);
     }

@@ -1,6 +1,6 @@
 package utils;
 
-import data.user.UserDatabase;
+import user.User;
 
 import java.util.Scanner;
 
@@ -41,14 +41,14 @@ public class UserProfileMenu {
                             System.out.println("7. Email");
                             System.out.println("8. Exit");
                             updateOption = Menu.getOption(updateOption, input);
-                            UserDatabase.updateUser(userID,updateOption);
+                            User.modifyUser(userID,updateOption);
                             if (updateOption == 8) {
                                 continueUpdate = false;
                             }
                         } while (continueUpdate);
                     break;
                 case 2:
-                    UserDatabase.deleteUser(userID);
+                    User.deleteUser(userID);
                     break;
                 case 3:
                     System.out.println("Exiting User Menu");

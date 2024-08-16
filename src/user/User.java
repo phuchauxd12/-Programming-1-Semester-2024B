@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 
@@ -34,7 +35,7 @@ public class User implements Serializable {
         ADMIN
     }
 
-    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status) throws Exception {
+    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType) throws Exception {
         this.userID = generateUserId();
         this.userName = userName;
         this.password = password;
@@ -44,7 +45,7 @@ public class User implements Serializable {
         this.phoneNum = phoneNum;
         this.email = email;
         this.userType = userType;
-        this.status = status;
+        this.status = "active";
     }
 
     private String generateUserId() {
@@ -60,9 +61,62 @@ public class User implements Serializable {
     }
 
     public void modifyProfile(int option) throws Exception {
-    //Need to get the user in the database to use this method
-        UserDatabase.updateUser(userID,option);
-        userList = UserDatabase.loadUsers();
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        switch (option) {
+            case 1:
+                System.out.println("Please enter new username: ");
+                input = scanner.nextLine();
+                this.setUserName(input);
+                break;
+            case 2:
+                System.out.println("Please enter new password: ");
+                input = scanner.nextLine();
+                this.setPassword(input);
+                break;
+            case 3:
+                System.out.println("Please enter new name: ");
+                input = scanner.nextLine();
+                this.setName(input);
+                break;
+            case 4:
+                System.out.println("Please enter new address: ");
+                input = scanner.nextLine();
+                this.setAddress(input);
+                break;
+            case 5:
+                System.out.println("Please enter new phone number: ");
+                input = scanner.nextLine();
+                this.setPhoneNum(Integer.parseInt(input));
+                break;
+            case 6:
+                System.out.println("Please enter new email: ");
+                input = scanner.nextLine();
+                this.setEmail(input);
+                break;
+            case 7:
+                System.out.println("Please enter new day of birth (yyyy-mm-dd): ");
+                input = scanner.nextLine();
+                this.setDob(LocalDate.parse(input));
+                break;
+
+            default:
+                System.out.println("Invalid field specified.");
+                return;
+        };
+        UserDatabase.saveUsersData(userList);
+
+    }
+
+    public static void modifyUser(String userID, int option) throws Exception {
+        for (User user : userList) {
+            if (user.getUserID().equals(userID)) {
+                user.modifyProfile(option);
+                System.out.println("User modified with ID: " + userID);
+                return;
+            }
+        }
+        System.out.println("User not found with ID: " + userID);
     }
 
     // Static methods for managing users
@@ -81,8 +135,8 @@ public class User implements Serializable {
 
 
     public static void addUser(User user) throws Exception {
-        UserDatabase.addUser(user);
-        userList = UserDatabase.loadUsers();  // Load the data again when added a new user in the database
+        userList.add(user);
+        UserDatabase.saveUsersData(userList);
         System.out.println("User added: " + user.getUserName());
     }
 
@@ -133,15 +187,18 @@ public class User implements Serializable {
         return salepersonsList.toString();
     }
 
-    public static void deleteUser(String userID) {
-        userList.removeIf(user -> user.getUserID().equals(userID));
-        System.out.println("User deleted with ID: " + userID);
+    public static void deleteUser(String userID) throws Exception {
+        for (User user : userList) {
+            if (user.getUserID().equals(userID)) {
+                user.setStatus("deleted");
+                UserDatabase.saveUsersData(userList);
+                System.out.println("User status updated to 'deleted' with ID: " + userID);
+                return;
+            }
+        }
+        System.out.println("User not found with ID: " + userID);
     }
 
-    public static void modifyUser(String userID,int option) throws Exception {
-      UserDatabase.updateUser(userID,option);
-      userList = UserDatabase.loadUsers();
-    }
 
     public static void viewAllUsers() {
         System.out.println("Viewing all users:");

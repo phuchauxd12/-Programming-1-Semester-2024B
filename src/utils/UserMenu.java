@@ -1,6 +1,5 @@
 package utils;
 
-import data.user.UserDatabase;
 import user.User;
 
 import java.util.Scanner;
@@ -84,8 +83,8 @@ public class UserMenu {
                             System.out.println("6. Phone Number");
                             System.out.println("7. Email");
                             System.out.println("8. Exit");
-                            updateOption = getOption(updateOption, input);
-                            UserDatabase.updateUser(userIDforUpdate,updateOption);
+                            updateOption = Menu.getOption(updateOption, input);
+                            User.modifyUser(userIDforUpdate,updateOption);
                             if (updateOption == 8) {
                                 continueUpdate = false;
                             }
