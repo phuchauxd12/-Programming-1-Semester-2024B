@@ -255,7 +255,7 @@ public class CarAndAutoPartMenu {
 
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
-        for (Car car : getCarsList()) {
+        for (Car car : carsList) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 carSold += 1;
             }
@@ -264,7 +264,7 @@ public class CarAndAutoPartMenu {
     }
 
     public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        for (Car car : getCarsList()) {
+        for (Car car : carsList) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 System.out.println(car);
             }
