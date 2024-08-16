@@ -1,7 +1,9 @@
 package transaction;
 
 import car.Car;
+import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
+import data.user.UserDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
@@ -12,10 +14,7 @@ import utils.UserMenu;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class SaleTransaction implements Serializable {
@@ -47,25 +46,25 @@ public class SaleTransaction implements Serializable {
 
     public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
         SaleTransactionList.transactions.add(saleTransaction);
-        SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
-        System.out.println("sale transaction added: ");
-    }
-
-    public static SaleTransaction getSaleTransactionById(String saleTransactionId) {
-        for (SaleTransaction saleTransaction: SaleTransactionList.transactions) {
-            if (saleTransaction.getTransactionId().equals(saleTransactionId)) {
-                return saleTransaction;
+        for(User user: UserMenu.getUserList()){
+            if(user.getUserName().equals(saleTransaction.clientId)){
+                Client client = (Client) user;
+                client.updateTotalSpending(saleTransaction.totalAmount);
             }
         }
-        return null;
+        // TODO: Còn Method đổi status của Car.
+        UserDatabase.saveUsersData(UserMenu.getUserList());
+        SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
+        System.out.println("SaleTransaction added successfully!");
     }
+
     public static void updateSaleTransaction() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction ID to update: ");
         String transactionId = scanner.nextLine();
 
-        SaleTransaction transaction = SaleTransaction.getSaleTransactionById(transactionId);
+        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionId);
         if (transaction != null && !transaction.isDeleted()) {
             System.out.println("Which field would you like to update?");
             System.out.println("1. Transaction Date");
@@ -98,6 +97,7 @@ public class SaleTransaction implements Serializable {
                         // Set new cars' status to "SOLD"
                         for (Car car : newPurchasedItems) {
                             car.setStatus(Status.SOLD);
+                            CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
                         }
 
                         // Update total amount and discount based on new cars
@@ -113,6 +113,7 @@ public class SaleTransaction implements Serializable {
                                 .orElse(null);
                         if (client != null) {
                             client.updateTotalSpending(transaction.getTotalAmount());
+                            UserDatabase.saveUsersData(UserMenu.getUserList());
                         }
                         break;
                     case "3":
@@ -139,7 +140,7 @@ public class SaleTransaction implements Serializable {
         System.out.print("Enter transaction ID to delete: ");
         String transactionId = scanner.nextLine();
 
-        SaleTransaction transaction = SaleTransaction.getSaleTransactionById(transactionId);
+        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionId);
         if (transaction != null) {
             transaction.markAsDeleted();
             SaleTransactionDatabase.saveSaleTransaction(SaleTransactionDatabase.loadSaleTransaction());
@@ -148,10 +149,11 @@ public class SaleTransaction implements Serializable {
             System.out.println("Transaction not found.");
         }
     }
-    List<Car> retrieveCars(List<String> carIds) {
+    List<Car> retrieveCars(List<String> carIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
+        List<Car> allCars = CarDatabase.loadCars();
         for (String carId : carIds) {
-            Optional<Car> carOpt = CarAndAutoPartMenu.getAutoPartList().stream()
+            Optional<Car> carOpt = allCars.stream()
                     .filter(car -> car.getCarID().equalsIgnoreCase(carId))
                     .findFirst();
             carOpt.ifPresent(cars::add);
@@ -161,7 +163,7 @@ public class SaleTransaction implements Serializable {
 
     double calculateDiscount(String clientId) {
         // find membership of that specific clientId
-        User user = User.userList.stream()
+        User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserID().equals(clientId))
                 .findFirst()
                 .orElse(null);

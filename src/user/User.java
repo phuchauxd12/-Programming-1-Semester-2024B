@@ -103,7 +103,7 @@ public class User implements Serializable {
                 System.out.println("Invalid field specified.");
                 return;
         };
-        UserDatabase.saveUsersData(UserDatabase.loadUsers());
+        UserDatabase.saveUsersData(UserMenu.getUserList());
 
     }
 
@@ -131,7 +131,7 @@ public class User implements Serializable {
         User user = UserMenu.getUserById(userID);
         if (user != null) {
             user.setStatus("deleted");
-            UserDatabase.saveUsersData(UserDatabase.loadUsers());
+            UserDatabase.saveUsersData(UserMenu.getUserList());
             System.out.println("User deleted successfully!");
         } else {
             System.out.println("User not found with ID: " + userID);
