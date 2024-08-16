@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
-    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, ServiceList serviceList) {
+    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, ServiceList serviceList) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status, null, serviceList);
         this.serviceList = serviceList;
     }
@@ -85,7 +85,7 @@ public class Mechanic extends Employee {
     }
 
 
-    public void addService() {
+    public void addService() throws Exception {
         serviceList.addService(this.getUserName());
     }
 

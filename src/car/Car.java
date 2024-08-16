@@ -228,7 +228,7 @@ public class Car implements Serializable {
         System.out.println(car);
     }
 
-    public static void updateCar(User user) {
+    public static void updateCar(User user) throws Exception {
         CarAndAutoPartMenu.displayAllCars();
         Car car = null;
         Scanner input = new Scanner(System.in);
@@ -330,7 +330,7 @@ public class Car implements Serializable {
         } while (option != 8);
     }
 
-    private static int getNewCarYear(Scanner input) {
+    public static int getNewCarYear(Scanner input) {
         int newCarYear;
         while (true) {
             try {

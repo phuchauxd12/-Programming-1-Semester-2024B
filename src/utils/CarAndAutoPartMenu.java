@@ -48,8 +48,20 @@ public class CarAndAutoPartMenu {
                 menuActions.put(4, this::displayAllParts);
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
-                menuActions.put(7, _ -> updateCar(user));
-                menuActions.put(8, _ -> updatePart(user));
+                menuActions.put(7, _ -> {
+                    try {
+                        updateCar(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                menuActions.put(8, _ -> {
+                    try {
+                        updatePart(user);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 menuActions.put(10, this::exit);
             }
             case SALESPERSON -> {
@@ -132,7 +144,7 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void updateCar(User user) {
+    private void updateCar(User user) throws Exception {
         Scanner scanner = new Scanner(System.in);
         displayAllCars();
         System.out.println("Enter the car ID to update:");
@@ -146,7 +158,7 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void updatePart(User user) {
+    private void updatePart(User user) throws Exception {
         Scanner scanner = new Scanner(System.in);
         displayAllParts();
         System.out.println("Enter the part ID to update:");
@@ -168,7 +180,7 @@ public class CarAndAutoPartMenu {
         System.out.println("---------------------");
     }
 
-    public void mainMenu(User user) {
+    public void mainMenu(User user) throws Exception {
         int option = 0;
         do {
             displayMenu();

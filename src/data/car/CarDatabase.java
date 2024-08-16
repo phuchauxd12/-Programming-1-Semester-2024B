@@ -2,7 +2,6 @@ package data.car;
 
 import car.Car;
 import data.Database;
-import utils.Menu;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +14,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class CarDatabase {
-    private static final String path = "src/data/car/CarAccount.txt";
+    private static final String path = "src/data/car/Car.txt";
     private static List<Car> carList;
 
 
@@ -45,10 +44,8 @@ public class CarDatabase {
 
     // Method to add a new user to the database
     public static void addCar(Car newCar) throws Exception {
-        // Load the current list of users
         loadCars();
 
-        // Add the new user to the list
         carList.add(newCar);
 
         // Save the updated list back to the file
@@ -56,10 +53,9 @@ public class CarDatabase {
     }
 
     public static Car findCarByID(String carID) throws Exception {
-        // Load the current list of users
+
         loadCars();
 
-        // Find the user with the given userID
         var foundCar = carList.stream()
                 .filter(user -> user.getCarID().equals(carID))
                 .findFirst();
@@ -68,7 +64,7 @@ public class CarDatabase {
 
     public static void deleteCar(String carID) throws Exception {
         var foundCar = findCarByID(carID);
-        // Add the new user to the list
+
         if (foundCar != null) {
             carList = carList.stream()
                     .filter(user -> !user.getCarID().equals(carID))
@@ -81,23 +77,19 @@ public class CarDatabase {
         }
     }
 
-    public static void updateCar(String carID) throws Exception {
+    public static void updateCar(String carID,int option) throws Exception {
         var foundCar = findCarByID(carID);
         if (foundCar != null) {
             Scanner input = new Scanner(System.in);
-            boolean continueUpdate = true;
-            int option = 0;
-            do {
-                System.out.println("What would you like to update?");
-                System.out.println("1. Car Make");
-                System.out.println("2. Car Model");
-                System.out.println("3. Car Year");
-                System.out.println("4. Car Color");
-                System.out.println("5. Car Mileage");
-                System.out.println("6. Car Price");
-                System.out.println("7. Additional Notes");
-                System.out.println("8. Exit");
-                option = Menu.getOption(option, input);
+//                System.out.println("What would you like to update?");
+//                System.out.println("1. Car Make");
+//                System.out.println("2. Car Model");
+//                System.out.println("3. Car Year");
+//                System.out.println("4. Car Color");
+//                System.out.println("5. Car Mileage");
+//                System.out.println("6. Car Price");
+//                System.out.println("7. Additional Notes");
+//                System.out.println("8. Exit");
                 switch (option) {
                     case 1:
                         System.out.println("Please input the car's make:");
@@ -180,14 +172,12 @@ public class CarDatabase {
                         break;
                     case 8:
                         System.out.println(carList);
-                        continueUpdate = false;
                         break;
                     default:
                         System.out.println("Invalid option.");
-                        break;
+                        return;
                 }
 
-            } while ((continueUpdate));
 
             Database.<Car>saveDatabase(path, carList, "Car had been updated in the database.", "Error while updating the database file.");
         } else {
