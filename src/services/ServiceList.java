@@ -1,18 +1,27 @@
 package services;
 
 import autoPart.autoPart;
+import data.Database;
+import data.service.ServiceDatabase;
 import user.Client;
-import user.User;
+import utils.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServiceList {
-    private List<Service> services;
-
-    public ServiceList() {
-        this.services = Service.serviceList;
+    public static List<Service> services;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(ServiceDatabase.path)){
+                ServiceDatabase.createDatabase();
+            };
+            services = ServiceDatabase.loadService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -146,7 +155,7 @@ public class ServiceList {
                         service.setTotalCost(newservice);
 
                         // Update client's total spending
-                        Client client = (Client) User.userList.stream()
+                        Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(service.getClientId()))
                                 .findFirst()
                                 .orElse(null);

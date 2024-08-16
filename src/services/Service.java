@@ -1,12 +1,14 @@
 package services;
 
 import autoPart.autoPart;
-import data.Database;
+import data.autoPart.AutoPartDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
+import utils.CarAndAutoPartMenu;
+import utils.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -44,18 +46,7 @@ public class Service implements Serializable {
         this.isDeleted = false;
 
     }
-    public static List<Service> serviceList;
-    // This code run one time when create an instance of a class
-    static {
-        try {
-            if(!Database.isDatabaseExist(ServiceDatabase.path)){
-               ServiceDatabase.createDatabase();
-            };
-            serviceList = ServiceDatabase.loadService();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 //    public static void addService(String mechanicId) throws Exception {
 //        Scanner scanner = new Scanner(System.in);
 //
@@ -102,19 +93,19 @@ public class Service implements Serializable {
 //    }
     public static void addService(Service service) throws Exception {
         // TO DO: Thêm method để track xem liệu client id có trong database không. Nếu không yêu cầu tạo hoặc không cho thực hiện.
-        serviceList.add(service);
-        for(User user: User.userList){
+        ServiceList.services.add(service);
+        for(User user: UserMenu.getUserList()){
             if(user.getUserName().equals(service.clientId)){
                 Client client = (Client) user;
                 client.updateTotalSpending(service.serviceCost);
             }
         }
-        UserDatabase.saveUsersData(User.userList);
-        ServiceDatabase.saveService(serviceList);
+        UserDatabase.saveUsersData(UserMenu.getUserList());
+        ServiceDatabase.saveService(ServiceList.services);
         System.out.println("Service added successfully:");
     }
     public static Service getServiceById(String serviceId) {
-        for (Service service : serviceList) {
+        for (Service service : ServiceList.services) {
             if (service.getServiceId().equals(serviceId)) {
                 return service;
             }
@@ -179,7 +170,7 @@ public class Service implements Serializable {
                         service.setTotalCost(newservice);
 
                         // Update client's total spending
-                        Client client = (Client) User.userList.stream()
+                        Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(service.getClientId()))
                                 .findFirst()
                                 .orElse(null);
@@ -202,7 +193,7 @@ public class Service implements Serializable {
                         System.out.println("Invalid choice: " + choice);
                 }
 
-                ServiceDatabase.saveService(serviceList);
+                ServiceDatabase.saveService(ServiceList.services);
             }
 
             // Update the service in the list successfully
@@ -222,7 +213,7 @@ public class Service implements Serializable {
         Service service = Service.getServiceById(serviceId);
         if (service != null) {
             service.markAsDeleted();
-            ServiceDatabase.saveService(serviceList);
+            ServiceDatabase.saveService(ServiceList.services);
             System.out.println("Sale transaction marked as deleted.");
         } else {
             System.out.println("Transaction not found.");
@@ -232,7 +223,7 @@ public class Service implements Serializable {
     List<autoPart> retrieveParts(List<String> partNames) {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         for (String partName :partNames) {
-            Optional<autoPart> partOpt = autoPart.autoPartList.stream()
+            Optional<autoPart> partOpt = AutoPartDatabase.loadAutoParts().stream()
                     .filter(part -> part.getPartName().equalsIgnoreCase(partName))
                     .findFirst();
             partOpt.ifPresent(parts::add);
@@ -242,7 +233,7 @@ public class Service implements Serializable {
 
     double calculateDiscount(String clientId) {
         // find membership of that specific clientId
-        User user = User.userList.stream()
+        User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserID().equals(clientId))
                 .findFirst()
                 .orElse(null);

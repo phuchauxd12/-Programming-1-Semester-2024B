@@ -1,11 +1,10 @@
 package user;
 
-import data.Database;
 import data.user.UserDatabase;
+import utils.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -104,12 +103,12 @@ public class User implements Serializable {
                 System.out.println("Invalid field specified.");
                 return;
         };
-        UserDatabase.saveUsersData(userList);
+        UserDatabase.saveUsersData(UserDatabase.loadUsers());
 
     }
 
     public static void modifyUser(String userID, int option) throws Exception {
-        for (User user : userList) {
+        for (User user : UserMenu.getUserList()) {
             if (user.getUserID().equals(userID)) {
                 user.modifyProfile(option);
                 System.out.println("User modified with ID: " + userID);
@@ -119,113 +118,26 @@ public class User implements Serializable {
         System.out.println("User not found with ID: " + userID);
     }
 
-    // Static methods for managing users
-    public static List<User> userList;
-    // This code run one time when create an instance of a class
-    static {
-        try {
-            if(!Database.isDatabaseExist(UserDatabase.path)){
-                UserDatabase.createDatabase();
-            };
-            userList = UserDatabase.loadUsers();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public static void addUser(User user) throws Exception {
+        List<User> userList = UserMenu.getUserList();
         userList.add(user);
         UserDatabase.saveUsersData(userList);
         System.out.println("User added: " + user.getUserName());
     }
 
-    public static User getUserById(String userId) {
-        for (User user : userList) {
-            if (user.getUserID().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public static List<Mechanic> getAllMechanics() {
-        List<Mechanic> mechanics = new ArrayList<>();
-        for (User user : userList) {
-            if (user instanceof Mechanic) {
-                mechanics.add((Mechanic) user);
-            }
-        }
-        return mechanics;
-    }
-
-    public static String displayAllMechanics() {
-        List<Mechanic> mechanics = getAllMechanics();
-        StringBuilder mechanicList = new StringBuilder();
-        for (Mechanic mechanic : mechanics) {
-            mechanicList.append(mechanic.toString()).append("\n");
-        }
-        return mechanicList.toString();
-    }
-
-    public static List<Salesperson> getAllSalespersons() {
-        List<Salesperson> salespersons = new ArrayList<>();
-        for (User user : userList) {
-            if (user instanceof Salesperson) {
-                salespersons.add((Salesperson) user);
-            }
-        }
-        return salespersons;
-    }
-
-    public static String displayAllSalespersons() {
-        List<Salesperson> salespersons = getAllSalespersons();
-        StringBuilder salepersonsList = new StringBuilder();
-        for (Salesperson saleperson : salespersons) {
-            salepersonsList.append(saleperson.toString()).append("\n");
-        }
-        return salepersonsList.toString();
-    }
 
     public static void deleteUser(String userID) throws Exception {
-        for (User user : userList) {
-            if (user.getUserID().equals(userID)) {
-                user.setStatus("deleted");
-                UserDatabase.saveUsersData(userList);
-                System.out.println("User status updated to 'deleted' with ID: " + userID);
-                return;
-            }
-        }
-        System.out.println("User not found with ID: " + userID);
-    }
-
-
-    public static void viewAllUsers() {
-        System.out.println("Viewing all users:");
-        for (User user : userList) {
-            System.out.println("UserID: " + user.getUserID() + ", UserName: " + user.getUserName());
+        User user = UserMenu.getUserById(userID);
+        if (user != null) {
+            user.setStatus("deleted");
+            UserDatabase.saveUsersData(UserDatabase.loadUsers());
+            System.out.println("User deleted successfully!");
+        } else {
+            System.out.println("User not found with ID: " + userID);
         }
     }
 
-    public static void viewUsersByRole(ROLE role) {
-        try {
-            List<User> userByRoleList = new ArrayList<>();
-
-            for(User user : userList){
-                if(user.getRole() == role){
-                    userByRoleList.add(user);
-                }
-            }
-
-            if (userByRoleList.isEmpty()) {
-                System.out.println("No users found with role: " + role);
-            } else {
-                userByRoleList.forEach(System.out::println);
-            }
-        } catch (Exception e) {
-            System.out.println("Error while viewing users by role: " + e.getMessage());
-        }
-    }
 
 
     // Getters and Setters

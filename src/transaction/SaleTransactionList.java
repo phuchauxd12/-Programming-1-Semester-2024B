@@ -1,17 +1,28 @@
 package transaction;
 
 import car.Car;
+import data.Database;
+import data.transaction.SaleTransactionDatabase;
 import user.Client;
 import user.User;
 import utils.Status;
+import utils.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class SaleTransactionList {
-    private List<SaleTransaction> transactions;
-    public SaleTransactionList() {
-        transactions = new ArrayList<>();
+    public static List<SaleTransaction> transactions;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(SaleTransactionDatabase.path)){
+                SaleTransactionDatabase.createDatabase();
+            };
+            transactions = SaleTransactionDatabase.loadSaleTransaction();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addSaleTransaction(String salespersonId) throws Exception {
@@ -34,7 +45,7 @@ public class SaleTransactionList {
             car.setStatus(Status.SOLD);
         }
 
-        User user = User.userList.stream()
+        User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserID().equals(clientId))
                 .findFirst()
                 .orElse(null);
@@ -110,7 +121,7 @@ public class SaleTransactionList {
                         transaction.setTotalAmount(newTotalAmount);
 
                         // Update client's total spending
-                        Client client = (Client) User.userList.stream()
+                        Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(transaction.getClientId()))
                                 .findFirst()
                                 .orElse(null);

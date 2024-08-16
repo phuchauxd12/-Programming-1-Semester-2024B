@@ -1,7 +1,6 @@
 package autoPart;
 
 
-import data.Database;
 import data.autoPart.AutoPartDatabase;
 import user.User;
 import utils.CarAndAutoPartMenu;
@@ -26,17 +25,8 @@ public class autoPart implements Serializable {
     private Status status = Status.AVAILABLE;
     private LocalDateTime soldDate = null;
     private boolean isDeleted = false;
-    public static List<autoPart> autoPartList;
-    static {
-        try {
-            if(!Database.isDatabaseExist(AutoPartDatabase.path)){
-               AutoPartDatabase.createDatabase();
-            };
-            autoPartList = AutoPartDatabase.loadAutoParts();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
+
     public enum Condition {
         NEW,
         USED,
@@ -180,30 +170,25 @@ public class autoPart implements Serializable {
     }
 
     public static void addPartToList(autoPart part) throws Exception {
+        List<autoPart> autoPartList = AutoPartDatabase.loadAutoParts();
         autoPartList.add(part);
         AutoPartDatabase.saveAutoPartData(autoPartList);
         System.out.println("Part successfully added to list!");
     }
-    public static autoPart getAutoPArtById(String carID) {
-        for (autoPart autoPart : autoPartList) {
-            if (autoPart.getPartID().equals(carID)) {
-                return autoPart;
-            }
-        }
-        return null;
-    }
+
+
     public static void deletePart() throws Exception {
         CarAndAutoPartMenu.displayAllParts();
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
         String partID = input.next();
-        autoPart part = autoPart.getAutoPArtById(partID);
+        autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
         if (part == null) {
             System.out.println("Part not found.");
             return;
         }
         part.setDeleted(true);
-        AutoPartDatabase.saveAutoPartData(autoPartList);
+        AutoPartDatabase.saveAutoPartData(AutoPartDatabase.loadAutoParts());
         System.out.println("Part deleted successfully.");
         System.out.println(part);
     }
@@ -215,7 +200,7 @@ public class autoPart implements Serializable {
         while (part == null) {
             System.out.println("Enter the part ID of the part you want to update: ");
             String partID = input.next();
-            part = autoPart.getAutoPArtById(partID);
+            part = CarAndAutoPartMenu.findAutoPartByID(partID);
             if (part == null) {
                 System.out.println("Not found/invalid part ID. Please try again.");
             }
@@ -297,7 +282,7 @@ public class autoPart implements Serializable {
                     System.out.println(part);
                     break;
                 case 7:
-                    AutoPartDatabase.saveAutoPartData(autoPartList);
+                    AutoPartDatabase.saveAutoPartData(AutoPartDatabase.loadAutoParts());
                     CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
                     menu.mainMenu(user);
                     break;

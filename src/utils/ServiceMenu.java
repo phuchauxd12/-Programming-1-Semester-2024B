@@ -9,6 +9,7 @@ public class ServiceMenu {
     private HashSet<String> menuList = new HashSet<String>();
     private Map<Integer, Runnable> menuActions = new HashMap<>();
 
+
     // Constructor to initialize the menuList and menuActions
     public ServiceMenu() {
         menuList.add("Display All Services");

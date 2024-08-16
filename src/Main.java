@@ -8,6 +8,11 @@ import user.*;
 import utils.LoginMenu;
 import utils.Menu;
 import utils.UserSession;
+import user.Manager;
+import user.Mechanic;
+import user.Membership;
+import user.User;
+import utils.Menu;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +25,14 @@ public class Main {
         Client client = new Client("john_doe", "password1234", "Timmy Toe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.CLIENT, membership);
         Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
         Salesperson sale1 = new Salesperson("salesperson1", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE, null);
+//        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
+//        Client client1 = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, "Active", membership);
+//        Client client2 = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, "Active", membership);
+        Manager manager = new Manager("manager1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.MANAGER, "Active", null, null);
+        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", null);
+//        autoPart part1 = new autoPart("Brake Pad", "ACDelco", autoPart.Condition.NEW, 12, 24.99, "Fits most Honda vehicles");
+//        autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 9.99, "Compatible with various car models");
+//        autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 14.99, "High-performance spark plugs");
         System.out.println("COSC2081 GROUP ASSIGNMENT");
         System.out.println("AUTO136 CAR DEALERSHIP MANAGEMENT SYSTEM");
         System.out.println("Instructor: Mr. Minh Vu & Mr. Dung Nguyen");
@@ -68,11 +81,7 @@ public class Main {
 
         /* Add to database.txt file*/
 
-        autoPart part1 = new autoPart("Brake Pad", "ACDelco", autoPart.Condition.NEW, 12, 24.99, "Fits most Honda vehicles");
 
-        autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 9.99, "Compatible with various car models");
-
-        autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 14.99, "High-performance spark plugs");
 //        var partlist = new ArrayList<String>();
 ////        partlist.add(part1.getPartName());
 ////        partlist.add(part2.getPartName());

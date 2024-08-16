@@ -1,17 +1,22 @@
 package transaction;
 
 import car.Car;
-import data.Database;
 import data.transaction.SaleTransactionDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
+import utils.CarAndAutoPartMenu;
 import utils.Status;
+import utils.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+
 
 public class SaleTransaction implements Serializable {
     private String transactionId;
@@ -24,18 +29,6 @@ public class SaleTransaction implements Serializable {
     private boolean isDeleted;
     private String additionalNotes;
 
-    public static List<SaleTransaction> saleTransactionList;
-    // This code run one time when create an instance of a class
-    static {
-        try {
-            if(!Database.isDatabaseExist(SaleTransactionDatabase.path)){
-               SaleTransactionDatabase.createDatabase();
-            };
-            saleTransactionList = SaleTransactionDatabase.loadSaleTransaction();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
     // Constructor
     public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) throws Exception {
 
@@ -43,21 +36,23 @@ public class SaleTransaction implements Serializable {
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
-        this.purchasedItems = retrieveCars(carIds);;
+        this.purchasedItems = retrieveCars(carIds);
+        ;
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedItems, discount);;
+        this.totalAmount = calculateTotalAmount(purchasedItems, discount);
+        ;
         this.additionalNotes = "";
         this.isDeleted = false;
     }
 
     public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
-        saleTransactionList.add(saleTransaction);
-        SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+        SaleTransactionList.transactions.add(saleTransaction);
+        SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
         System.out.println("sale transaction added: ");
     }
 
     public static SaleTransaction getSaleTransactionById(String saleTransactionId) {
-        for (SaleTransaction saleTransaction: SaleTransaction.saleTransactionList) {
+        for (SaleTransaction saleTransaction: SaleTransactionList.transactions) {
             if (saleTransaction.getTransactionId().equals(saleTransactionId)) {
                 return saleTransaction;
             }
@@ -112,7 +107,7 @@ public class SaleTransaction implements Serializable {
                         transaction.setTotalAmount(newTotalAmount);
 
                         // Update client's total spending
-                        Client client = (Client) User.userList.stream()
+                        Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(transaction.getClientId()))
                                 .findFirst()
                                 .orElse(null);
@@ -129,7 +124,7 @@ public class SaleTransaction implements Serializable {
                         System.out.println("Invalid choice: " + choice);
                         return;
                 }
-                SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+                SaleTransactionDatabase.saveSaleTransaction(SaleTransactionDatabase.loadSaleTransaction());
             }
 
             System.out.println("Sale transaction updated successfully:");
@@ -147,7 +142,7 @@ public class SaleTransaction implements Serializable {
         SaleTransaction transaction = SaleTransaction.getSaleTransactionById(transactionId);
         if (transaction != null) {
             transaction.markAsDeleted();
-            SaleTransactionDatabase.saveSaleTransaction(saleTransactionList);
+            SaleTransactionDatabase.saveSaleTransaction(SaleTransactionDatabase.loadSaleTransaction());
             System.out.println("Sale transaction marked as deleted.");
         } else {
             System.out.println("Transaction not found.");
@@ -155,8 +150,8 @@ public class SaleTransaction implements Serializable {
     }
     List<Car> retrieveCars(List<String> carIds) {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
-        for (String carId :carIds) {
-            Optional<Car> carOpt = Car.carList.stream()
+        for (String carId : carIds) {
+            Optional<Car> carOpt = CarAndAutoPartMenu.getAutoPartList().stream()
                     .filter(car -> car.getCarID().equalsIgnoreCase(carId))
                     .findFirst();
             carOpt.ifPresent(cars::add);
@@ -164,7 +159,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    double calculateDiscount(String clientId)  {
+    double calculateDiscount(String clientId) {
         // find membership of that specific clientId
         User user = User.userList.stream()
                 .filter(u -> u.getUserID().equals(clientId))

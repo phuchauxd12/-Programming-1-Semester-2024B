@@ -135,9 +135,9 @@ public class StatisticsMenu {
     }
 
     private void ManagerProcessMechanicRevenue(Scanner s) {
-        User.displayAllMechanics();
+        UserMenu.displayAllMechanics();
         String mechanicId = promptForUserId("mechanic");
-        Mechanic mechanic = (Mechanic) User.getUserById(mechanicId);
+        Mechanic mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
         if (mechanic != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
@@ -149,9 +149,9 @@ public class StatisticsMenu {
     }
 
     private void ManagerProcessSalespersonRevenue(Scanner s) {
-        User.displayAllSalespersons();
+        UserMenu.displayAllSalespersons();
         String salespersonId = promptForUserId("salesperson");
-        Salesperson salesperson = (Salesperson) User.getUserById(salespersonId);
+        Salesperson salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
         if (salesperson != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
@@ -174,7 +174,7 @@ public class StatisticsMenu {
 
     private void getAllTransactionsInSpecificPeriod(Scanner scanner) {
         // TODO: Implement this method (current implementation quick and dirty)
-        for (User user : User.userList) {
+        for (User user : UserMenu.getUserList()) {
             if (user instanceof Salesperson salesperson) {
                 salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
             }
@@ -183,7 +183,7 @@ public class StatisticsMenu {
 
     private void getAllServicesInSpecificPeriod(Scanner scanner) {
         // TODO: Implement this method (current implementation quick and dirty)
-        for (User user : User.userList) {
+        for (User user : UserMenu.getUserList()) {
             if (user instanceof Mechanic mechanic) {
                 mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
             }
@@ -194,7 +194,7 @@ public class StatisticsMenu {
         if (loggedInUser instanceof Mechanic mechanic) {
             mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
         } else if (loggedInUser instanceof Manager) {
-            User.displayAllMechanics();
+            UserMenu.displayAllMechanics();
             String mechanicId;
             Mechanic mechanic;
             Scanner input = new Scanner(System.in);
@@ -202,7 +202,7 @@ public class StatisticsMenu {
                 System.out.print("Enter mechanic ID: ");
                 mechanicId = input.nextLine();
                 if (!mechanicId.isEmpty()) {
-                    mechanic = (Mechanic) User.getUserById(mechanicId);
+                    mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
                     if (mechanic != null) {
                         break;
                     } else {
@@ -219,14 +219,14 @@ public class StatisticsMenu {
         if (loggedInUser instanceof Salesperson salesperson) {
             salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
         } else if (loggedInUser instanceof Manager) {
-            User.displayAllSalespersons();
+            UserMenu.displayAllSalespersons();
             String salespersonId;
             Salesperson salesperson;
             while (true) {
                 System.out.print("Enter salesperson ID: ");
                 salespersonId = input.nextLine();
                 if (!salespersonId.isEmpty()) {
-                    salesperson = (Salesperson) User.getUserById(salespersonId);
+                    salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
                     if (salesperson != null) {
                         break;
                     } else {
@@ -316,12 +316,12 @@ public class StatisticsMenu {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         Client client = (Client) loggedInUser;
-        client.viewTransactionsHistoryInSpecificPeriod(startDate, endDate);
+        client.viewTransactionsHistory(startDate, endDate);
     }
 
     private void getAllClientSalesTransactions(User loggedInUser) {
         Client client = (Client) loggedInUser;
-        client.viewTransactionsHistoryInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        client.viewTransactionsHistory(LocalDate.of(1970, 1, 1), LocalDate.now());
     }
 
     private void getAllClientServicesInSpecificPeriod(User loggedInUser) {
