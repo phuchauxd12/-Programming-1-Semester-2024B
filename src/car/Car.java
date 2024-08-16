@@ -322,7 +322,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 8:
-                    CarDatabase.saveCarData(CarDatabase.loadCars());// Save into database
+                    CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());// Save into database
                     CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
                     menu.mainMenu(user);
                     break;
