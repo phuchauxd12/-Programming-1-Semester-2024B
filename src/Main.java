@@ -1,10 +1,9 @@
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.Menu;
+import utils.DatePrompt;
 
 import java.time.LocalDate;
-import utils.ServiceMenu;
 
 
 public class Main {
@@ -63,7 +62,7 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
-        Menu.mainMenu(client);
+//        Menu.mainMenu(client);
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
@@ -71,6 +70,9 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
 
+        DatePrompt dateInput = new DatePrompt();
+        LocalDate date = dateInput.promptForDate();
+        System.out.println("Returned value: " + date);
     }
 
 }
