@@ -29,7 +29,7 @@ public class ServiceList {
 
 
 
-    public void addService(String mechanicId) throws Exception {
+    public static void addService(String mechanicId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -87,9 +87,13 @@ public class ServiceList {
         return services;
     }
 
-    public void displayAllServices(){
+    // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
+    public static void displayAllServices(){
         for (Service service : services) {
-            System.out.println(service);
+            if(!service.isDeleted()) {
+                System.out.println(service.getFormattedServiceDetails());
+                System.out.println("___________________________________");
+            }
         }
     }
 
@@ -106,24 +110,25 @@ public class ServiceList {
 //        services.removeIf(service -> service.getServiceId().equals(serviceId));
 //    }
 
-    public List<Service> getServicesBetween(LocalDate startDate, LocalDate endDate) {
+    public static List<Service> getServicesBetween(LocalDate startDate, LocalDate endDate) {
         List<Service> filteredServices = new ArrayList<>();
         for (Service service : services) {
-            if ((service.getServiceDate().isEqual(startDate) || service.getServiceDate().isAfter(startDate)) &&
-                    (service.getServiceDate().isEqual(endDate) || service.getServiceDate().isBefore(endDate))) {
+            LocalDate serviceDate = service.getServiceDate();
+            if ((serviceDate.isEqual(startDate) || serviceDate.isAfter(startDate)) &&
+                    (serviceDate.isEqual(endDate) || serviceDate.isBefore(endDate.plusDays(1)))) {
                 filteredServices.add(service);
             }
         }
         return filteredServices;
     }
 
-    public void updateService() throws Exception {
+    public static void updateService() throws Exception {
         displayAllServices();
         Service.updateService();
     }
 
 
-    public void deleteService() throws Exception {
+    public static void deleteService() throws Exception {
         displayAllServices();
         Service.deleteService();
     }
@@ -137,7 +142,7 @@ public class ServiceList {
     }
 
 
-    public int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
+    public static int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
         int autoPartCount = 0;
 
@@ -160,7 +165,7 @@ public class ServiceList {
         return usedParts;
     }
 
-    public double[] calculateServiceRevenueAndCount(LocalDate startDate, LocalDate endDate) {
+    public static double[] calculateServiceRevenueAndCount(LocalDate startDate, LocalDate endDate) {
         double totalServiceRevenue = 0.0;
         int serviceCount = 0;
 
@@ -172,7 +177,7 @@ public class ServiceList {
         return new double[]{totalServiceRevenue, serviceCount};
     }
 
-    public double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
+    public static double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
 
         double totalServiceRevenue = 0.0;
 
@@ -188,17 +193,33 @@ public class ServiceList {
         return totalServiceRevenue;
     }
 
-    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
+    public static void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
         double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
         double totalServiceRevenue = serviceRevenueAndCount[0];
         int serviceCount = (int) serviceRevenueAndCount[1];
         int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Double> mechanicRevenue = new HashMap<>();
 
         for (Service service : getServicesBetween(startDate, endDate)) {
 
             clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
+
+            String mechanicId = service.getMechanicId(); // Assuming you have this method
+            mechanicRevenue.put(mechanicId,
+                    mechanicRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());
+        }
+
+        // Find the mechanic with the top revenue
+        String topMechanicId = null;
+        double maxRevenue = 0.0;
+
+        for (Map.Entry<String, Double> entry : mechanicRevenue.entrySet()) {
+            if (entry.getValue() > maxRevenue) {
+                maxRevenue = entry.getValue();
+                topMechanicId = entry.getKey();
+            }
         }
 
         // Statistics info
@@ -211,6 +232,13 @@ public class ServiceList {
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+
+        // Top mechanic
+        if (topMechanicId != null) {
+            System.out.printf("Top Mechanic ID: %s, Revenue: $%.2f\n", topMechanicId, maxRevenue);
+        } else {
+            System.out.println("No service transactions in the given period.");
         }
     }
 

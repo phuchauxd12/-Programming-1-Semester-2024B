@@ -5,7 +5,8 @@ import services.Service;
 import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
-import utils.UserProfileMenu;
+import utils.Menu;
+import utils.UserSession;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,13 +40,14 @@ public class Main {
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") ,ServiceBy.AUTO136, "car1", 2000000000);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
 
 //        ServiceList serviceList = new ServiceList();
-//        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
-//        serviceList.addService(new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
-//        serviceList.addService(new Service(LocalDate.of(2024, 3, 10), "client3", "mechanic1", "Tire Rotation", ServiceBy.AUTO136, "car3", 49.99));
-//        serviceList.addService(new Service(LocalDate.of(2024, 4, 5), "client4", "mechanic3", "Battery Replacement", ServiceBy.OTHER, "car4", 119.99));
+//        Service service1 = new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
+//        Service service2 = new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
+//        Service service1 = new Service(LocalDate.of(2024, 3, 10), "client3", "mechanic1", "Tire Rotation", ServiceBy.AUTO136, "car3", 49.99));
+//        Service service1 = new Service(LocalDate.of(2024, 4, 5), "client4", "mechanic3", "Battery Replacement", ServiceBy.OTHER, "car4", 119.99));
 //
 //        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", serviceList);
 //        Client client = new Client("client001", "password123", "Client One", LocalDate.of(1990, 6, 10), "789 Pine St", 123456789, "client.one@example.com", User.ROLE.CLIENT, "Active", new Membership());
@@ -92,8 +94,9 @@ public class Main {
         var listUser = UserDatabase.loadUsers();
         System.out.println(listUser);
 
+
 //        ServiceDatabase.createDatabase();
-//        Service.addService(service1);
+//        Service.addService(service2);
 
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
@@ -101,10 +104,11 @@ public class Main {
 //        UserMenu.mainMenu();
 
 //        System.out.println(UserSession.getCurrentUser());
-        UserProfileMenu.mainMenu();
+//        UserProfileMenu.mainMenu();
+//        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-//        Menu.mainMenu(UserSession.getCurrentUser());
+        Menu.mainMenu(UserSession.getCurrentUser());
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
@@ -114,4 +118,5 @@ public class Main {
 
     }
 
+    //
 }

@@ -28,7 +28,7 @@ public class SaleTransactionList {
         }
     }
 
-    public void addSaleTransaction(String salespersonId) throws Exception {
+    public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -78,19 +78,21 @@ public class SaleTransactionList {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
-    public void displayAllSaleTransactions() {
+    public static void displayAllSaleTransactions() {
         for (SaleTransaction transaction : transactions) {
-            System.out.println(transaction.getFormattedSaleTransactionDetails());
+            if(!transaction.isDeleted()){
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+            }
         }
     }
 
-    public void updateSaleTransaction() throws Exception {
+    public static void updateSaleTransaction() throws Exception {
         displayAllSaleTransactions();
         SaleTransaction.updateSaleTransaction();
     }
 
 
-    public void deleteSaleTransaction() throws Exception {
+    public static void deleteSaleTransaction() throws Exception {
         displayAllSaleTransactions();
         SaleTransaction.deleteSaleTransaction();
     }
@@ -103,7 +105,7 @@ public class SaleTransactionList {
         return total;
     }
 
-    public List<SaleTransaction> getSaleTransactionsBetween(LocalDate startDate, LocalDate endDate) {
+    public static List<SaleTransaction> getSaleTransactionsBetween(LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> filteredTransactions = new ArrayList<>();
         for (SaleTransaction transaction : transactions) {
             LocalDate transactionDate = transaction.getTransactionDate();
@@ -115,7 +117,7 @@ public class SaleTransactionList {
         return filteredTransactions;
     }
 
-    public int calculateCarsSold(LocalDate startDate, LocalDate endDate) {
+    public static int calculateCarsSold(LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
         int carCount = 0;
 
@@ -142,7 +144,7 @@ public class SaleTransactionList {
         return carsSold;
     }
 
-    public double[] calculateRevenueAndCount(LocalDate startDate, LocalDate endDate) {
+    public static double[] calculateRevenueAndCount(LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
         int transactionCount = 0;
 
@@ -154,7 +156,7 @@ public class SaleTransactionList {
         return new double[]{totalSalesRevenue, transactionCount};
     }
 
-    public double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
+    public static double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
 
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
@@ -169,17 +171,33 @@ public class SaleTransactionList {
         return totalSalesRevenue;
     }
 
-    public void viewSalesStatistics(LocalDate startDate, LocalDate endDate) {
+    public static void viewSalesStatistics(LocalDate startDate, LocalDate endDate) {
         double[] revenueAndCount = calculateRevenueAndCount(startDate, endDate);
         double totalSalesRevenue = revenueAndCount[0];
         int transactionCount = (int) revenueAndCount[1];
         int carsSold = calculateCarsSold(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Double> salespersonRevenue = new HashMap<>();
 
         for (SaleTransaction transaction : getSaleTransactionsBetween(startDate, endDate)) {
 
             clientRevenue.put(transaction.getClientId(), clientRevenue.getOrDefault(transaction.getClientId(), 0.0) + transaction.getTotalAmount());
+
+            String salespersonId = transaction.getSalespersonId(); // Assuming you have this method
+            salespersonRevenue.put(salespersonId,
+                    salespersonRevenue.getOrDefault(salespersonId, 0.0) + transaction.getTotalAmount());
+        }
+
+        // Find the salesperson with the top revenue
+        String topSalespersonId = null;
+        double maxRevenue = 0.0;
+
+        for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
+            if (entry.getValue() > maxRevenue) {
+                maxRevenue = entry.getValue();
+                topSalespersonId = entry.getKey();
+            }
         }
 
         // Statistics info
@@ -192,6 +210,13 @@ public class SaleTransactionList {
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+
+        // Top salesperson
+        if (topSalespersonId != null) {
+            System.out.printf("Top Salesperson ID: %s, Revenue: $%.2f\n", topSalespersonId, maxRevenue);
+        } else {
+            System.out.println("No sales transactions in the given period.");
         }
     }
 

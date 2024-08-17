@@ -1,11 +1,9 @@
 package user;
 
 
-import services.Service;
 import services.ServiceList;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
@@ -68,21 +66,21 @@ public class Mechanic extends Employee {
 //        }
 //    }
 
-    public double getRevenueInASpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        double totalServiceRevenue = 0.0;
-        // Calculate total service revenue
-        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
-        String finalMechanicId = this.getUserName();
-        List<Service> filteredServices = servicesInRange.stream()
-                .filter(service -> service.getMechanicId().equals(finalMechanicId))
-                .toList();
-
-        totalServiceRevenue = filteredServices.stream()
-                .mapToDouble(Service::getTotalCost)
-                .sum();
-
-        return totalServiceRevenue;
-    }
+//    public double getRevenueInASpecificPeriod(LocalDate startDate, LocalDate endDate) {
+//        double totalServiceRevenue = 0.0;
+//        // Calculate total service revenue
+//        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+//        String finalMechanicId = this.getUserName();
+//        List<Service> filteredServices = servicesInRange.stream()
+//                .filter(service -> service.getMechanicId().equals(finalMechanicId))
+//                .toList();
+//
+//        totalServiceRevenue = filteredServices.stream()
+//                .mapToDouble(Service::getTotalCost)
+//                .sum();
+//
+//        return totalServiceRevenue;
+//    }
 
 
     public void addService() throws Exception {

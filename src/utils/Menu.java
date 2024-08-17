@@ -13,9 +13,10 @@ public class Menu {
         System.out.println("----------------");
         System.out.println("1. User Menu");
         System.out.println("2. Car and Auto Part Menu");
-        System.out.println("3. Transaction Menu");
-        System.out.println("4. Statistics Menu");
-        System.out.println("5. Exit");
+        System.out.println("3. Service Menu");
+        System.out.println("4. Sale Transaction Menu");
+        System.out.println("5. Statistics Menu");
+        System.out.println("6. Exit");
         System.out.println("----------------");
     }
 
@@ -40,7 +41,6 @@ public class Menu {
         while (true) {
             System.out.print("Enter end date (YYYY-MM-DD): ");
             try {
-                scanner.nextLine();
                 endDate = LocalDate.parse(scanner.nextLine());
                 if (!endDate.isBefore(startDate)) {
                     break;
@@ -83,13 +83,18 @@ public class Menu {
                     carAndAutoPartMenu.mainMenu(user);
                     break;
                 case 3:
-                    System.out.println("Transaction Menu");
+                    ServiceMenu serviceMenu = new ServiceMenu();
+                    serviceMenu.mainMenu(user);
                     break;
                 case 4:
+                    SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
+                    transactionMenu.mainMenu(user);
+                    break;
+                case 5:
                     StatisticsMenu statisticsMenu = new StatisticsMenu(user);
                     statisticsMenu.mainMenu(user);
                     break;
-                case 5:
+                case 6:
                     System.out.println("Goodbye!");
                     break;
                 default:

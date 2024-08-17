@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Service implements Serializable {
     private String serviceId;
@@ -93,8 +94,8 @@ public class Service implements Serializable {
 //
 //    }
     public static void addService(Service service) throws Exception {
-        // TO DO: Thêm method để track xem liệu client id có trong database không. Nếu không yêu cầu tạo hoặc không cho thực hiện.
-        // chuyển autoPart status thành SOlD + cho người dùng addCar (default status là  work in)
+        // TODO: Thêm method để track xem liệu client id có trong database không. Nếu không yêu cầu tạo hoặc không cho thực hiện.
+        // TODO: chuyển autoPart status thành SOlD + cho người dùng addCar (default status là  work in)
         ServiceList.services.add(service);
         for(User user: UserMenu.getUserList()){
             if(user.getUserName().equals(service.clientId)){
@@ -152,12 +153,15 @@ public class Service implements Serializable {
                         service.setCarId(newCarId);
                         break;
                     case "5":
-                        System.out.println("Enter new replaced parts (part IDs separated by space): ");
-                        String partIdsInput = scanner.nextLine();
-                        List<String> partIds = List.of(partIdsInput.split("\\s+"));
+                        System.out.println("Enter new replaced parts (part names separated by comma): ");
+                        String partNamesInput = scanner.nextLine();
+                        List<String> partNames = Arrays.stream(partNamesInput.split(","))
+                                .map(String::trim)
+                                .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
+                                .collect(Collectors.toList());
 
                         // Retrieve and update replaced parts
-                        List<autoPart> newReplacedParts = service.retrieveParts(partIds);
+                        List<autoPart> newReplacedParts = service.retrieveParts(partNames);
                         service.setReplacedParts(newReplacedParts);
 
                         double newDiscount = service.calculateDiscount(service.getClientId());
@@ -238,7 +242,7 @@ public class Service implements Serializable {
     double calculateDiscount(String clientId) {
         // find membership of that specific clientId
         User user = UserMenu.getUserList().stream()
-                .filter(u -> u.getUserID().equals(clientId))
+                .filter(u -> u.getUserName().equals(clientId))
                 .findFirst()
                 .orElse(null);
 
@@ -363,6 +367,33 @@ public class Service implements Serializable {
     }
 
 
+//    public String getFormattedServiceDetails() {
+//        StringBuilder sb = new StringBuilder();
+//
+//        sb.append("Service ID: ").append(serviceId).append("\n");
+//        sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ISO_LOCAL_DATE)).append("\n");
+//        sb.append("Client ID: ").append(clientId).append("\n");
+//        sb.append("Mechanic ID: ").append(mechanicId).append("\n");
+//        sb.append("Service Type: ").append(serviceType).append("\n");
+//        sb.append("Service By: ").append(serviceBy).append("\n");
+//        sb.append("Service Cost: ").append(serviceCost).append("\n");
+//
+//        // TODO: need AutoPart Class for this operation
+//        // if (!replacedParts.isEmpty()) {
+//        //     List<String> partNames = new ArrayList<>();
+//        //     for (AutoPart part : replacedParts) {
+//        //         partNames.add(part.getPartName());
+//        //     }
+//        //     sb.append("Replaced Parts: ").append(String.join(", ", partNames)).append("\n");
+//        // }
+//
+//        sb.append("Service Cost: $").append(String.format("%.2f", serviceCost)).append("\n");
+//        if (!additionalNotes.isEmpty()) {
+//            sb.append("Notes: ").append(additionalNotes).append("\n");
+//        }
+//        return sb.toString();
+//    }
+
     public String getFormattedServiceDetails() {
         StringBuilder sb = new StringBuilder();
 
@@ -372,21 +403,23 @@ public class Service implements Serializable {
         sb.append("Mechanic ID: ").append(mechanicId).append("\n");
         sb.append("Service Type: ").append(serviceType).append("\n");
         sb.append("Service By: ").append(serviceBy).append("\n");
-        sb.append("Service Cost: ").append(serviceCost).append("\n");
-
-        // TODO: need AutoPart Class for this operation
-        // if (!replacedParts.isEmpty()) {
-        //     List<String> partNames = new ArrayList<>();
-        //     for (AutoPart part : replacedParts) {
-        //         partNames.add(part.getPartName());
-        //     }
-        //     sb.append("Replaced Parts: ").append(String.join(", ", partNames)).append("\n");
-        // }
-
+        sb.append("Car ID: ").append(carId).append("\n");
         sb.append("Service Cost: $").append(String.format("%.2f", serviceCost)).append("\n");
+
+        if (!replacedParts.isEmpty()) {
+            List<String> partNames = replacedParts.stream()
+                    .map(autoPart::getPartName)  // Assuming getPartName() returns the name of the part
+                    .collect(Collectors.toList());
+            sb.append("Replaced Parts: ").append(String.join(", ", partNames)).append("\n");
+        } else {
+            sb.append("Replaced Parts: None\n");
+        }
+
         if (!additionalNotes.isEmpty()) {
             sb.append("Notes: ").append(additionalNotes).append("\n");
         }
+
         return sb.toString();
     }
+
 }

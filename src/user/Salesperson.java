@@ -1,10 +1,8 @@
 package user;
 
-import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Salesperson extends Employee {
@@ -51,21 +49,21 @@ public class Salesperson extends Employee {
 //    }
 //
     
-    public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-
-        double totalSalesRevenue = 0.0;
-
-        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
-        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
-                .filter(transaction -> transaction.getSalespersonId().equals(this.getUserName()))
-                .toList();
-
-        totalSalesRevenue = filteredTransactions.stream()
-                .mapToDouble(SaleTransaction::getTotalAmount)
-                .sum();
-
-        return totalSalesRevenue;
-    }
+//    public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
+//
+//        double totalSalesRevenue = 0.0;
+//
+//        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
+//        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
+//                .filter(transaction -> transaction.getSalespersonId().equals(this.getUserName()))
+//                .toList();
+//
+//        totalSalesRevenue = filteredTransactions.stream()
+//                .mapToDouble(SaleTransaction::getTotalAmount)
+//                .sum();
+//
+//        return totalSalesRevenue;
+//    }
 
 
     public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {

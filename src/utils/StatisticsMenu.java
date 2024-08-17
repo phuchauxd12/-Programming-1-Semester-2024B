@@ -1,5 +1,7 @@
 package utils;
 
+import services.ServiceList;
+import transaction.SaleTransactionList;
 import user.*;
 
 import java.time.LocalDate;
@@ -46,6 +48,7 @@ public class StatisticsMenu {
                 menuActions.put(1, this::getNumberOfCarsSoldInSpecificPeriod);
                 menuActions.put(2, this::ManagerProcessMechanicRevenue);
                 menuActions.put(3, this::ManagerProcessSalespersonRevenue);
+                menuActions.put(4, this::ManagerProcessTotalRevenue);
                 menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
                 menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
@@ -141,7 +144,7 @@ public class StatisticsMenu {
         if (mechanic != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
-            double result = mechanic.getRevenueInASpecificPeriod(startDate, endDate);
+            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
             System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
         } else {
             System.out.println("Mechanic not found. Please try again.");
@@ -149,6 +152,7 @@ public class StatisticsMenu {
     }
 
     private void ManagerProcessSalespersonRevenue(Scanner s) {
+        // TODO: chỉnh lại function để lưu ID ng dùng thay vì tên (test hiện tại dùng tên cho dễ test)
         UserMenu.displayAllSalespersons();
         String salespersonId = promptForUserId("salesperson");
         Salesperson salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
@@ -157,11 +161,19 @@ public class StatisticsMenu {
             LocalDate endDate = Menu.getEndDate(startDate);
             // Get start date
 
-            double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
+            double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
             System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
         } else {
             System.out.println("Salesperson not found. Please try again.");
         }
+    }
+
+    private void ManagerProcessTotalRevenue(Scanner s) {
+        LocalDate startDate = Menu.getStartDate();
+        LocalDate endDate = Menu.getEndDate(startDate);
+        SaleTransactionList.viewSalesStatistics(startDate, endDate);
+        System.out.println("_______________________________________");
+        ServiceList.viewServiceStatistics(startDate, endDate);
     }
 
     private void getAllCarsSoldInSpecificPeriod(Scanner s) {
@@ -250,7 +262,7 @@ public class StatisticsMenu {
 
     private void SalespersonRevenue(User loggedInUser) {
         Salesperson salesperson = (Salesperson) loggedInUser;
-        double result = salesperson.getRevenueInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(),LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
@@ -258,7 +270,7 @@ public class StatisticsMenu {
         Salesperson salesperson = (Salesperson) loggedInUser;
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
-        double result = salesperson.getRevenueInSpecificPeriod(startDate, endDate);
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
         System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
@@ -286,13 +298,13 @@ public class StatisticsMenu {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = mechanic.getRevenueInASpecificPeriod(startDate, endDate);
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
     private void getRevenueOfServices(User loggedInUser) {
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = mechanic.getRevenueInASpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
