@@ -115,14 +115,13 @@ public class StatisticsMenu {
     }
 
 
-    public void mainMenu(User user) throws Exception {
+    public void mainMenu(Menu mainMenu) throws Exception {
         int option = 0;
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
-        Menu mainMenu = new Menu(user);
         mainMenu.mainMenu();
     }
 

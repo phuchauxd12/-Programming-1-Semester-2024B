@@ -19,17 +19,17 @@ public class CarAndAutoPartMenu {
     private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
 
 
-    public CarAndAutoPartMenu(User user) {
+    public CarAndAutoPartMenu(User user, Menu mainMenu) {
         switch (user) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user);
-            case Client _ -> initializeMenu(MenuOption.CLIENT, user);
+            case Manager _ -> initializeMenu(MenuOption.MANAGER, user, mainMenu);
+            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user, mainMenu);
+            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user, mainMenu);
+            case Client _ -> initializeMenu(MenuOption.CLIENT, user, mainMenu);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption, User user) {
+    private void initializeMenu(MenuOption menuOption, User user, Menu mainMenu) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Add a car");
@@ -43,13 +43,13 @@ public class CarAndAutoPartMenu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> addCar(user));
-                menuActions.put(2, this::displayAllCars);
+                menuActions.put(2, _ -> displayAllCars());
                 menuActions.put(3, this::addAutoPart);
-                menuActions.put(4, this::displayAllParts);
+                menuActions.put(4, _ -> displayAllParts());
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
-                menuActions.put(7, _ -> updateCar(user));
-                menuActions.put(8, _ -> updatePart(user));
+                menuActions.put(7, _ -> updateCar(mainMenu));
+                menuActions.put(8, _ -> updatePart(mainMenu));
                 menuActions.put(10, this::exit);
             }
             case SALESPERSON -> {
@@ -97,9 +97,6 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void displayAllCars(Scanner scanner) {
-        displayAllCars();
-    }
 
     private void addAutoPart(Scanner scanner) {
         autoPart part = autoPart.createPart();
@@ -110,9 +107,6 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void displayAllParts(Scanner scanner) {
-        displayAllParts();
-    }
 
     private void deleteCar(Scanner scanner) {
         try {
@@ -130,17 +124,19 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    private void updateCar(User user) {
+    private void updateCar(Menu mainMenu) {
         try {
-            Car.updateCar(user);
+            Car.updateCar();
+            mainMenu(mainMenu);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void updatePart(User user) {
+    private void updatePart(Menu mainMenu) {
         try {
-            autoPart.updatePart(user);
+            autoPart.updatePart();
+            mainMenu(mainMenu);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -154,14 +150,13 @@ public class CarAndAutoPartMenu {
         System.out.println("---------------------");
     }
 
-    public void mainMenu(User user) throws Exception {
+    public void mainMenu(Menu mainMenu) throws Exception {
         int option = 0;
         do {
             displayMenu();
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         } while (option != 10);
-        Menu mainMenu = new Menu(user);
         mainMenu.mainMenu();
     }
 

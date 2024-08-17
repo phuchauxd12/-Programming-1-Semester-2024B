@@ -2,7 +2,6 @@ package autoPart;
 
 
 import data.autoPart.AutoPartDatabase;
-import user.User;
 import utils.CarAndAutoPartMenu;
 import utils.Menu;
 import utils.Status;
@@ -193,7 +192,7 @@ public class autoPart implements Serializable {
         System.out.println(part);
     }
 
-    public static void updatePart(User user) throws Exception {
+    public static void updatePart() throws Exception {
         CarAndAutoPartMenu.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);
@@ -283,8 +282,6 @@ public class autoPart implements Serializable {
                     break;
                 case 7:
                     AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
-                    CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
-                    menu.mainMenu(user);
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");

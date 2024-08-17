@@ -77,7 +77,7 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
-        Menu mainMenu = new Menu(mechanic);
+        Menu mainMenu = new Menu(manager);
         mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
@@ -85,7 +85,7 @@ public class Main {
 //
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
-        
+
     }
 
 }

@@ -230,7 +230,7 @@ public class Car implements Serializable {
         System.out.println(car);
     }
 
-    public static void updateCar(User user) throws Exception {
+    public static void updateCar() throws Exception {
         CarAndAutoPartMenu.displayAllCars();
         Car car = null;
         Scanner input = new Scanner(System.in);
@@ -323,8 +323,6 @@ public class Car implements Serializable {
                     break;
                 case 8:
                     CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());// Save into database
-                    CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
-                    menu.mainMenu(user);
                     break;
                 default:
                     System.out.println("Invalid option.");

@@ -40,7 +40,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user));
+                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
                 menuActions.put(3, _ -> transactionMenu(user));
                 menuActions.put(4, _ -> serviceMenu(user));
                 menuActions.put(5, _ -> statisticsMenu(user));
@@ -57,7 +57,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user));
+                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
                 menuActions.put(3, _ -> transactionMenu(user));
                 menuActions.put(4, _ -> statisticsMenu(user));
                 menuActions.put(5, _ -> activityLogMenu(user));
@@ -72,7 +72,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user));
+                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
                 menuActions.put(3, _ -> serviceMenu(user));
                 menuActions.put(4, _ -> statisticsMenu(user));
                 menuActions.put(5, _ -> activityLogMenu(user));
@@ -86,7 +86,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user));
+                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
                 menuActions.put(3, _ -> statisticsMenu(user));
                 menuActions.put(4, _ -> activityLogMenu(user));
                 menuActions.put(10, this::exit);
@@ -112,7 +112,7 @@ public class Menu {
     private void statisticsMenu(User user) {
         StatisticsMenu statisticsMenu = new StatisticsMenu(user);
         try {
-            statisticsMenu.mainMenu(user);
+            statisticsMenu.mainMenu(this);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -128,10 +128,10 @@ public class Menu {
         System.out.println("Transaction Menu");
     }
 
-    private void carAndAutoPartMenu(User user) {
-        CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(user);
+    private void carAndAutoPartMenu(User user, Menu mainMenu) {
+        CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(user, mainMenu);
         try {
-            carAndAutoPartMenu.mainMenu(user);
+            carAndAutoPartMenu.mainMenu(mainMenu);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
