@@ -10,12 +10,12 @@ import java.util.List;
 public class Salesperson extends Employee {
     private SaleTransactionList transactionList;
 
-    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) {
+    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status, transactionList, null);
         this.transactionList = transactionList;
     }
 
-    public void addTransaction() {
+    public void addTransaction() throws Exception {
         transactionList.addSaleTransaction(this.getUserName());
     }
 
@@ -50,42 +50,14 @@ public class Salesperson extends Employee {
 //        }
 //    }
 //
-//    // Transactions done by this salesperson in specific date range
-    public void viewTransactionsBySalesperson(LocalDate startDate, LocalDate endDate) {
-        String salespersonId = this.getUserID(); // Get the salesperson ID
-
-        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
-
-        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
-                .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
-                .toList();
-
-        double totalSalesRevenue = filteredTransactions.stream()
-                .mapToDouble(SaleTransaction::getTotalAmount)
-                .sum();
-        int transactionCount = filteredTransactions.size();
-
-        System.out.println("Sales Transactions for Salesperson ID: " + salespersonId);
-        System.out.println("Total Sales Revenue: $" + String.format("%.2f", totalSalesRevenue));
-        System.out.println("Total Number of Transactions: " + transactionCount);
-
-        if (!filteredTransactions.isEmpty()) {
-            System.out.println("\nTransaction Details:");
-            for (SaleTransaction transaction : filteredTransactions) {
-                System.out.println(transaction.getFormattedSaleTransactionDetails());
-                System.out.println("--------------------------------------------------");
-            }
-        }
-    }
-
-
+    
     public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
 
         double totalSalesRevenue = 0.0;
 
         List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
         List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
-                .filter(transaction -> transaction.getSalespersonId().equals(this.userID))
+                .filter(transaction -> transaction.getSalespersonId().equals(this.getUserName()))
                 .toList();
 
         totalSalesRevenue = filteredTransactions.stream()

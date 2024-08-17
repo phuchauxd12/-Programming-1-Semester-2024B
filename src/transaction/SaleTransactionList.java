@@ -14,7 +14,7 @@ public class SaleTransactionList {
         transactions = new ArrayList<>();
     }
 
-    public void addSaleTransaction(String salespersonId) {
+    public void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -62,7 +62,7 @@ public class SaleTransactionList {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
-    public void updateSaleTransaction() {
+    public void updateSaleTransaction() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction ID to update: ");

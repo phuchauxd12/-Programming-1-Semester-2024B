@@ -1,5 +1,8 @@
 package user;
 
+import data.Database;
+import data.user.UserDatabase;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +22,6 @@ public class User implements Serializable {
     protected ROLE userType;
     protected String status;
 
-    protected static long userCounter = 0;
 
     public User() {
 
@@ -32,7 +34,7 @@ public class User implements Serializable {
         ADMIN
     }
 
-    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status) {
+    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status) throws Exception {
         this.userID = generateUserId();
         this.userName = userName;
         this.password = password;
@@ -43,7 +45,6 @@ public class User implements Serializable {
         this.email = email;
         this.userType = userType;
         this.status = status;
-        addUser(this);
     }
 
     private String generateUserId() {
@@ -58,43 +59,57 @@ public class User implements Serializable {
         System.out.println("Viewing profile for user: " + this.userName);
     }
 
-    public void modifyProfile(String field, String newValue) {
-        switch (field) {
-            case "userName":
+    public void modifyProfile(int option, String newValue) throws Exception {
+        switch (option) {
+            case 1:
                 this.setUserName(newValue);
                 break;
-            case "password":
+            case 2:
                 this.setPassword(newValue);
                 break;
-            case "name":
+            case 3:
                 this.setName(newValue);
                 break;
-            case "address":
+            case 4:
                 this.setAddress(newValue);
                 break;
-            case "phoneNum":
+            case 5:
                 this.setPhoneNum(Integer.parseInt(newValue));
                 break;
-            case "email":
+            case 6:
                 this.setEmail(newValue);
                 break;
-            case "status":
-                this.setStatus(newValue);
-                break;
-            case "dob":
+            case 7:
                 this.setDob(LocalDate.parse(newValue));
+
                 break;
 
             default:
                 System.out.println("Invalid field specified.");
-        }
+                return;
+        };
+        UserDatabase.saveUsersData(userList);
+
     }
 
     // Static methods for managing users
-    public static List<User> userList = new ArrayList<>();
+    public static List<User> userList;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(UserDatabase.path)){
+                UserDatabase.createDatabase();
+            };
+            userList = UserDatabase.loadUsers();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    public static void addUser(User user) {
+
+    public static void addUser(User user) throws Exception {
         userList.add(user);
+        UserDatabase.saveUsersData(userList);
         System.out.println("User added: " + user.getUserName());
     }
 
@@ -150,10 +165,10 @@ public class User implements Serializable {
         System.out.println("User deleted with ID: " + userID);
     }
 
-    public static void modifyUser(String userID, String field, String newValue) {
+    public static void modifyUser(String userID, int option, String newValue) throws Exception {
         for (User user : userList) {
             if (user.getUserID().equals(userID)) {
-                user.modifyProfile(field, newValue);
+                user.modifyProfile(option, newValue);
                 System.out.println("User modified with ID: " + userID);
                 return;
             }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Mechanic extends Employee {
     private ServiceList serviceList;
-    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, ServiceList serviceList) {
+    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, ServiceList serviceList) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status, null, serviceList);
         this.serviceList = serviceList;
     }
@@ -72,7 +72,7 @@ public class Mechanic extends Employee {
         double totalServiceRevenue = 0.0;
         // Calculate total service revenue
         List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
-        String finalMechanicId = this.userID;
+        String finalMechanicId = this.getUserName();
         List<Service> filteredServices = servicesInRange.stream()
                 .filter(service -> service.getMechanicId().equals(finalMechanicId))
                 .toList();
@@ -85,7 +85,7 @@ public class Mechanic extends Employee {
     }
 
 
-    public void addService() {
+    public void addService() throws Exception {
         serviceList.addService(this.getUserName());
     }
 
