@@ -1,8 +1,9 @@
+import activityLog.ActivityLog;
+import utils.ActivityLogMenu;
+
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.DatePrompt;
-
 import java.time.LocalDate;
 
 
@@ -70,9 +71,13 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
 
-        DatePrompt dateInput = new DatePrompt();
-        LocalDate date = dateInput.promptForDate();
-        System.out.println("Returned value: " + date);
+        // Add some activity logs
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
+        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
+
+        ActivityLogMenu menu = new ActivityLogMenu();
+        menu.mainMenu();
     }
 
 }
