@@ -1,7 +1,9 @@
 package transaction;
 
 import car.Car;
+import autoPart.autoPart;
 import data.Database;
+import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
@@ -13,6 +15,7 @@ import utils.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SaleTransactionList {
     public static List<SaleTransaction> transactions;
@@ -37,16 +40,23 @@ public class SaleTransactionList {
         System.out.print("Enter client ID: ");
         String clientId = scanner.nextLine();
 
-        System.out.println("Enter item IDs purchased (seperated by space): ");
-        String carIdsInput = scanner.nextLine();
-        List<String> carIds = List.of(carIdsInput.split("\\s+"));
+        System.out.println("Enter new item IDs purchased (separated by comma): ");
+        String itemIdsInput = scanner.nextLine();
+        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                .map(String::trim)
+                .map(item -> item.replaceAll(" +", " "))
+                .collect(Collectors.toList());
 
-        SaleTransaction transaction = new SaleTransaction(transactionDate, clientId, salespersonId, carIds);
+        SaleTransaction transaction = new SaleTransaction(transactionDate, clientId, salespersonId, newItemIds);
         SaleTransaction.addSaleTransaction(transaction);
 
-        for (Car car : transaction.getPurchasedItems()) {
+        for (Car car : transaction.getPurchasedCars()) {
             car.setStatus(Status.SOLD);
             CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
+        }
+        for (autoPart part : transaction.getPurchasedAutoParts()) {
+            part.setStatus(Status.SOLD);
+            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
         }
 
         User user = UserMenu.getUserList().stream()
@@ -97,7 +107,7 @@ public class SaleTransactionList {
         SaleTransaction.deleteSaleTransaction();
     }
 
-    public double calculateTotalSales() {
+    public static double calculateTotalSalesRevenue() {
         double total = 0.0;
         for (SaleTransaction transaction : transactions) {
             total += transaction.getTotalAmount();
@@ -110,7 +120,7 @@ public class SaleTransactionList {
         for (SaleTransaction transaction : transactions) {
             LocalDate transactionDate = transaction.getTransactionDate();
             if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate)) &&
-                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate))) {
+                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) && !transaction.isDeleted()) {
                 filteredTransactions.add(transaction);
             }
         }
@@ -122,10 +132,21 @@ public class SaleTransactionList {
         int carCount = 0;
 
         for (SaleTransaction transaction : transactionsInRange) {
-            carCount += transaction.getPurchasedItems().size();
+            carCount += transaction.getPurchasedCars().size();
         }
 
         return carCount;
+    }
+
+    public static int calculateAutoPartsSold(LocalDate startDate, LocalDate endDate) {
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        int partCount = 0;
+
+        for (SaleTransaction transaction : transactionsInRange) {
+            partCount += transaction.getPurchasedAutoParts().size();
+        }
+
+        return partCount;
     }
 
     public List<Car> listCarsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
@@ -137,11 +158,26 @@ public class SaleTransactionList {
                     (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) &&
                     !transaction.isDeleted()) {
 
-                carsSold.addAll(transaction.getPurchasedItems());
+                carsSold.addAll(transaction.getPurchasedCars());
             }
         }
 
         return carsSold;
+    }
+
+    public List<autoPart> listAutoPartsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+        List<autoPart> autoPartsSold = new ArrayList<>();
+
+        for (SaleTransaction transaction : transactions) {
+            LocalDate transactionDate = transaction.getTransactionDate();
+            if((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
+                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())){
+
+                autoPartsSold.addAll(transaction.getPurchasedAutoParts());
+            }
+        }
+
+        return autoPartsSold;
     }
 
     public static double[] calculateRevenueAndCount(LocalDate startDate, LocalDate endDate) {
@@ -176,35 +212,42 @@ public class SaleTransactionList {
         double totalSalesRevenue = revenueAndCount[0];
         int transactionCount = (int) revenueAndCount[1];
         int carsSold = calculateCarsSold(startDate, endDate);
+        int autoPartsSold = calculateAutoPartsSold(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Integer> salespersonSales = new HashMap<>();
         Map<String, Double> salespersonRevenue = new HashMap<>();
 
         for (SaleTransaction transaction : getSaleTransactionsBetween(startDate, endDate)) {
 
             clientRevenue.put(transaction.getClientId(), clientRevenue.getOrDefault(transaction.getClientId(), 0.0) + transaction.getTotalAmount());
 
-            String salespersonId = transaction.getSalespersonId(); // Assuming you have this method
-            salespersonRevenue.put(salespersonId,
-                    salespersonRevenue.getOrDefault(salespersonId, 0.0) + transaction.getTotalAmount());
+            String salespersonId = transaction.getSalespersonId();
+            salespersonRevenue.put(salespersonId, salespersonRevenue.getOrDefault(salespersonId, 0.0) + transaction.getTotalAmount());
+            salespersonSales.put(salespersonId, salespersonSales.getOrDefault(salespersonId, 0) + 1);
+
         }
 
         // Find the salesperson with the top revenue
-        String topSalespersonId = null;
-        double maxRevenue = 0.0;
+        String topSalespersonByRevenue = salespersonRevenue.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        double maxRevenue = salespersonRevenue.getOrDefault(topSalespersonByRevenue, 0.0);
 
-        for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
-            if (entry.getValue() > maxRevenue) {
-                maxRevenue = entry.getValue();
-                topSalespersonId = entry.getKey();
-            }
-        }
+        // Find top salesperson by sales count
+        String topSalespersonByCount = salespersonSales.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        int maxSalesCount = salespersonSales.getOrDefault(topSalespersonByCount, 0);
 
         // Statistics info
         System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Sales Revenue: $%.2f\n", totalSalesRevenue);
         System.out.printf("Total Number of Transactions: %d\n", transactionCount);
         System.out.printf("Total Number of Cars Sold: %d\n", carsSold);
+        System.out.printf("Total Number of AutoParts Sold: %d\n", autoPartsSold);
 
         // Revenue by client
         System.out.println("Revenue by Client:");
@@ -212,11 +255,14 @@ public class SaleTransactionList {
             System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
         }
 
-        // Top salesperson
-        if (topSalespersonId != null) {
-            System.out.printf("Top Salesperson ID: %s, Revenue: $%.2f\n", topSalespersonId, maxRevenue);
-        } else {
-            System.out.println("No sales transactions in the given period.");
+        // Top salesperson by revenue count
+        if (topSalespersonByRevenue != null) {
+            System.out.printf("Top Salesperson by Revenue: ID: %s, Revenue: $%.2f\n", topSalespersonByRevenue, maxRevenue);
+        }
+
+        // top salesperson by sale count
+        if (topSalespersonByCount != null) {
+            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", topSalespersonByCount, maxSalesCount);
         }
     }
 

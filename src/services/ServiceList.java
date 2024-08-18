@@ -133,7 +133,7 @@ public class ServiceList {
         Service.deleteService();
     }
 
-    public double calculateTotalServiceRevenue() {
+    public static double calculateTotalServiceRevenue() {
         double total = 0.0;
         for (Service service : services) {
             total += service.getTotalCost();
@@ -200,16 +200,36 @@ public class ServiceList {
         int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Integer> serviceUsageCount = new HashMap<>();
+        Map<String, Double> serviceRevenue = new HashMap<>();
         Map<String, Double> mechanicRevenue = new HashMap<>();
 
         for (Service service : getServicesBetween(startDate, endDate)) {
 
             clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
 
+            String serviceType = service.getServiceType();
+            serviceUsageCount.put(serviceType, serviceUsageCount.getOrDefault(serviceType, 0) + 1);
+            serviceRevenue.put(serviceType, serviceRevenue.getOrDefault(serviceType, 0.0) + service.getTotalCost());
+
+
             String mechanicId = service.getMechanicId(); // Assuming you have this method
             mechanicRevenue.put(mechanicId,
                     mechanicRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());
         }
+
+        // Find most used service
+        String mostUsedService = serviceUsageCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        // Find highest revenue service
+        String highestRevenueService = serviceRevenue.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        double highestRevenue = serviceRevenue.getOrDefault(highestRevenueService, 0.0);
 
         // Find the mechanic with the top revenue
         String topMechanicId = null;
@@ -239,6 +259,14 @@ public class ServiceList {
             System.out.printf("Top Mechanic ID: %s, Revenue: $%.2f\n", topMechanicId, maxRevenue);
         } else {
             System.out.println("No service transactions in the given period.");
+        }
+
+        if (mostUsedService != null) {
+            System.out.printf("Most Used Service: %s\n", mostUsedService);
+        }
+
+        if (highestRevenueService != null) {
+            System.out.printf("Highest Revenue Service: %s, Revenue: $%.2f\n", highestRevenueService, highestRevenue);
         }
     }
 

@@ -1,6 +1,8 @@
 package transaction;
 
+import autoPart.autoPart;
 import car.Car;
+import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
@@ -15,6 +17,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class SaleTransaction implements Serializable {
@@ -22,24 +25,24 @@ public class SaleTransaction implements Serializable {
     private LocalDate transactionDate;
     private String clientId;
     private String salespersonId;
-    private List<Car> purchasedItems;
+    private List<Car> purchasedCars;
+    private List<autoPart> purchasedAutoParts;
     private double discount;
     private double totalAmount;
     private boolean isDeleted;
     private String additionalNotes;
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> carIds) throws Exception {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> itemIds) throws Exception {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
         this.clientId = clientId;
         this.salespersonId = salespersonId;
-        this.purchasedItems = retrieveCars(carIds);
-        ;
+        this.purchasedCars = retrieveCars(itemIds);
+        this.purchasedAutoParts = retrieveAutoParts(itemIds);
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedItems, discount);
-        ;
+        this.totalAmount = calculateTotalAmount(purchasedCars, purchasedAutoParts, discount);
         this.additionalNotes = "";
         this.isDeleted = false;
     }
@@ -52,9 +55,18 @@ public class SaleTransaction implements Serializable {
                 client.updateTotalSpending(saleTransaction.totalAmount);
             }
         }
-        // TODO: Còn Method đổi status của Car.
+        for(Car car : saleTransaction.purchasedCars){
+            car.setStatus(Status.SOLD);
+        }
+        for(autoPart autoPart : saleTransaction.purchasedAutoParts){
+            autoPart.setStatus(Status.SOLD);
+        }
+
         UserDatabase.saveUsersData(UserMenu.getUserList());
         SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
+        CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
+        AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
+
         System.out.println("SaleTransaction added successfully!");
     }
 
@@ -83,27 +95,41 @@ public class SaleTransaction implements Serializable {
                         break;
                     case "2":
                         // Set old cars' status to "AVAILABLE"
-                        for (Car car : transaction.getPurchasedItems()) {
+                        for (Car car : transaction.getPurchasedCars()) {
                             car.setStatus(Status.AVAILABLE);
                         }
 
-                        System.out.println("Enter new item IDs purchased (separated by space): ");
-                        String carIdsInput = scanner.nextLine();
-                        List<String> newCarIds = List.of(carIdsInput.split("\\s+"));
+                        for (autoPart autoPart : transaction.getPurchasedAutoParts()) {
+                            autoPart.setStatus(Status.AVAILABLE);
+                        }
 
-                        List<Car> newPurchasedItems = transaction.retrieveCars(newCarIds);
-                        transaction.setPurchasedItems(newPurchasedItems);
+                        System.out.println("Enter new item IDs purchased (separated by comma): ");
+                        String itemIdsInput = scanner.nextLine();
+                        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                                .map(String::trim)
+                                .map(item -> item.replaceAll(" +", " "))
+                                .collect(Collectors.toList());
+
+                        List<Car> newPurchasedCars = transaction.retrieveCars(newItemIds);
+                        List<autoPart> newPurchasedAutoParts = transaction.retrieveAutoParts(newItemIds);
+                        transaction.setPurchasedCars(newPurchasedCars);
+                        transaction.setPurchasedAutoParts(newPurchasedAutoParts);
 
                         // Set new cars' status to "SOLD"
-                        for (Car car : newPurchasedItems) {
+                        for (Car car : newPurchasedCars) {
                             car.setStatus(Status.SOLD);
                             CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
+                        }
+
+                        for (autoPart autoPart : newPurchasedAutoParts) {
+                            autoPart.setStatus(Status.SOLD);
+                            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                         }
 
                         // Update total amount and discount based on new cars
                         double newDiscount = transaction.calculateDiscount(transaction.getClientId());
                         transaction.setDiscount(newDiscount);
-                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedItems, newDiscount);
+                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedCars, newPurchasedAutoParts, newDiscount);
                         transaction.setTotalAmount(newTotalAmount);
 
                         // Update client's total spending
@@ -149,16 +175,29 @@ public class SaleTransaction implements Serializable {
             System.out.println("Transaction not found.");
         }
     }
-    List<Car> retrieveCars(List<String> carIds) throws Exception {
+    private List<Car> retrieveCars(List<String> itemIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         List<Car> allCars = CarDatabase.loadCars();
-        for (String carId : carIds) {
+        for (String itemId : itemIds) {
             Optional<Car> carOpt = allCars.stream()
-                    .filter(car -> car.getCarID().equalsIgnoreCase(carId))
+                    .filter(car -> car.getCarID().equalsIgnoreCase(itemId))
                     .findFirst();
             carOpt.ifPresent(cars::add);
         }
         return cars;
+    }
+
+    private List<autoPart> retrieveAutoParts(List<String> itemIds) throws Exception {
+        List<autoPart> autoParts = new ArrayList<>();
+        List<autoPart> allAutoParts = AutoPartDatabase.loadAutoParts();
+
+        for (String itemId : itemIds) {
+            Optional<autoPart> autoPartOpt = allAutoParts.stream()
+                    .filter(autoPart -> autoPart.getPartID().equalsIgnoreCase(itemId))
+                    .findFirst();
+            autoPartOpt.ifPresent(autoParts::add);
+        }
+        return autoParts;
     }
 
     double calculateDiscount(String clientId) {
@@ -178,10 +217,17 @@ public class SaleTransaction implements Serializable {
         return 0;
     }
 
-    double calculateTotalAmount(List<Car> purchasedItems, double discount) {
+    double calculateTotalAmount(List<Car> cars, List<autoPart> parts, double discount) {
         double total = 0;
-        for (Car car : purchasedItems) {
-            total += car.getPrice();
+        if (!cars.isEmpty()) {
+            for (Car car : cars) {
+                total += car.getPrice();
+            }
+        }
+        if(!parts.isEmpty()) {
+            for (autoPart autoPart : parts) {
+                total += autoPart.getPrice();
+            }
         }
         return total * (1 - discount);
     }
@@ -210,9 +256,11 @@ public class SaleTransaction implements Serializable {
         return salespersonId;
     }
 
-    public List<Car> getPurchasedItems() {
-        return purchasedItems;
+    public List<Car> getPurchasedCars() {
+        return purchasedCars;
     }
+
+    public List<autoPart> getPurchasedAutoParts() {return purchasedAutoParts;}
 
     public double getDiscount() {
         return discount;
@@ -247,9 +295,11 @@ public class SaleTransaction implements Serializable {
         this.salespersonId = salespersonId;
     }
 
-    public void setPurchasedItems(List<Car> purchasedItems) {
-        this.purchasedItems = purchasedItems;
+    public void setPurchasedCars(List<Car> purchasedCars) {
+        this.purchasedCars = purchasedCars;
     }
+
+    public void setPurchasedAutoParts(List<autoPart> purchasedAutoParts) {this.purchasedAutoParts = purchasedAutoParts;}
 
     public void setDiscount(double discount) {
         this.discount = discount;
@@ -272,15 +322,20 @@ public class SaleTransaction implements Serializable {
         sb.append("Salesperson ID: ").append(salespersonId).append("\n");
         sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");
         sb.append("Amount: $").append(String.format("%.2f", totalAmount)).append("\n");
-
-        // TODO: need Car Class for this operation
-        // if (!purchasedItems.isEmpty()) {
-        //     List<String> carIds = new ArrayList<>();
-        //     for (Car car : purchasedItems) {
-        //         carIds.add(car.getCarID());
-        //     }
-        //     sb.append("Purchased Items: ").append(String.join(", ", carIds)).append("\n");
-        // }
+         if (!purchasedCars.isEmpty()) {
+             List<String> cars = new ArrayList<>();
+             for (Car car : purchasedCars) {
+                 cars.add(car.getCarModel());
+             }
+             sb.append("Purchased Items: ").append(String.join(", ", cars)).append("\n");
+         }
+        if (!purchasedAutoParts.isEmpty()) {
+            List<String> carIds = new ArrayList<>();
+            for (autoPart part : purchasedAutoParts) {
+                carIds.add(part.getPartName());
+            }
+            sb.append("Purchased Items: ").append(String.join(", ", carIds)).append("\n");
+        }
 
         if (!additionalNotes.isEmpty()) {
             sb.append("Notes: ").append(additionalNotes).append("\n");

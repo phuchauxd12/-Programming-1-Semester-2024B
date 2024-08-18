@@ -33,13 +33,13 @@ public class Service implements Serializable {
 
 
     // Constructor
-    public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partNames, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
+    public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
         this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
         this.mechanicId = mechanicId;
         this.serviceType = serviceType;
-        this.replacedParts = retrieveParts(partNames);
+        this.replacedParts = retrieveParts(partIds);
         this.serviceBy = serviceBy;
         this.carId = carId;
         this.serviceCost = serviceCost;
@@ -49,53 +49,9 @@ public class Service implements Serializable {
 
     }
 
-//    public static void addService(String mechanicId) throws Exception {
-//        Scanner scanner = new Scanner(System.in);
-//
-//        System.out.print("Enter transaction date (YYYY-MM-DD): ");
-//        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
-//
-//        System.out.print("Enter client ID: ");
-//        String clientId = scanner.nextLine();
-//
-//        System.out.print("Enter serviceType: ");
-//        String serviceType = scanner.nextLine();
-//
-//        System.out.println("Enter name of replaced parts (seperated by space): ");
-//        String partNamesInput = scanner.nextLine();
-//        List<String> partNames = List.of(partNamesInput.split("\\s+"));
-//
-//        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
-//        int serviceByInput = Integer.parseInt(scanner.nextLine());
-//        ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
-//
-//        System.out.print("Enter car ID: ");
-//        String carId = scanner.nextLine();
-//
-//        System.out.print("Enter service cost: ");
-//        double serviceCost = scanner.nextDouble();
-//
-//        Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
-//        Service.serviceList.add(service);
-//        ServiceDatabase.saveService(serviceList);
-//
-//        User user = User.userList.stream()
-//                .filter(u -> u.getUserID().equals(clientId))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (user != null && user instanceof Client) {
-//            Client client = (Client) user;
-//            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
-//        }
-//
-//        System.out.println("Service added successfully:");
-//        System.out.println(service.getFormattedServiceDetails());
-//
-//    }
     public static void addService(Service service) throws Exception {
         // TODO: Thêm method để track xem liệu client id có trong database không. Nếu không yêu cầu tạo hoặc không cho thực hiện.
-        // TODO: chuyển autoPart status thành SOlD + cho người dùng addCar (default status là  work in)
+        // TODO: cho người dùng addCar (default status là  work in)
         ServiceList.services.add(service);
         for(User user: UserMenu.getUserList()){
             if(user.getUserName().equals(service.clientId)){
@@ -103,8 +59,15 @@ public class Service implements Serializable {
                 client.updateTotalSpending(service.serviceCost);
             }
         }
+        if(!service.replacedParts.isEmpty()){
+            for (autoPart part : service.replacedParts) {
+                part.setStatus(Status.SOLD);
+            }
+        }
+
         UserDatabase.saveUsersData(UserMenu.getUserList());
         ServiceDatabase.saveService(ServiceList.services);
+        AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
         System.out.println("Service added successfully!");
     }
 
@@ -153,15 +116,20 @@ public class Service implements Serializable {
                         service.setCarId(newCarId);
                         break;
                     case "5":
-                        System.out.println("Enter new replaced parts (part names separated by comma): ");
-                        String partNamesInput = scanner.nextLine();
-                        List<String> partNames = Arrays.stream(partNamesInput.split(","))
+                        for (autoPart part : service.getReplacedParts()) {
+                            part.setStatus(Status.AVAILABLE);
+                            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
+                        }
+
+                        System.out.println("Enter new replaced parts (part Ids separated by comma): ");
+                        String partIdsInput = scanner.nextLine();
+                        List<String> partIds = Arrays.stream(partIdsInput.split(","))
                                 .map(String::trim)
                                 .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
                                 .collect(Collectors.toList());
 
                         // Retrieve and update replaced parts
-                        List<autoPart> newReplacedParts = service.retrieveParts(partNames);
+                        List<autoPart> newReplacedParts = service.retrieveParts(partIds);
                         service.setReplacedParts(newReplacedParts);
 
                         double newDiscount = service.calculateDiscount(service.getClientId());
@@ -227,12 +195,12 @@ public class Service implements Serializable {
         }
     }
 
-    List<autoPart> retrieveParts(List<String> partNames) throws Exception {
+    List<autoPart> retrieveParts(List<String> partIds) throws Exception {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
 
-        for (String partName :partNames) {
+        for (String partId :partIds) {
             Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
-                    .filter(part -> part.getPartName().equalsIgnoreCase(partName))
+                    .filter(part -> part.getPartID().equalsIgnoreCase(partId))
                     .findFirst();
             partOpt.ifPresent(parts::add);
         }

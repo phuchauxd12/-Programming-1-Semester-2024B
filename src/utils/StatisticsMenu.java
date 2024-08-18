@@ -1,10 +1,15 @@
 package utils;
 
+import car.Car;
+import autoPart.autoPart;
+import services.Service;
 import services.ServiceList;
+import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 import user.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -159,8 +164,6 @@ public class StatisticsMenu {
         if (salesperson != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
-            // Get start date
-
             double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
             System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
         } else {
@@ -171,9 +174,167 @@ public class StatisticsMenu {
     private void ManagerProcessTotalRevenue(Scanner s) {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
-        SaleTransactionList.viewSalesStatistics(startDate, endDate);
-        System.out.println("_______________________________________");
-        ServiceList.viewServiceStatistics(startDate, endDate);
+        double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[0];
+        double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[0];
+        int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[1];
+        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[1];
+
+        double totalRevenue = totalSalesRevenue + totalServiceRevenue;
+        int totalTransactions = totalSalesTransactions + totalServiceTransactions;
+
+        Map<String, Double> employeeRevenue = calculateEmployeeRevenue(startDate, endDate);
+        Map<String, Double> clientRevenue = calculateClientRevenue(startDate, endDate);
+
+        System.out.printf("Combined Statistics from %s to %s:\n", startDate, endDate);
+        System.out.printf("Total Combined Revenue: $%.2f\n", totalRevenue);
+        System.out.printf("Total Combined Transactions: %d\n", totalTransactions);
+
+        System.out.println("Revenue by Employee:");
+        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee ID: %s, Revenue: $%.2f\n", employeeId, revenue));
+
+        System.out.println("Revenue by Client:");
+        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client ID: %s, Revenue: $%.2f\n", clientId, revenue));
+    }
+
+    private static Map<String, Double> calculateEmployeeRevenue(LocalDate startDate, LocalDate endDate) {
+        Map<String, Double> employeeRevenue = new HashMap<>();
+
+        for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
+            String salespersonId = transaction.getSalespersonId(); // Assuming you have this method
+            employeeRevenue.put(salespersonId,
+                    employeeRevenue.getOrDefault(salespersonId, 0.0) + transaction.getTotalAmount());
+        }
+
+        for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
+            String mechanicId = service.getMechanicId();
+            employeeRevenue.put(mechanicId,
+                    employeeRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());
+        }
+        return employeeRevenue;
+    }
+
+    private static Map<String, Double> calculateClientRevenue(LocalDate startDate, LocalDate endDate) {
+        Map<String, Double> clientRevenue = new HashMap<>();
+
+        for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
+            String clientId = transaction.getClientId();
+            clientRevenue.put(clientId,
+                    clientRevenue.getOrDefault(clientId, 0.0) + transaction.getTotalAmount());
+        }
+
+        // Service transactions
+        for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
+            String clientId = service.getClientId();
+            clientRevenue.put(clientId,
+                    clientRevenue.getOrDefault(clientId, 0.0) + service.getTotalCost());
+        }
+
+        return clientRevenue;
+    }
+
+    private static void viewAutoPartStatistics() {
+        int totalPartsInStock = 0;
+        int totalPartsSold = 0;
+        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
+
+        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
+            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
+                totalPartsInStock++;
+                if(part.getCondition() == autoPart.Condition.NEW){
+                    partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                } else if(part.getCondition() == autoPart.Condition.USED){
+                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                } else {
+                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                }
+            }
+            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
+                totalPartsSold++;
+            }
+        }
+
+        System.out.println("Auto Part Statistics:");
+        System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
+        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
+
+        System.out.println("Part Condition Statistics:");
+        partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
+    }
+
+    public static void viewCarStatistics(LocalDate startDate, LocalDate endDate) {
+        double totalCarRevenue = calculateTotalCarSellRevenueAndCount(startDate, endDate)[0];
+        int totalCarsSold = (int) calculateTotalCarSellRevenueAndCount(startDate, endDate)[1];
+        double averageCarPrice = totalCarsSold > 0 ? totalCarRevenue / totalCarsSold : 0;
+        // Thống kê doanh thu từ các dòng xe khác nhau, giúp xác định dòng xe nào bán chạy nhất.
+        Map<String, Double> revenueByCarModel = new HashMap<>();
+        Map<String, Integer> carsSoldByModel = new HashMap<>();
+        // Calculate total number of cars in repair (work-in) and number of services performed
+        Map<String, Integer> carsInRepair = new HashMap<>();
+
+        for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
+            for (Car car : transaction.getPurchasedCars()){
+                String carType = car.getCarModel();
+                revenueByCarModel.put(carType, revenueByCarModel.getOrDefault(carType, 0.0) + transaction.getTotalAmount());
+                carsSoldByModel.put(carType, carsSoldByModel.getOrDefault(carType, 0) + 1);
+            }
+        }
+
+
+        for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
+            String carId = service.getCarId();
+            carsInRepair.put(carId, carsInRepair.getOrDefault(carId, 0) + 1);
+        }
+
+        String topSellingCarModel = null;
+        int maxSoldCount = 0;
+        for (Map.Entry<String, Integer> entry : carsSoldByModel.entrySet()) {
+            if (entry.getValue() > maxSoldCount) {
+                maxSoldCount = entry.getValue();
+                topSellingCarModel = entry.getKey();
+            }
+        }
+
+        String highestRevenueCarModel = null;
+        double maxRevenue = 0.0;
+        for (Map.Entry<String, Double> entry : revenueByCarModel.entrySet()) {
+            if (entry.getValue() > maxRevenue) {
+                maxRevenue = entry.getValue();
+                highestRevenueCarModel = entry.getKey();
+            }
+        }
+
+        System.out.printf("Car Sales Statistics from %s to %s:\n", startDate, endDate);
+        System.out.printf("Total Car Revenue: $%.2f\n", totalCarRevenue);
+        System.out.printf("Total Cars Sold: %d\n", totalCarsSold);
+        System.out.printf("Average Car Price: $%.2f\n", averageCarPrice);
+
+        System.out.println("Number of car sales by Car Model:");
+        for (Map.Entry<String, Integer> entry : carsSoldByModel.entrySet()) {
+            System.out.printf("Car Model: %s, Sales: %d\n", entry.getKey(), entry.getValue());
+        }
+
+        System.out.println("Revenue by Car Model:");
+        for (Map.Entry<String, Double> entry : revenueByCarModel.entrySet()) {
+            System.out.printf("Car Model: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+        System.out.println("Total Cars in Repair:" + carsInRepair.size());
+
+        System.out.println("Cars in Repair:");
+        for (Map.Entry<String, Integer> entry : carsInRepair.entrySet()) {
+            System.out.printf("Car ID: %s, Services Count: %d\n", entry.getKey(), entry.getValue());
+        }
+    }
+
+    private static double[] calculateTotalCarSellRevenueAndCount(LocalDate startDate, LocalDate endDate) {
+        double totalRevenue = 0.0;
+        int totalCarsSold = 0;
+        for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
+            for (Car car : transaction.getPurchasedCars()){
+                totalRevenue += car.getPrice();
+                totalCarsSold++;
+            }
+        }
+        return new double[]{totalRevenue, totalCarsSold};
     }
 
     private void getAllCarsSoldInSpecificPeriod(Scanner s) {
