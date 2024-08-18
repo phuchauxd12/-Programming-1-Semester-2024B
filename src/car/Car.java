@@ -25,7 +25,7 @@ public class Car implements Serializable {
     private String addNotes;
     private LocalDate soldDate = null;
     private boolean isDeleted = false;
-    private static ArrayList<Service> serviceHistory;
+    private ArrayList<Service> serviceHistory;
 
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
