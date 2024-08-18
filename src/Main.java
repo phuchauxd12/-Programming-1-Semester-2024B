@@ -1,9 +1,10 @@
+import activityLog.ActivityLog;
+import utils.ActivityLogMenu;
+import user.Client;
 import user.Manager;
 import user.Mechanic;
 import user.Membership;
 import user.User;
-import utils.Menu;
-
 import java.time.LocalDate;
 
 
@@ -77,6 +78,8 @@ public class Main {
 //        var listUser = UserDatabase.loadUsers();
 //        System.out.println(listUser
 //        LoginMenu.displayLoginMenu();
+//        Menu.mainMenu(client);
+
         Menu mainMenu = new Menu(mechanic);
         mainMenu.mainMenu();
 
@@ -86,6 +89,13 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
 
+        // Add some activity logs
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
+        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
+
+        ActivityLogMenu menu = new ActivityLogMenu();
+        menu.mainMenu();
     }
 
 }
