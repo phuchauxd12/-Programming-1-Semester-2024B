@@ -1,12 +1,11 @@
 import activityLog.ActivityLog;
-import utils.ActivityLogMenu;
-import user.Client;
 import user.Manager;
 import user.Mechanic;
 import user.Membership;
 import user.User;
-import java.time.LocalDate;
+import utils.ActivityLogMenu;
 
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -80,15 +79,14 @@ public class Main {
 //        LoginMenu.displayLoginMenu();
 //        Menu.mainMenu(client);
 
-        Menu mainMenu = new Menu(mechanic);
-        mainMenu.mainMenu();
+//        Menu mainMenu = new Menu(mechanic);
+//        mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
 //
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
-
         // Add some activity logs
         ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
         ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");

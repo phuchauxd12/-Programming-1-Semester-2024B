@@ -1,19 +1,23 @@
 package activityLog;
 
+import data.Database;
+import data.activityLog.ActivityLogDatabase;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ActivityLog {
+public class ActivityLog implements Serializable {
     private String activityId;
     private String userId;
     private LocalDate date;
     private String activityName;
 
-    public ActivityLog(String activityId, String userId, LocalDate date, String activityName) {
-        this.activityId = activityId;
+    public ActivityLog(String userId, LocalDate date, String activityName) {
+        this.activityId = generateActivityId();
         this.userId = userId;
         this.date = date;
         this.activityName = activityName;
@@ -35,12 +39,23 @@ public class ActivityLog {
         return activityName;
     }
 
-    private static List<ActivityLog> activityLogs = new ArrayList<>();
+    private static List<ActivityLog> activityLogs;
 
-    public static void addActivityLog(String userId, LocalDate date, String activityName) {
-        String activityId = generateActivityId();
-        ActivityLog newLog = new ActivityLog(activityId, userId, date, activityName);
+    static {
+        try {
+            if(!Database.isDatabaseExist(ActivityLogDatabase.path)){
+                ActivityLogDatabase.createDatabase();
+            };
+            activityLogs = ActivityLogDatabase.loadActivityLogs();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void addActivityLog(String userId, LocalDate date, String activityName) throws Exception {
+        ActivityLog newLog = new ActivityLog( userId, date, activityName);
         activityLogs.add(newLog);
+        ActivityLogDatabase.saveActivityLogData(activityLogs);
     }
 
     public static ActivityLog getActivityLog(String activityId) {
@@ -82,6 +97,6 @@ public class ActivityLog {
     }
 
     private static String generateActivityId() {
-        return UUID.randomUUID().toString();
+        return "a-" + UUID.randomUUID().toString();
     }
 }
