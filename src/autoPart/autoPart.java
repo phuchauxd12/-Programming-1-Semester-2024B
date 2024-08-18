@@ -1,6 +1,7 @@
 package autoPart;
 
 
+import data.autoPart.AutoPartDatabase;
 import user.User;
 import utils.CarAndAutoPartMenu;
 import utils.Menu;
@@ -9,6 +10,7 @@ import utils.Status;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class autoPart implements Serializable {
     private Status status = Status.AVAILABLE;
     private LocalDateTime soldDate = null;
     private boolean isDeleted = false;
+
 
     public enum Condition {
         NEW,
@@ -166,12 +169,15 @@ public class autoPart implements Serializable {
         return part;
     }
 
-    public static void addPartToList(autoPart part) {
-        CarAndAutoPartMenu.getAutoPartsList().add(part);
+    public static void addPartToList(autoPart part) throws Exception {
+        List<autoPart> autoPartList = AutoPartDatabase.loadAutoParts();
+        autoPartList.add(part);
+        AutoPartDatabase.saveAutoPartData(autoPartList);
         System.out.println("Part successfully added to list!");
     }
 
-    public static void deletePart() {
+
+    public static void deletePart() throws Exception {
         CarAndAutoPartMenu.displayAllParts();
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
@@ -182,11 +188,12 @@ public class autoPart implements Serializable {
             return;
         }
         part.setDeleted(true);
+        AutoPartDatabase.saveAutoPartData(AutoPartDatabase.loadAutoParts());
         System.out.println("Part deleted successfully.");
         System.out.println(part);
     }
 
-    public static void updatePart(User user) {
+    public static void updatePart(User user) throws Exception {
         CarAndAutoPartMenu.displayAllParts();
         autoPart part = null;
         Scanner input = new Scanner(System.in);
@@ -275,6 +282,7 @@ public class autoPart implements Serializable {
                     System.out.println(part);
                     break;
                 case 7:
+                    AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                     CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
                     menu.mainMenu(user);
                     break;

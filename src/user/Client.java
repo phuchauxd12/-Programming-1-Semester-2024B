@@ -14,7 +14,7 @@ public class Client extends User {
     private SaleTransactionList saleTransactionList;
     private ServiceList serviceList;
 
-    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, Membership membership) {
+    public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, Membership membership) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType, status);
         this.membership = membership;
         this.totalSpending = 0.0;
@@ -57,32 +57,34 @@ public class Client extends User {
         updateMembership();
     }
 
-    public void viewTransactionsHistory() {
-        List<SaleTransaction> transactions = saleTransactionList.getAllSaleTransactions();
-        System.out.println("Transaction history for client ID " + userID + ":");
+    public void viewTransactionsHistory(LocalDate startDate, LocalDate endDate) {
+        List<SaleTransaction> transactions = saleTransactionList.getSaleTransactionsBetween(startDate, endDate);
+        System.out.println("Transaction history for client ID " + getUserName() + ":");
         boolean hasTransactions = false;
         for (SaleTransaction transaction : transactions) {
-            if (transaction.getClientId().equals(userID)) {
+            if (transaction.getClientId().equals(getUserName())) {
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
                 hasTransactions = true;
             }
         }
         if (!hasTransactions) {
-            System.out.println("No transactions found for client ID " + userID);
+            System.out.println("No transactions found for client ID " + getUserName());
         }
     }
 
-    public void viewTransactionsHistoryInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        List<SaleTransaction> transactionsInRange = saleTransactionList.getSaleTransactionsBetween(startDate, endDate);
-        for (SaleTransaction transaction : transactionsInRange) {
-            System.out.println(transaction.getFormattedSaleTransactionDetails());
-        }
-    }
 
     public void viewServiceHistoryInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+        System.out.println("Service history for client ID " + getUserName() + ":");
+        boolean hasServices = false;
         for (Service service : servicesInRange) {
-            System.out.println(service.getFormattedServiceDetails());
+            if (service.getClientId().equals(getUserName())) {
+                System.out.println(service.getFormattedServiceDetails());
+                hasServices = true;
+            }
+        }
+        if (!hasServices) {
+            System.out.println("No services found for client ID " + getUserName());
         }
     }
 

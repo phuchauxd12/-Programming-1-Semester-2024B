@@ -2,13 +2,13 @@ package utils;
 
 import autoPart.autoPart;
 import car.Car;
+import data.Database;
+import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
 import user.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static utils.Menu.getOption;
@@ -21,15 +21,15 @@ public class CarAndAutoPartMenu {
 
     public CarAndAutoPartMenu(User user) {
         switch (user) {
-            case Manager manager -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson salesperson -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic mechanic -> initializeMenu(MenuOption.MECHANIC);
-            case Client client -> initializeMenu(MenuOption.CLIENT);
+            case Manager _ -> initializeMenu(MenuOption.MANAGER, user);
+            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user);
+            case Client _ -> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption) {
+    private void initializeMenu(MenuOption menuOption, User user) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Add a car");
@@ -42,14 +42,14 @@ public class CarAndAutoPartMenu {
                 menuItems.put(8, "Update an auto part");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, this::addCar);
+                menuActions.put(1, _ -> addCar(user));
                 menuActions.put(2, this::displayAllCars);
                 menuActions.put(3, this::addAutoPart);
                 menuActions.put(4, this::displayAllParts);
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
-                menuActions.put(7, this::updateCar);
-                menuActions.put(8, this::updatePart);
+                menuActions.put(7, _ -> updateCar(user));
+                menuActions.put(8, _ -> updatePart(user));
                 menuActions.put(10, this::exit);
             }
             case SALESPERSON -> {
@@ -59,8 +59,8 @@ public class CarAndAutoPartMenu {
                 menuItems.put(4, "Search for an auto part");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, s -> displayAllCarsForSale());
-                menuActions.put(3, s -> displayAllPartsForSale());
+                menuActions.put(1, _ -> displayAllCarsForSale());
+                menuActions.put(3, _ -> displayAllPartsForSale());
                 menuActions.put(10, this::exit);
             }
             case MECHANIC -> {
@@ -69,9 +69,9 @@ public class CarAndAutoPartMenu {
                 menuItems.put(3, "Display all auto parts"); // that are available
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, s -> displayAllCars());
-                menuActions.put(2, this::addCar);
-                menuActions.put(3, s -> displayAllPartsForSale());
+                menuActions.put(1, _ -> displayAllCars());
+                menuActions.put(2, _ -> addCar(user));
+                menuActions.put(3, _ -> displayAllPartsForSale());
                 menuActions.put(10, this::exit);
             }
             case CLIENT -> {
@@ -79,8 +79,8 @@ public class CarAndAutoPartMenu {
                 menuItems.put(2, "Display all auto parts"); // Display auto parts that are for sale
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, s -> displayAllCarsForSale());
-                menuActions.put(2, s -> displayAllPartsForSale());
+                menuActions.put(1, _ -> displayAllCarsForSale());
+                menuActions.put(2, _ -> displayAllPartsForSale());
                 menuActions.put(10, this::exit);
             }
         }
@@ -88,11 +88,13 @@ public class CarAndAutoPartMenu {
 
 
     // MANAGER Functions
-    private void addCar(Scanner scanner) {
-//        // TODO: get current user
-//        User user;
-//        Car car = Car.createCar();
-//        carsList.add(car);
+    private void addCar(User user) {
+        Car car = Car.createCar(user);
+        try {
+            Car.addCarToList(car);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void displayAllCars(Scanner scanner) {
@@ -101,7 +103,11 @@ public class CarAndAutoPartMenu {
 
     private void addAutoPart(Scanner scanner) {
         autoPart part = autoPart.createPart();
-        autoPartsList.add(part);
+        try {
+            autoPart.addPartToList(part);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void displayAllParts(Scanner scanner) {
@@ -109,57 +115,35 @@ public class CarAndAutoPartMenu {
     }
 
     private void deleteCar(Scanner scanner) {
-        displayAllCars();
-        System.out.println("Enter the car ID to delete:");
-        String carID = scanner.next();
-        Car car = findCarByID(carID);
-        if (car != null) {
-            car.setDeleted(true);
-            System.out.println("Car with ID " + carID + " has been deleted.");
-        } else {
-            System.out.println("Car with ID " + carID + " not found.");
+        try {
+            Car.deleteCar();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void deletePart(Scanner scanner) {
-        displayAllParts();
-        System.out.println("Enter the part ID to delete:");
-        String partID = scanner.next();
-        autoPart part = findAutoPartByID(partID);
-        if (part != null) {
-            part.setDeleted(true);
-            System.out.println("Part with ID " + partID + " has been deleted.");
-        } else {
-            System.out.println("Part with ID " + partID + " not found.");
+        try {
+            autoPart.deletePart();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private void updateCar(Scanner scanner) {
-        // TODO: get current user
-//        displayAllCars();
-//        System.out.println("Enter the car ID to update:");
-//        String carID = scanner.next();
-//        Car car = findCarByID(carID);
-//        if (car != null) {
-//            car.updateCar(user);
-//            System.out.println("Car with ID " + carID + " has been updated.");
-//        } else {
-//            System.out.println("Car with ID " + carID + " not found.");
-//        }
+    private void updateCar(User user) {
+        try {
+            Car.updateCar(user);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    private void updatePart(Scanner scanner) {
-//        // TODO: get current user
-//        displayAllParts();
-//        System.out.println("Enter the part ID to update:");
-//        String partID = scanner.next();
-//        autoPart part = findAutoPartByID(partID);
-//        if (part != null) {
-//            part.updatePart(user);
-//            System.out.println("Part with ID " + partID + " has been updated.");
-//        } else {
-//            System.out.println("Part with ID " + partID + " not found.");
-//        }
+    private void updatePart(User user) {
+        try {
+            autoPart.updatePart(user);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     // Menu functions
@@ -170,25 +154,49 @@ public class CarAndAutoPartMenu {
         System.out.println("---------------------");
     }
 
-    public void mainMenu(User user) {
+    public void mainMenu(User user) throws Exception {
         int option = 0;
         do {
             displayMenu();
             option = getOption(option, input);
-            menuActions.getOrDefault(option, s -> System.out.println("Invalid option. Please try again.")).accept(input);
+            menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         } while (option != 10);
-        Menu.mainMenu(user);
+        Menu mainMenu = new Menu(user);
+        mainMenu.mainMenu();
     }
 
     // Static helper functions
-    private static ArrayList<Car> carsList = new ArrayList<>();
-    private static ArrayList<autoPart> autoPartsList = new ArrayList<>();
+    private static List<Car> carsList;
 
-    public static ArrayList<Car> getCarsList() {
+    static {
+        try {
+            if (!Database.isDatabaseExist(CarDatabase.path)) {
+                CarDatabase.createDatabase();
+            }
+            carsList = CarDatabase.loadCars();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static List<autoPart> autoPartsList;
+
+    static {
+        try {
+            if (!Database.isDatabaseExist(AutoPartDatabase.path)) {
+                AutoPartDatabase.createDatabase();
+            }
+            autoPartsList = AutoPartDatabase.loadAutoParts();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Car> getCarsList() {
         return carsList;
     }
 
-    public static ArrayList<autoPart> getAutoPartsList() {
+    public static List<autoPart> getAutoPartsList() {
         return autoPartsList;
     }
 
@@ -220,7 +228,7 @@ public class CarAndAutoPartMenu {
 
     public static void displayAllParts() {
         System.out.println("Displaying all Auto Parts:");
-        for (autoPart part : getAutoPartsList()) {
+        for (autoPart part : autoPartsList) {
             System.out.println(part);
         }
         System.out.println("----------------");
@@ -248,7 +256,7 @@ public class CarAndAutoPartMenu {
 
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
-        for (Car car : getCarsList()) {
+        for (Car car : carsList) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 carSold += 1;
             }
@@ -257,7 +265,7 @@ public class CarAndAutoPartMenu {
     }
 
     public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        for (Car car : getCarsList()) {
+        for (Car car : carsList) {
             if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 System.out.println(car);
             }
