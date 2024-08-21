@@ -76,7 +76,7 @@ public class Salesperson extends Employee {
         String salespersonId = this.getUserName();
         int carsSold = transactionList.getSaleTransactionsBetween(startDate, endDate).stream()
                 .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
-                .mapToInt(transaction -> transaction.getPurchasedItems().size())
+                .mapToInt(transaction -> transaction.getPurchasedCars().size())
                 .sum();
 
         System.out.printf("Total Number of Cars Sold by Salesperson ID %s from %s to %s: %d\n",

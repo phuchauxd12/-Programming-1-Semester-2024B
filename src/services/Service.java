@@ -1,12 +1,11 @@
 package services;
 
 import autoPart.autoPart;
+import car.Car;
 import data.autoPart.AutoPartDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import user.Client;
-import user.Membership;
-import user.User;
+import user.*;
 import utils.CarAndAutoPartMenu;
 import utils.Status;
 import utils.UserMenu;
@@ -50,18 +49,68 @@ public class Service implements Serializable {
     }
 
     public static void addService(Service service) throws Exception {
-        // TODO: Thêm method để track xem liệu client id có trong database không. Nếu không yêu cầu tạo hoặc không cho thực hiện.
-        // TODO: cho người dùng addCar (default status là  work in)
-        ServiceList.services.add(service);
-        for(User user: UserMenu.getUserList()){
-            if(user.getUserName().equals(service.clientId)){
+
+        boolean clientExists = false;
+        for (User user : UserMenu.getUserList()) {
+            if (user.getUserName().equals(service.clientId) && user instanceof Client) {
+                clientExists = true;
                 Client client = (Client) user;
                 client.updateTotalSpending(service.serviceCost);
+                break;
             }
         }
-        if(!service.replacedParts.isEmpty()){
-            for (autoPart part : service.replacedParts) {
-                part.setStatus(Status.SOLD);
+
+        if (!clientExists) {
+            throw new Exception("Client ID not found in the database. Please create a new client before adding the service.");
+        }
+
+        boolean carExists = false;
+        for (Car car : CarAndAutoPartMenu.getCarsList()) {
+            if (car.getCarID().equals(service.getCarId())) {
+                carExists = true;
+                break;
+            }
+        }
+
+        if (!carExists) {
+            System.out.println("No car exist in the database. Please create new car:");
+            Scanner input = new Scanner(System.in);
+            Status status = Status.WALK_IN;
+            System.out.println("Please input the car's make:");
+            String carMake = input.next();
+            System.out.println("Please input the car's model:");
+            String carModel = input.next();
+            int carYear = Car.getNewCarYear(input);
+            System.out.println("Please input the car's color:");
+            String color = input.next().toUpperCase();
+            double mileage;
+            while (true) {
+                try {
+                    System.out.println("Please input the car's mileage:");
+                    mileage = input.nextDouble();
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please input a valid mileage");
+                    input.nextLine();
+                }
+            }
+            double price = 0;
+            input.nextLine();
+            System.out.println("Please input any additional notes:");
+            String addNotes = input.nextLine();
+            Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
+            try{
+                Car.addCarToList(newCar);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("Car created successfully!");
+        } else {
+            ServiceList.services.add(service);
+            if (!service.replacedParts.isEmpty()) {
+                for (autoPart part : service.replacedParts) {
+                    part.setStatus(Status.SOLD);
+                }
             }
         }
 
@@ -128,7 +177,6 @@ public class Service implements Serializable {
                                 .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
                                 .collect(Collectors.toList());
 
-                        // Retrieve and update replaced parts
                         List<autoPart> newReplacedParts = service.retrieveParts(partIds);
                         service.setReplacedParts(newReplacedParts);
 
@@ -140,8 +188,7 @@ public class Service implements Serializable {
                             part.setStatus(Status.SOLD);
                             AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                         }
-
-                        // Update client's total spending
+                        
                         Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(service.getClientId()))
                                 .findFirst()
@@ -208,17 +255,16 @@ public class Service implements Serializable {
     }
 
     double calculateDiscount(String clientId) {
-        // find membership of that specific clientId
         User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserName().equals(clientId))
                 .findFirst()
                 .orElse(null);
 
         if (user != null && user instanceof Client) {
-            Client client = (Client) user;  // Cast to Client
-            Membership membership = client.getMembership();  // Access getMembership
+            Client client = (Client) user;
+            Membership membership = client.getMembership();
             if (membership != null) {
-                return membership.getDiscount();  // Assuming discount rate is a fraction (e.g., 0.15 for 15%)
+                return membership.getDiscount();
             }
         }
         return 0;
