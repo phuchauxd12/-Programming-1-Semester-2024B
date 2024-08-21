@@ -9,27 +9,34 @@ import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.Consumer;
 
 public class Menu {
     private static final Scanner input = new Scanner(System.in);
     private final Map<Integer, String> menuItems = new LinkedHashMap<>();
-    private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
+    private final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private final User currentUser = UserSession.getCurrentUser();
-    private final CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(currentUser, this);
+    private final User currentUser;
+    private final CarAndAutoPartMenu carAndAutoPartMenu;
+    private final StatisticsMenu statisticsMenu;
+    private final SaleTransactionMenu saleTransactionMenu;
+    private final ServiceMenu serviceMenu;
 
-    public Menu(User user) {
-        switch (user) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user);
-            case Client _ -> initializeMenu(MenuOption.CLIENT, user);
+    public Menu() {
+        this.currentUser = UserSession.getCurrentUser();
+        carAndAutoPartMenu = new CarAndAutoPartMenu(currentUser);
+        statisticsMenu = new StatisticsMenu(currentUser);
+        saleTransactionMenu = new SaleTransactionMenu();
+        serviceMenu = new ServiceMenu();
+        switch (currentUser) {
+            case Manager _ -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
+            case Client _ -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption, User user) {
+    private void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Manage Profile Menu");
@@ -39,16 +46,16 @@ public class Menu {
                 menuItems.put(5, "Statistics Menu");
                 menuItems.put(6, "Manage Users Menu");
                 menuItems.put(7, "Activity Log Menu");
-                menuItems.put(10, "Exit");
+                menuItems.put(0, "Exit");
 
-                menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(this));
-                menuActions.put(3, _ -> transactionMenu(user));
-                menuActions.put(4, _ -> serviceMenu(user));
-                menuActions.put(5, _ -> statisticsMenu(user));
-                menuActions.put(6, _ -> manageUsersMenu(user));
-                menuActions.put(7, _ -> activityLogMenu(user));
-                menuActions.put(10, this::exit);
+                menuActions.put(1, this::manageProfileMenu);
+                menuActions.put(2, this::carAndAutoPartMenu);
+                menuActions.put(3, this::transactionMenu);
+                menuActions.put(4, this::serviceMenu);
+                menuActions.put(5, this::statisticsMenu);
+                menuActions.put(6, this::manageUsersMenu);
+                menuActions.put(7, this::activityLogMenu);
+                menuActions.put(0, this::exit);
             }
             case SALESPERSON -> {
                 menuItems.put(1, "Manage Profile Menu");
@@ -58,11 +65,11 @@ public class Menu {
                 menuItems.put(5, "Activity Log Menu");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(this));
-                menuActions.put(3, _ -> transactionMenu(user));
-                menuActions.put(4, _ -> statisticsMenu(user));
-                menuActions.put(5, _ -> activityLogMenu(user));
+                menuActions.put(1, this::manageProfileMenu);
+                menuActions.put(2, this::carAndAutoPartMenu);
+                menuActions.put(3, this::transactionMenu);
+                menuActions.put(4, this::statisticsMenu);
+                menuActions.put(5, this::activityLogMenu);
                 menuActions.put(10, this::exit);
             }
             case MECHANIC -> {
@@ -73,11 +80,11 @@ public class Menu {
                 menuItems.put(5, "Activity Log Menu");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(this));
-                menuActions.put(3, _ -> serviceMenu(user));
-                menuActions.put(4, _ -> statisticsMenu(user));
-                menuActions.put(5, _ -> activityLogMenu(user));
+                menuActions.put(1, this::manageProfileMenu);
+                menuActions.put(2, this::carAndAutoPartMenu);
+                menuActions.put(3, this::serviceMenu);
+                menuActions.put(4, this::statisticsMenu);
+                menuActions.put(5, this::activityLogMenu);
                 menuActions.put(10, this::exit);
             }
             case CLIENT -> {
@@ -87,10 +94,10 @@ public class Menu {
                 menuItems.put(4, "Activity Log Menu");
                 menuItems.put(10, "Exit");
 
-                menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(this));
-                menuActions.put(3, _ -> statisticsMenu(user));
-                menuActions.put(4, _ -> activityLogMenu(user));
+                menuActions.put(1, this::manageProfileMenu);
+                menuActions.put(2, this::carAndAutoPartMenu);
+                menuActions.put(3, this::statisticsMenu);
+                menuActions.put(4, this::activityLogMenu);
                 menuActions.put(10, this::exit);
             }
         }
@@ -98,21 +105,24 @@ public class Menu {
 
 
     // Menu actions
-    private void activityLogMenu(User user) {
+    private void activityLogMenu() {
         System.out.println("Activity Log Menu");
         // Get the activity log menu
     }
 
-    private void manageUsersMenu(User user) {
-        try {
-            UserMenu.mainMenu();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+    private void manageUsersMenu() {
+        if (currentUser instanceof Manager) {
+            try {
+                UserMenu.mainMenu(this);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("You do not have permission to access this menu.");
         }
     }
 
-    private void statisticsMenu(User user) {
-        StatisticsMenu statisticsMenu = new StatisticsMenu(user);
+    private void statisticsMenu() {
         try {
             statisticsMenu.mainMenu(this);
         } catch (Exception e) {
@@ -120,30 +130,39 @@ public class Menu {
         }
     }
 
-    private void serviceMenu(User user) {
-        // Get the service menu
-        System.out.println("Service Menu");
-    }
-
-    private void transactionMenu(User user) {
-        // Get the transaction menu
-        System.out.println("Transaction Menu");
-    }
-
-    private void carAndAutoPartMenu(Menu mainMenu) {
+    private void serviceMenu() {
         try {
-            carAndAutoPartMenu.mainMenu(mainMenu);
+            serviceMenu.mainMenu(this);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void manageProfileMenu(User user) {
-        // Get the user's profile menu
-        System.out.println("Manage Profile Menu");
+    private void transactionMenu() {
+        try {
+            saleTransactionMenu.mainMenu(this);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void exit(Scanner input) {
+    private void carAndAutoPartMenu() {
+        try {
+            carAndAutoPartMenu.mainMenu(this);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void manageProfileMenu() {
+        try {
+            UserProfileMenu.mainMenu(this);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void exit() {
         System.out.println("Exiting the program...");
     }
 
@@ -155,13 +174,18 @@ public class Menu {
         System.out.println("---------------------");
     }
 
-    public void mainMenu() throws Exception {
-        int option = 0;
+    public void mainMenu() {
+        int option = 100;
         do {
             displayMenu();
             option = getOption(option, input);
-            menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
-        } while (option != 10);
+            Runnable action = menuActions.get(option);
+            if (action != null) {
+                action.run();
+            } else {
+                System.out.println("Invalid option. Please try again.");
+            }
+        } while (option != 0);
         System.exit(0);
     }
 
@@ -236,7 +260,6 @@ public class Menu {
             }
         }
         return option;
-
     }
 }
 

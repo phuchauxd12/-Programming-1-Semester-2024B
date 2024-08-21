@@ -6,7 +6,6 @@ import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
 import utils.Menu;
-import utils.UserSession;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -108,7 +107,7 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu mainMenu = new Menu(UserSession.getCurrentUser());
+        Menu mainMenu = new Menu();
         mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();

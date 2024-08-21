@@ -41,7 +41,7 @@ public class ServiceMenu {
         }
     }
 
-    public void mainMenu(User user, Menu mainMenu) throws Exception {
+    public void mainMenu(Menu mainMenu) throws Exception {
         Scanner serviceMenuInput = new Scanner(System.in);
         int option = 0;
         while (option != 7) {
