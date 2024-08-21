@@ -20,10 +20,10 @@ public class StatisticsMenu {
 
     public StatisticsMenu(User user) {
         switch (user) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user);
-            case Client _ -> initializeMenu(MenuOption.CLIENT, user);
+            case Manager c -> initializeMenu(MenuOption.MANAGER, user);
+            case Salesperson  c-> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic  c-> initializeMenu(MenuOption.MECHANIC, user);
+            case Client  c-> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -49,8 +49,8 @@ public class StatisticsMenu {
                 menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
                 menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
-                menuActions.put(8, _ -> getAllSalespersonSales(user));
-                menuActions.put(9, _ -> getAllMechanicServices(user));
+                menuActions.put(8, c -> getAllSalespersonSales(user));
+                menuActions.put(9, c -> getAllMechanicServices(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -64,12 +64,12 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add salesperson-specific actions here
-                menuActions.put(1, _ -> getAllSalespersonSales(user));
-                menuActions.put(2, _ -> getAllTransactionsByMeInSpecificPeriod(user));
-                menuActions.put(3, _ -> getAllCarsSoldBySalesperson(user));
-                menuActions.put(4, _ -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
-                menuActions.put(5, _ -> SalespersonRevenue(user));
-                menuActions.put(6, _ -> SalespersonRevenueInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllSalespersonSales(user));
+                menuActions.put(2, c-> getAllTransactionsByMeInSpecificPeriod(user));
+                menuActions.put(3, c -> getAllCarsSoldBySalesperson(user));
+                menuActions.put(4, c -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
+                menuActions.put(5, c -> SalespersonRevenue(user));
+                menuActions.put(6, c -> SalespersonRevenueInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -81,10 +81,10 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add mechanic-specific actions here
-                menuActions.put(1, _ -> getAllMechanicServices(user));
-                menuActions.put(2, _ -> getAllMechanicServicesInSpecificPeriod(user));
-                menuActions.put(3, _ -> getRevenueOfServices(user));
-                menuActions.put(4, _ -> getRevenueOfServicesInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllMechanicServices(user));
+                menuActions.put(2, c -> getAllMechanicServicesInSpecificPeriod(user));
+                menuActions.put(3, c -> getRevenueOfServices(user));
+                menuActions.put(4, c -> getRevenueOfServicesInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -96,10 +96,10 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add client-specific actions here
-                menuActions.put(1, _ -> getAllClientServices(user));
-                menuActions.put(2, _ -> getAllClientServicesInSpecificPeriod(user));
-                menuActions.put(3, _ -> getAllClientSalesTransactions(user));
-                menuActions.put(4, _ -> getAllClientTransactionsInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllClientServices(user));
+                menuActions.put(2, c -> getAllClientServicesInSpecificPeriod(user));
+                menuActions.put(3, c-> getAllClientSalesTransactions(user));
+                menuActions.put(4, c -> getAllClientTransactionsInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -120,7 +120,7 @@ public class StatisticsMenu {
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();
             option = getOption(option, input);
-            menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
+            menuActions.getOrDefault(option, c -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
         Menu mainMenu = new Menu(user);
         mainMenu.mainMenu();
