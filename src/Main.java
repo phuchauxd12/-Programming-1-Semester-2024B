@@ -15,9 +15,9 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
         Membership membership = new Membership();
-        Manager manager = new Manager("manager1", "pass123", "Johnny Stack",LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER, null, null );
+        Manager manager = new Manager("manager1", "pass123", "Johnny Stack", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER, null, null);
         Client client = new Client("john_doe", "password1234", "Timmy Toe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.CLIENT, membership);
-        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
+        Mechanic mechanic = new Mechanic("mechanic", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
         Salesperson sale1 = new Salesperson("salesperson1", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE, null);
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
 //        Client client1 = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, "Active", membership);
@@ -40,8 +40,8 @@ public class Main {
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug"), ServiceBy.AUTO136, "car1", 2000000000);
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter"), ServiceBy.AUTO136, "car1", 2000000000);
 
 //        ServiceList serviceList = new ServiceList();
 //        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
@@ -108,7 +108,8 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu.mainMenu(UserSession.getCurrentUser());
+        Menu mainMenu = new Menu(UserSession.getCurrentUser());
+        mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();

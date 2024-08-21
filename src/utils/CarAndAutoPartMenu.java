@@ -43,49 +43,85 @@ public class CarAndAutoPartMenu {
                 menuItems.put(6, "Delete an auto part");
                 menuItems.put(7, "Update a car");
                 menuItems.put(8, "Update an auto part");
-                menuItems.put(10, "Exit");
+                menuItems.put(9, "Search for car");
+                menuItems.put(10, "Search for auto part");
+                menuItems.put(100, "Exit");
 
                 menuActions.put(1, _ -> addCar(user));
-                menuActions.put(2, _ -> displayAllCars());
+                menuActions.put(2, _ -> displayAllCars(null));
                 menuActions.put(3, this::addAutoPart);
-                menuActions.put(4, _ -> displayAllParts());
+                menuActions.put(4, _ -> displayAllParts(null));
                 menuActions.put(5, this::deleteCar);
                 menuActions.put(6, this::deletePart);
                 menuActions.put(7, _ -> updateCar(mainMenu));
                 menuActions.put(8, _ -> updatePart(mainMenu));
-                menuActions.put(10, this::exit);
+                menuActions.put(9, _ -> searchForCar());
+                menuActions.put(10, _ -> searchForPart());
+                menuActions.put(100, this::exit);
             }
             case SALESPERSON -> {
                 menuItems.put(1, "Display all cars"); // that are for sale
                 menuItems.put(2, "Search for a car");
                 menuItems.put(3, "Display all auto parts"); // that are for sale
                 menuItems.put(4, "Search for an auto part");
-                menuItems.put(10, "Exit");
+                menuItems.put(100, "Exit");
 
-                menuActions.put(1, _ -> displayAllCarsForSale());
-                menuActions.put(3, _ -> displayAllPartsForSale());
-                menuActions.put(10, this::exit);
+                menuActions.put(1, _ -> displayAllCars(Status.AVAILABLE));
+                menuActions.put(2, _ -> searchForCar());
+                menuActions.put(3, _ -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(4, _ -> searchForPart());
+                menuActions.put(100, this::exit);
             }
             case MECHANIC -> {
-                menuItems.put(1, "Display all cars"); // for walk in only (dunno yet)
-                menuItems.put(2, "Add car"); // for walk in only
-                menuItems.put(3, "Display all auto parts"); // that are available
-                menuItems.put(10, "Exit");
+                menuItems.put(1, "Display all cars");
+                menuItems.put(2, "Add car");
+                menuItems.put(3, "Display all auto parts");
+                menuItems.put(4, "Search for car");
+                menuItems.put(5, "Search for auto part");
+                menuItems.put(100, "Exit");
 
-                menuActions.put(1, _ -> displayAllCars());
+                menuActions.put(1, _ -> displayAllCars(Status.WALK_IN));
                 menuActions.put(2, _ -> addCar(user));
-                menuActions.put(3, _ -> displayAllPartsForSale());
-                menuActions.put(10, this::exit);
+                menuActions.put(3, _ -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(4, _ -> searchForCar());
+                menuActions.put(5, _ -> searchForPart());
+                menuActions.put(100, this::exit);
             }
             case CLIENT -> {
                 menuItems.put(1, "Display all cars"); // Display cars that are for sale
                 menuItems.put(2, "Display all auto parts"); // Display auto parts that are for sale
-                menuItems.put(10, "Exit");
+                menuItems.put(3, "Search for car");
+                menuItems.put(4, "Search for auto part");
+                menuItems.put(100, "Exit");
 
-                menuActions.put(1, _ -> displayAllCarsForSale());
-                menuActions.put(2, _ -> displayAllPartsForSale());
-                menuActions.put(10, this::exit);
+                menuActions.put(1, _ -> displayAllCars(Status.AVAILABLE));
+                menuActions.put(2, _ -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(3, _ -> searchForCar());
+                menuActions.put(4, _ -> searchForPart());
+                menuActions.put(100, this::exit);
             }
+        }
+    }
+
+    private void searchForCar() {
+        System.out.println("Enter the car ID:");
+        String carID = input.nextLine();
+        Car car = findCarByID(carID);
+        if (car != null) {
+            System.out.println(car.toStringDetailed());
+        } else {
+            System.out.println("Car not found.");
+        }
+    }
+
+    private void searchForPart() {
+        System.out.println("Enter the part ID:");
+        String partID = input.nextLine();
+        autoPart part = findAutoPartByID(partID);
+        if (part != null) {
+            System.out.println(part.toStringDetailed());
+        } else {
+            System.out.println("Part not found.");
         }
     }
 
@@ -159,7 +195,7 @@ public class CarAndAutoPartMenu {
             displayMenu();
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
-        } while (option != 10);
+        } while (option != 100);
         mainMenu.mainMenu();
     }
 
@@ -216,31 +252,43 @@ public class CarAndAutoPartMenu {
         return null;
     }
 
-    public static void displayAllCars() {
-        System.out.println("Displaying all cars:");
-        for (Car car : carsList) {
-            System.out.println(car);
-        }
-        System.out.println("----------------");
-    }
-
-    public static void displayAllParts() {
-        System.out.println("Displaying all Auto Parts:");
-        for (autoPart part : autoPartsList) {
-            System.out.println(part);
-        }
-        System.out.println("----------------");
-    }
-
-    public static void displayAllCarsForSale() {
-        System.out.println("Displaying all cars for sale:");
-        for (Car car : carsList) {
-            if (car.getStatus() == Status.AVAILABLE) {
+    public static void displayAllCars(Status status) {
+        if (status == null) {
+            System.out.println("Displaying all cars:");
+            for (Car car : carsList) {
                 System.out.println(car);
+            }
+        } else {
+            System.out.println("Displaying all cars with" + status + " status:");
+            for (Car car : carsList) {
+
+                if (car.getStatus() == status) {
+                    System.out.println(car);
+                }
             }
         }
         System.out.println("----------------");
+        System.out.println("To see detailed information of a specific car, please use the search function!");
     }
+
+    public static void displayAllParts(Status status) {
+        if (status == null) {
+            System.out.println("Displaying all Auto Parts:");
+            for (autoPart part : autoPartsList) {
+                System.out.println(part);
+            }
+        } else {
+            System.out.println("Displaying all Auto Parts with" + status + " status:");
+            for (autoPart part : autoPartsList) {
+                if (part.getStatus() == status) {
+                    System.out.println(part);
+                }
+            }
+        }
+        System.out.println("----------------");
+        System.out.println("To see detailed information of a specific part, please use the search function!");
+    }
+
 
     public static void displayAllPartsForSale() {
         System.out.println("Displaying all Auto Parts for sale:");

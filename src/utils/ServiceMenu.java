@@ -41,7 +41,7 @@ public class ServiceMenu {
         }
     }
 
-    public void mainMenu(User user) throws Exception {
+    public void mainMenu(User user, Menu mainMenu) throws Exception {
         Scanner serviceMenuInput = new Scanner(System.in);
         int option = 0;
         while (option != 7) {
@@ -54,7 +54,7 @@ public class ServiceMenu {
                 System.out.println("Invalid option. Please try again.");
             }
         }
-        Menu.mainMenu(user);
+        mainMenu.mainMenu();
     }
 
     // Method to get the user's option
@@ -92,12 +92,12 @@ public class ServiceMenu {
 
     private void createService() throws Exception {
         System.out.println("Creating a new service...");
-        if(UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER){
+        if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
             Scanner input = new Scanner(System.in);
             System.out.println("Enter mechanic ID: ");
             String mechanicID = input.nextLine();
             ServiceList.addService(mechanicID);
-        }else {
+        } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
     }
@@ -112,27 +112,27 @@ public class ServiceMenu {
         ServiceList.deleteService();
     }
 
-    private void searchServiceById(){
+    private void searchServiceById() {
         System.out.println("Searching service by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter service ID: ");
         String serviceID = input.nextLine();
-        if(ServiceList.getServiceById(serviceID) != null){
+        if (ServiceList.getServiceById(serviceID) != null) {
             System.out.println("Service found!");
             System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
         }
         System.out.println("No service found with ID: " + serviceID);
     }
 
-    private void searchServiceByDate(){
+    private void searchServiceByDate() {
         System.out.println("Searching service between ...");
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
-        if(!servicesBetween.isEmpty()){
+        if (!servicesBetween.isEmpty()) {
             System.out.println("Service found!");
-            for(Service service : servicesBetween){
-                if(!service.isDeleted()) {
+            for (Service service : servicesBetween) {
+                if (!service.isDeleted()) {
                     System.out.println(service.getFormattedServiceDetails());
                 }
             }

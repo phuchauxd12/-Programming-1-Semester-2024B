@@ -177,7 +177,7 @@ public class autoPart implements Serializable {
 
 
     public static void deletePart() throws Exception {
-        CarAndAutoPartMenu.displayAllParts();
+        CarAndAutoPartMenu.displayAllParts(null);
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
         String partID = input.next();
@@ -193,7 +193,7 @@ public class autoPart implements Serializable {
     }
 
     public static void updatePart() throws Exception {
-        CarAndAutoPartMenu.displayAllParts();
+        CarAndAutoPartMenu.displayAllParts(null);
         autoPart part = null;
         Scanner input = new Scanner(System.in);
         while (part == null) {
@@ -289,9 +289,7 @@ public class autoPart implements Serializable {
         }
     }
 
-
-    @Override
-    public String toString() {
+    public String toStringDetailed() {
         return "{" +
                 "partID ='" + partID + '\'' +
                 ", partName ='" + partName + '\'' +
@@ -303,6 +301,16 @@ public class autoPart implements Serializable {
                 ", status = " + status +
                 ", soldDate = " + soldDate +
                 ", isDeleted = " + isDeleted +
+                '}';
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "partID ='" + partID + '\'' +
+                ", partName ='" + partName + '\'' +
+                ", partManufacturer ='" + partManufacturer + '\'' +
+                ", condition = " + condition +
                 '}';
     }
 }

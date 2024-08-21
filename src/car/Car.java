@@ -215,7 +215,7 @@ public class Car implements Serializable {
     }
 
     public static void deleteCar() throws Exception {
-        CarAndAutoPartMenu.displayAllCars();
+        CarAndAutoPartMenu.displayAllCars(null);
         Scanner input = new Scanner(System.in);
         System.out.println("Please input the car's ID to delete:");
         String carID = input.next();
@@ -231,7 +231,7 @@ public class Car implements Serializable {
     }
 
     public static void updateCar() throws Exception {
-        CarAndAutoPartMenu.displayAllCars();
+        CarAndAutoPartMenu.displayAllCars(null);
         Car car = null;
         Scanner input = new Scanner(System.in);
         while (car == null) {
@@ -256,6 +256,7 @@ public class Car implements Serializable {
             option = Menu.getOption(option, input);
             switch (option) {
                 case 1:
+                    System.out.println("The current car's make: " + car.carMake);
                     System.out.println("Please input the car's make:");
                     String newCarMake = input.next();
                     car.setCarMake(newCarMake);
@@ -263,6 +264,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 2:
+                    System.out.println("The current car's model: " + car.carModel);
                     System.out.println("Please input the car's model:");
                     String newCarModel = input.next();
                     car.setCarModel(newCarModel);
@@ -270,6 +272,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 3:
+                    System.out.println("The current car's year: " + car.carYear);
                     int newCarYear;
                     newCarYear = getNewCarYear(input);
                     car.setCarYear(newCarYear);
@@ -277,12 +280,14 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 4:
+                    System.out.println("The current car's color: " + car.color);
                     System.out.println("Please input the car's color:");
                     car.setColor(input.next().toUpperCase());
                     System.out.println("Updated successfully!");
                     System.out.println(car);
                     break;
                 case 5:
+                    System.out.println("The current car's mileage: " + car.mileage);
                     double newMileage;
                     while (true) {
                         try {
@@ -299,6 +304,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 6:
+                    System.out.println("The current car's price: " + car.price);
                     double newPrice;
                     while (true) {
                         try {
@@ -315,6 +321,7 @@ public class Car implements Serializable {
                     System.out.println(car);
                     break;
                 case 7:
+                    System.out.println("The current additional notes: " + car.addNotes);
                     input.nextLine();
                     System.out.println("Please input any additional notes:");
                     car.setAddNotes(input.nextLine());
@@ -350,6 +357,20 @@ public class Car implements Serializable {
         return newCarYear;
     }
 
+    public String toStringDetailed() {
+        return "Car ID: " + carID + "\n" +
+                "Car Make: " + carMake + "\n" +
+                "Car Model: " + carModel + "\n" +
+                "Car Year: " + carYear + "\n" +
+                "Color: " + color + "\n" +
+                "Mileage: " + mileage + "\n" +
+                "Price: " + price + "\n" +
+                "Status: " + status + "\n" +
+                "Additional Notes: " + addNotes + "\n" +
+                "Sold Date: " + soldDate + "\n" +
+                "Deleted: " + isDeleted + "\n" +
+                "Service History: " + serviceHistory + "\n";
+    }
 
     @Override
     public String toString() {
@@ -358,14 +379,7 @@ public class Car implements Serializable {
                 ", carMake ='" + carMake + "'" +
                 ", carModel ='" + carModel + "'" +
                 ", carYear = " + carYear +
-                ", color ='" + color + '\'' +
-                ", mileage = " + mileage +
-                ", price = " + price +
-                ", status = " + status +
-                ", addNotes ='" + addNotes + '\'' +
-                ", soldDate = " + soldDate +
-                ", isDeleted = " + isDeleted +
-                ", serviceHistory = " + serviceHistory +
-                '}';
+                ", color ='" + color + "'" + ", price = " + price +
+                "}";
     }
 }

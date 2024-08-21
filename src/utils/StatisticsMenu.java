@@ -1,7 +1,6 @@
 package utils;
 
 import car.Car;
-import autoPart.autoPart;
 import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
@@ -149,7 +148,7 @@ public class StatisticsMenu {
         if (mechanic != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
-            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
+            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
             System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
         } else {
             System.out.println("Mechanic not found. Please try again.");
@@ -174,10 +173,10 @@ public class StatisticsMenu {
     private void ManagerProcessTotalRevenue(Scanner s) {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
-        double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[0];
-        double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[0];
-        int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[1];
-        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[1];
+        double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[0];
+        double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[0];
+        int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[1];
+        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[1];
 
         double totalRevenue = totalSalesRevenue + totalServiceRevenue;
         int totalTransactions = totalSalesTransactions + totalServiceTransactions;
@@ -232,34 +231,34 @@ public class StatisticsMenu {
         return clientRevenue;
     }
 
-    private static void viewAutoPartStatistics() {
-        int totalPartsInStock = 0;
-        int totalPartsSold = 0;
-        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
-
-        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
-            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
-                totalPartsInStock++;
-                if(part.getCondition() == autoPart.Condition.NEW){
-                    partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-                } else if(part.getCondition() == autoPart.Condition.USED){
-                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-                } else {
-                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-                }
-            }
-            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
-                totalPartsSold++;
-            }
-        }
-
-        System.out.println("Auto Part Statistics:");
-        System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
-        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
-
-        System.out.println("Part Condition Statistics:");
-        partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
-    }
+//    private static void viewAutoPartStatistics() {
+//        int totalPartsInStock = 0;
+//        int totalPartsSold = 0;
+//        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
+//
+//        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
+//            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
+//                totalPartsInStock++;
+//                if(part.getCondition() == autoPart.Condition.NEW){
+//                    partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+//                } else if(part.getCondition() == autoPart.Condition.USED){
+//                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+//                } else {
+//                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+//                }
+//            }
+//            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
+//                totalPartsSold++;
+//            }
+//        }
+//
+//        System.out.println("Auto Part Statistics:");
+//        System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
+//        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
+//
+//        System.out.println("Part Condition Statistics:");
+//        partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
+//    }
 
     public static void viewCarStatistics(LocalDate startDate, LocalDate endDate) {
         double totalCarRevenue = calculateTotalCarSellRevenueAndCount(startDate, endDate)[0];
@@ -272,7 +271,7 @@ public class StatisticsMenu {
         Map<String, Integer> carsInRepair = new HashMap<>();
 
         for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
-            for (Car car : transaction.getPurchasedCars()){
+            for (Car car : transaction.getPurchasedCars()) {
                 String carType = car.getCarModel();
                 revenueByCarModel.put(carType, revenueByCarModel.getOrDefault(carType, 0.0) + transaction.getTotalAmount());
                 carsSoldByModel.put(carType, carsSoldByModel.getOrDefault(carType, 0) + 1);
@@ -329,7 +328,7 @@ public class StatisticsMenu {
         double totalRevenue = 0.0;
         int totalCarsSold = 0;
         for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
-            for (Car car : transaction.getPurchasedCars()){
+            for (Car car : transaction.getPurchasedCars()) {
                 totalRevenue += car.getPrice();
                 totalCarsSold++;
             }
@@ -423,7 +422,7 @@ public class StatisticsMenu {
 
     private void SalespersonRevenue(User loggedInUser) {
         Salesperson salesperson = (Salesperson) loggedInUser;
-        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(),LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
@@ -459,13 +458,13 @@ public class StatisticsMenu {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
     private void getRevenueOfServices(User loggedInUser) {
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
