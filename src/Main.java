@@ -1,12 +1,13 @@
 import autoPart.autoPart;
+import car.Car;
 import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
+import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import services.Service;
 import services.ServiceBy;
 import user.*;
-import utils.LoginMenu;
-import utils.Menu;
-import utils.UserSession;
+import utils.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,13 +37,15 @@ public class Main {
         System.out.println("s3975133, Doan Nguyen Phu Chau");
 //        Membership membership = new Membership();
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-
+        Car car = new Car("Honda", "Civic", 2018, "Black", 45000, 15999.99, "Clean title, no accidents", Status.AVAILABLE);
+        CarDatabase.createDatabase();
+//        Car.addCarToList(car);
+        System.out.println(CarDatabase.loadCars());
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
-
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "c-19592090-d767-41da-9853-651e87aaaad7", 2000000000);
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-19592090-d767-41da-9853-651e87aaaad7", 2000000000);
 //        ServiceList serviceList = new ServiceList();
 //        Service service1 = new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
 //        Service service2 = new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
@@ -95,9 +98,9 @@ public class Main {
         System.out.println(listUser);
 
 
-//        ServiceDatabase.createDatabase();
-//        Service.addService(service2);
-
+        ServiceDatabase.createDatabase();
+        Service.addService(service2);
+        System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
         LoginMenu.displayLoginMenu();

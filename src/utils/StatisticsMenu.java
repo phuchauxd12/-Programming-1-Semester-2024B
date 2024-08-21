@@ -1,7 +1,7 @@
 package utils;
 
-import car.Car;
 import autoPart.autoPart;
+import car.Car;
 import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
@@ -27,10 +27,10 @@ public class StatisticsMenu {
 
     public StatisticsMenu(User user) {
         switch (user) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC, user);
-            case Client _ -> initializeMenu(MenuOption.CLIENT, user);
+            case Manager c -> initializeMenu(MenuOption.MANAGER, user);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC, user);
+            case Client c -> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -48,7 +48,8 @@ public class StatisticsMenu {
                 menuItems.put(7, "List All Services (in specific period)");
                 menuItems.put(8, "List all Sales by a salesperson");
                 menuItems.put(9, "List all Services by a mechanic");
-                menuItems.put(10, "Exit");
+                menuItems.put(10, "View autoPart statistic");
+                menuItems.put(11, "Exit");
 
                 menuActions.put(1, this::getNumberOfCarsSoldInSpecificPeriod);
                 menuActions.put(2, this::ManagerProcessMechanicRevenue);
@@ -57,9 +58,10 @@ public class StatisticsMenu {
                 menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
                 menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
-                menuActions.put(8, _ -> getAllSalespersonSales(user));
-                menuActions.put(9, _ -> getAllMechanicServices(user));
-                menuActions.put(10, this::exit);
+                menuActions.put(8, c -> getAllSalespersonSales(user));
+                menuActions.put(9, c -> getAllMechanicServices(user));
+                menuActions.put(10, c -> viewAutoPartStatistics());
+                menuActions.put(11, this::exit);
                 break;
 
             case SALESPERSON:
@@ -72,12 +74,12 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add salesperson-specific actions here
-                menuActions.put(1, _ -> getAllSalespersonSales(user));
-                menuActions.put(2, _ -> getAllTransactionsByMeInSpecificPeriod(user));
-                menuActions.put(3, _ -> getAllCarsSoldBySalesperson(user));
-                menuActions.put(4, _ -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
-                menuActions.put(5, _ -> SalespersonRevenue(user));
-                menuActions.put(6, _ -> SalespersonRevenueInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllSalespersonSales(user));
+                menuActions.put(2, c -> getAllTransactionsByMeInSpecificPeriod(user));
+                menuActions.put(3, c -> getAllCarsSoldBySalesperson(user));
+                menuActions.put(4, c -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
+                menuActions.put(5, c -> SalespersonRevenue(user));
+                menuActions.put(6, c -> SalespersonRevenueInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -89,10 +91,10 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add mechanic-specific actions here
-                menuActions.put(1, _ -> getAllMechanicServices(user));
-                menuActions.put(2, _ -> getAllMechanicServicesInSpecificPeriod(user));
-                menuActions.put(3, _ -> getRevenueOfServices(user));
-                menuActions.put(4, _ -> getRevenueOfServicesInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllMechanicServices(user));
+                menuActions.put(2, c -> getAllMechanicServicesInSpecificPeriod(user));
+                menuActions.put(3, c -> getRevenueOfServices(user));
+                menuActions.put(4, c -> getRevenueOfServicesInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -104,10 +106,10 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add client-specific actions here
-                menuActions.put(1, _ -> getAllClientServices(user));
-                menuActions.put(2, _ -> getAllClientServicesInSpecificPeriod(user));
-                menuActions.put(3, _ -> getAllClientSalesTransactions(user));
-                menuActions.put(4, _ -> getAllClientTransactionsInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllClientServices(user));
+                menuActions.put(2, c -> getAllClientServicesInSpecificPeriod(user));
+                menuActions.put(3, c -> getAllClientSalesTransactions(user));
+                menuActions.put(4, c -> getAllClientTransactionsInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
 
@@ -128,7 +130,7 @@ public class StatisticsMenu {
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();
             option = getOption(option, input);
-            menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
+            menuActions.getOrDefault(option, c -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
         Menu.mainMenu(user);
     }
@@ -235,7 +237,7 @@ public class StatisticsMenu {
     private static void viewAutoPartStatistics() {
         int totalPartsInStock = 0;
         int totalPartsSold = 0;
-        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
+        Map<autoPart.Condition, Integer> partConditionStats = new HashMap<>();
 
         for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
             if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
@@ -243,9 +245,9 @@ public class StatisticsMenu {
                 if(part.getCondition() == autoPart.Condition.NEW){
                     partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
                 } else if(part.getCondition() == autoPart.Condition.USED){
-                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.USED, 0) + 1);
                 } else {
-                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.REFURBISHED, 0) + 1);
                 }
             }
             if(part.getStatus() == Status.SOLD && !part.isDeleted()){
