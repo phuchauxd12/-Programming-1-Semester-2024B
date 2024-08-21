@@ -1,26 +1,35 @@
 package services;
 
 import autoPart.autoPart;
+import data.Database;
+import data.service.ServiceDatabase;
+import data.user.UserDatabase;
 import user.Client;
 import user.User;
+import utils.UserMenu;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceList {
-    private List<Service> services;
-
-    public ServiceList() {
-        this.services = new ArrayList<>();
+    public static List<Service> services;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(ServiceDatabase.path)){
+                ServiceDatabase.createDatabase();
+            };
+            services = ServiceDatabase.loadService();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
 
 
-    public void addService(String mechanicId) throws Exception {
+    public static void addService(String mechanicId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -32,9 +41,12 @@ public class ServiceList {
         System.out.print("Enter serviceType: ");
         String serviceType = scanner.nextLine();
 
-        System.out.println("Enter name of replaced parts (seperated by space): ");
+        System.out.println("Enter name of replaced parts (separate by comma): ");
         String partNamesInput = scanner.nextLine();
-        List<String> partNames = List.of(partNamesInput.split("\\s+"));
+        List<String> partNames = Arrays.stream(partNamesInput.split(","))
+                                        .map(String::trim)
+                                        .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
+                                        .collect(Collectors.toList());
 
         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
         int serviceByInput = Integer.parseInt(scanner.nextLine());
@@ -47,25 +59,22 @@ public class ServiceList {
         double serviceCost = scanner.nextDouble();
 
         Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
-        services.add(service);
+        Service.addService(service);
 
-
-        User user = User.userList.stream()
+        User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserID().equals(clientId))
                 .findFirst()
                 .orElse(null);
 
         if (user != null && user instanceof Client) {
             Client client = (Client) user;
-            client.updateTotalSpending(service.getServiceCost());  // Assuming Client class has this method
+            client.updateTotalSpending(service.getTotalCost());
+            UserDatabase.saveUsersData(UserMenu.getUserList());// Assuming Client class has this method
         }
-
-        System.out.println("Sale transaction added successfully:");
-        System.out.println(service.getFormattedServiceDetails());
 
     }
 
-    public Service getServiceById(String serviceId) {
+    public static Service getServiceById(String serviceId) {
         for (Service service : services) {
             if (service.getServiceId().equals(serviceId)) {
                 return service;
@@ -76,6 +85,16 @@ public class ServiceList {
 
     public List<Service> getAllServices() {
         return services;
+    }
+
+    // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
+    public static void displayAllServices(){
+        for (Service service : services) {
+            if(!service.isDeleted()) {
+                System.out.println(service.getFormattedServiceDetails());
+                System.out.println("___________________________________");
+            }
+        }
     }
 
 //    public void updateService(Service updatedService) {
@@ -91,123 +110,30 @@ public class ServiceList {
 //        services.removeIf(service -> service.getServiceId().equals(serviceId));
 //    }
 
-    public List<Service> getServicesBetween(LocalDate startDate, LocalDate endDate) {
+    public static List<Service> getServicesBetween(LocalDate startDate, LocalDate endDate) {
         List<Service> filteredServices = new ArrayList<>();
         for (Service service : services) {
-            if ((service.getServiceDate().isEqual(startDate) || service.getServiceDate().isAfter(startDate)) &&
-                    (service.getServiceDate().isEqual(endDate) || service.getServiceDate().isBefore(endDate))) {
+            LocalDate serviceDate = service.getServiceDate();
+            if ((serviceDate.isEqual(startDate) || serviceDate.isAfter(startDate)) &&
+                    (serviceDate.isEqual(endDate) || serviceDate.isBefore(endDate.plusDays(1)))) {
                 filteredServices.add(service);
             }
         }
         return filteredServices;
     }
 
-    public void updateService()  {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter service ID to update: ");
-        String serviceId = scanner.nextLine();
-
-        Service service = getServiceById(serviceId);
-        if (service != null && !service.isDeleted()) {
-            System.out.println("Which field would you like to update?");
-            System.out.println("1. Service Date");
-            System.out.println("2. Service Type");
-            System.out.println("3. Service By");
-            System.out.println("4. Car ID");
-            System.out.println("5. Replaced Parts");
-            System.out.println("6. Service Cost");
-            System.out.println("7. Additional Notes");
-            System.out.print("Enter the number corresponding to the field (or multiple numbers separated by space): ");
-            String choiceInput = scanner.nextLine();
-            List<String> choices = List.of(choiceInput.split("\\s+"));
-
-            for (String choice : choices) {
-                switch (choice) {
-                    case "1":
-                        System.out.print("Enter new service date (YYYY-MM-DD): ");
-                        LocalDate newDate = LocalDate.parse(scanner.nextLine());
-                        service.setServiceDate(newDate);
-                        break;
-                    case "2":
-                        System.out.print("Enter new service type: ");
-                        String newType = scanner.nextLine();
-                        service.setServiceType(newType);
-                        break;
-                    case "3":
-                        System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
-                        int serviceByInput = Integer.parseInt(scanner.nextLine());
-                        ServiceBy newServiceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
-                        service.setServiceBy(newServiceBy);
-                        break;
-                    case "4":
-                        System.out.print("Enter new car ID: ");
-                        String newCarId = scanner.nextLine();
-                        service.setCarId(newCarId);
-                        break;
-                    case "5":
-                        System.out.println("Enter new replaced parts (part IDs separated by space): ");
-                        String partIdsInput = scanner.nextLine();
-                        List<String> partIds = List.of(partIdsInput.split("\\s+"));
-
-                        // Retrieve and update replaced parts
-                        List<autoPart> newReplacedParts = service.retrieveParts(partIds);
-                        service.setReplacedParts(newReplacedParts);
-
-                        double newDiscount = service.calculateDiscount(service.getClientId());
-                        double newservice = service.calculateTotalAmount(newReplacedParts, newDiscount, service.getServiceCost());
-                        service.setTotalCost(newservice);
-
-                        // Update client's total spending
-                        Client client = (Client) User.userList.stream()
-                                .filter(u -> u.getUserID().equals(service.getClientId()))
-                                .findFirst()
-                                .orElse(null);
-                        if (client != null) {
-                            client.updateTotalSpending(service.getTotalCost());
-                        }
-
-                        break;
-                    case "6":
-                        System.out.print("Enter service cost: ");
-                        double serviceCost = scanner.nextDouble();
-                        service.setServiceCost(serviceCost);
-                        break;
-                    case "7":
-                        System.out.print("Enter additional notes (or leave blank): ");
-                        String additionalNotes = scanner.nextLine();
-                        service.setAdditionalNotes(additionalNotes);
-                        break;
-                    default:
-                        System.out.println("Invalid choice: " + choice);
-                }
-            }
-
-            // Update the service in the list successfully
-            System.out.println("Service updated successfully:");
-            System.out.println(service.getFormattedServiceDetails());
-        } else {
-            System.out.println("Service not found or it has been deleted.");
-        }
+    public static void updateService() throws Exception {
+        displayAllServices();
+        Service.updateService();
     }
 
 
-    public void deleteService() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter transaction ID to delete: ");
-        String serviceId = scanner.nextLine();
-
-        Service service = getServiceById(serviceId);
-        if (service != null) {
-            service.markAsDeleted();
-            System.out.println("Sale transaction marked as deleted.");
-        } else {
-            System.out.println("Transaction not found.");
-        }
+    public static void deleteService() throws Exception {
+        displayAllServices();
+        Service.deleteService();
     }
 
-    public double calculateTotalServiceRevenue() {
+    public static double calculateTotalServiceRevenue() {
         double total = 0.0;
         for (Service service : services) {
             total += service.getTotalCost();
@@ -216,7 +142,7 @@ public class ServiceList {
     }
 
 
-    public int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
+    public static int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
         int autoPartCount = 0;
 
@@ -239,7 +165,7 @@ public class ServiceList {
         return usedParts;
     }
 
-    public double[] calculateServiceRevenueAndCount(LocalDate startDate, LocalDate endDate) {
+    public static double[] calculateServiceRevenueAndCount(LocalDate startDate, LocalDate endDate) {
         double totalServiceRevenue = 0.0;
         int serviceCount = 0;
 
@@ -251,7 +177,7 @@ public class ServiceList {
         return new double[]{totalServiceRevenue, serviceCount};
     }
 
-    public double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
+    public static double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
 
         double totalServiceRevenue = 0.0;
 
@@ -267,17 +193,53 @@ public class ServiceList {
         return totalServiceRevenue;
     }
 
-    public void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
+    public static void viewServiceStatistics(LocalDate startDate, LocalDate endDate) {
         double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
         double totalServiceRevenue = serviceRevenueAndCount[0];
         int serviceCount = (int) serviceRevenueAndCount[1];
         int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Integer> serviceUsageCount = new HashMap<>();
+        Map<String, Double> serviceRevenue = new HashMap<>();
+        Map<String, Double> mechanicRevenue = new HashMap<>();
 
         for (Service service : getServicesBetween(startDate, endDate)) {
 
             clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
+
+            String serviceType = service.getServiceType();
+            serviceUsageCount.put(serviceType, serviceUsageCount.getOrDefault(serviceType, 0) + 1);
+            serviceRevenue.put(serviceType, serviceRevenue.getOrDefault(serviceType, 0.0) + service.getTotalCost());
+
+
+            String mechanicId = service.getMechanicId(); // Assuming you have this method
+            mechanicRevenue.put(mechanicId,
+                    mechanicRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());
+        }
+
+        // Find most used service
+        String mostUsedService = serviceUsageCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        // Find highest revenue service
+        String highestRevenueService = serviceRevenue.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        double highestRevenue = serviceRevenue.getOrDefault(highestRevenueService, 0.0);
+
+        // Find the mechanic with the top revenue
+        String topMechanicId = null;
+        double maxRevenue = 0.0;
+
+        for (Map.Entry<String, Double> entry : mechanicRevenue.entrySet()) {
+            if (entry.getValue() > maxRevenue) {
+                maxRevenue = entry.getValue();
+                topMechanicId = entry.getKey();
+            }
         }
 
         // Statistics info
@@ -290,6 +252,21 @@ public class ServiceList {
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+
+        // Top mechanic
+        if (topMechanicId != null) {
+            System.out.printf("Top Mechanic ID: %s, Revenue: $%.2f\n", topMechanicId, maxRevenue);
+        } else {
+            System.out.println("No service transactions in the given period.");
+        }
+
+        if (mostUsedService != null) {
+            System.out.printf("Most Used Service: %s\n", mostUsedService);
+        }
+
+        if (highestRevenueService != null) {
+            System.out.printf("Highest Revenue Service: %s, Revenue: $%.2f\n", highestRevenueService, highestRevenue);
         }
     }
 

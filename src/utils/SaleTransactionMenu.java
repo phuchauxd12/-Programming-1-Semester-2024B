@@ -1,5 +1,9 @@
 package utils;
 
+import services.ServiceList;
+import transaction.SaleTransactionList;
+import user.User;
+
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Map;
@@ -19,35 +23,73 @@ public class SaleTransactionMenu {
 
         menuActions.put(1, this::displayAllTransactions);
         menuActions.put(2, this::searchTransactionById);
-        menuActions.put(3, this::deleteTransaction);
-        menuActions.put(4, this::createNewTransaction);
-        menuActions.put(5, this::updateTransaction);
+        menuActions.put(3, this::deleteTransactionWrapper);
+        menuActions.put(4, this::createTransactionWrapper);
+        menuActions.put(5, this::updateTransactionWrapper);
         menuActions.put(6, this::exit);
+    }
+
+    private void createTransactionWrapper() {
+        try {
+            createNewTransaction();
+        } catch (Exception e) {
+            System.out.println("Error creating transaction: " + e.getMessage());
+        }
+    }
+
+    private void updateTransactionWrapper() {
+        try {
+            updateTransaction();
+        } catch (Exception e) {
+            System.out.println("Error updating service: " + e.getMessage());
+        }
+    }
+
+    private void deleteTransactionWrapper() {
+        try {
+            deleteTransaction();
+        } catch (Exception e) {
+            System.out.println("Error deleting service: " + e.getMessage());
+        }
     }
 
     private void displayAllTransactions() {
         System.out.println("Displaying all transactions...");
-        // Add logic to display all transactions
+        SaleTransactionList.displayAllSaleTransactions();
     }
 
     private void searchTransactionById() {
         System.out.println("Searching transaction by ID...");
-        // Add logic to search a transaction by ID
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter transaction ID: ");
+        String transactionID = input.nextLine();
+        if(ServiceList.getServiceById(transactionID) != null){
+            System.out.println("Transaction found!");
+            System.out.println(SaleTransactionList.getSaleTransactionById(transactionID).getFormattedSaleTransactionDetails());
+        }
+        System.out.println("No transaction found with ID: " + transactionID);
     }
 
-    private void deleteTransaction() {
+    private void deleteTransaction() throws Exception {
         System.out.println("Deleting a transaction...");
-        // Add logic to delete a transaction
+        SaleTransactionList.deleteSaleTransaction();
     }
 
-    private void createNewTransaction() {
+    private void createNewTransaction() throws Exception {
         System.out.println("Creating a new transaction...");
-        // Add logic to create a new transaction
+        if(UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER){
+            Scanner input = new Scanner(System.in);
+            System.out.println("Enter saleperson ID: ");
+            String salepersonID = input.nextLine();
+            SaleTransactionList.addSaleTransaction(salepersonID);
+        }else {
+            ServiceList.addService(UserSession.getCurrentUser().getUserName());
+        }
     }
 
-    private void updateTransaction() {
+    private void updateTransaction() throws Exception {
         System.out.println("Updating a transaction...");
-        // Add logic to update a transaction
+        SaleTransactionList.updateSaleTransaction();
     }
 
     private void exit() {
@@ -73,7 +115,7 @@ public class SaleTransactionMenu {
         return input.nextInt();
     }
 
-    public void mainMenu() {
+    public void mainMenu(User user) {
         Scanner input = new Scanner(System.in);
         int option = 0;
         while (option != 6) {

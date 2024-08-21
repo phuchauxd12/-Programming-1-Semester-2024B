@@ -1,17 +1,15 @@
 package user;
 
-import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Salesperson extends Employee {
     private SaleTransactionList transactionList;
 
-    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status, SaleTransactionList transactionList) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, status, transactionList, null);
+    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, SaleTransactionList transactionList) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType, transactionList, null);
         this.transactionList = transactionList;
     }
 
@@ -51,24 +49,25 @@ public class Salesperson extends Employee {
 //    }
 //
     
-    public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-
-        double totalSalesRevenue = 0.0;
-
-        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
-        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
-                .filter(transaction -> transaction.getSalespersonId().equals(this.getUserName()))
-                .toList();
-
-        totalSalesRevenue = filteredTransactions.stream()
-                .mapToDouble(SaleTransaction::getTotalAmount)
-                .sum();
-
-        return totalSalesRevenue;
-    }
+//    public double getRevenueInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
+//
+//        double totalSalesRevenue = 0.0;
+//
+//        List<SaleTransaction> transactionsInRange = transactionList.getSaleTransactionsBetween(startDate, endDate);
+//        List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
+//                .filter(transaction -> transaction.getSalespersonId().equals(this.getUserName()))
+//                .toList();
+//
+//        totalSalesRevenue = filteredTransactions.stream()
+//                .mapToDouble(SaleTransaction::getTotalAmount)
+//                .sum();
+//
+//        return totalSalesRevenue;
+//    }
 
 
     public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {
+
         String salespersonId = this.getUserName();
         transactionList.viewTransactionsBySalesperson(salespersonId, startDate, endDate);
     }
@@ -77,7 +76,7 @@ public class Salesperson extends Employee {
         String salespersonId = this.getUserName();
         int carsSold = transactionList.getSaleTransactionsBetween(startDate, endDate).stream()
                 .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
-                .mapToInt(transaction -> transaction.getPurchasedItems().size())
+                .mapToInt(transaction -> transaction.getPurchasedCars().size())
                 .sum();
 
         System.out.printf("Total Number of Cars Sold by Salesperson ID %s from %s to %s: %d\n",

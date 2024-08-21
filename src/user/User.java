@@ -1,12 +1,12 @@
 package user;
 
-import data.Database;
 import data.user.UserDatabase;
+import utils.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 
@@ -34,7 +34,7 @@ public class User implements Serializable {
         ADMIN
     }
 
-    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, String status) throws Exception {
+    public User(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType) throws Exception {
         this.userID = generateUserId();
         this.userName = userName;
         this.password = password;
@@ -44,7 +44,7 @@ public class User implements Serializable {
         this.phoneNum = phoneNum;
         this.email = email;
         this.userType = userType;
-        this.status = status;
+        this.status = "active";
     }
 
     private String generateUserId() {
@@ -59,116 +59,58 @@ public class User implements Serializable {
         System.out.println("Viewing profile for user: " + this.userName);
     }
 
-    public void modifyProfile(int option, String newValue) throws Exception {
+    public void modifyProfile(int option) throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        String input;
         switch (option) {
             case 1:
-                this.setUserName(newValue);
+                System.out.println("Please enter new username: ");
+                input = scanner.nextLine();
+                this.setUserName(input);
                 break;
             case 2:
-                this.setPassword(newValue);
+                System.out.println("Please enter new password: ");
+                input = scanner.nextLine();
+                this.setPassword(input);
                 break;
             case 3:
-                this.setName(newValue);
+                System.out.println("Please enter new name: ");
+                input = scanner.nextLine();
+                this.setName(input);
                 break;
             case 4:
-                this.setAddress(newValue);
+                System.out.println("Please enter new address: ");
+                input = scanner.nextLine();
+                this.setAddress(input);
                 break;
             case 5:
-                this.setPhoneNum(Integer.parseInt(newValue));
+                System.out.println("Please enter new phone number: ");
+                input = scanner.nextLine();
+                this.setPhoneNum(Integer.parseInt(input));
                 break;
             case 6:
-                this.setEmail(newValue);
+                System.out.println("Please enter new email: ");
+                input = scanner.nextLine();
+                this.setEmail(input);
                 break;
             case 7:
-                this.setDob(LocalDate.parse(newValue));
-
+                System.out.println("Please enter new day of birth (yyyy-mm-dd): ");
+                input = scanner.nextLine();
+                this.setDob(LocalDate.parse(input));
                 break;
 
             default:
                 System.out.println("Invalid field specified.");
                 return;
         };
-        UserDatabase.saveUsersData(userList);
+        UserDatabase.saveUsersData(UserMenu.getUserList());
 
     }
 
-    // Static methods for managing users
-    public static List<User> userList;
-    // This code run one time when create an instance of a class
-    static {
-        try {
-            if(!Database.isDatabaseExist(UserDatabase.path)){
-                UserDatabase.createDatabase();
-            };
-            userList = UserDatabase.loadUsers();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public static void addUser(User user) throws Exception {
-        userList.add(user);
-        UserDatabase.saveUsersData(userList);
-        System.out.println("User added: " + user.getUserName());
-    }
-
-    public static User getUserById(String userId) {
-        for (User user : userList) {
-            if (user.getUserID().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public static List<Mechanic> getAllMechanics() {
-        List<Mechanic> mechanics = new ArrayList<>();
-        for (User user : userList) {
-            if (user instanceof Mechanic) {
-                mechanics.add((Mechanic) user);
-            }
-        }
-        return mechanics;
-    }
-
-    public static String displayAllMechanics() {
-        List<Mechanic> mechanics = getAllMechanics();
-        StringBuilder mechanicList = new StringBuilder();
-        for (Mechanic mechanic : mechanics) {
-            mechanicList.append(mechanic.toString()).append("\n");
-        }
-        return mechanicList.toString();
-    }
-
-    public static List<Salesperson> getAllSalespersons() {
-        List<Salesperson> salespersons = new ArrayList<>();
-        for (User user : userList) {
-            if (user instanceof Salesperson) {
-                salespersons.add((Salesperson) user);
-            }
-        }
-        return salespersons;
-    }
-
-    public static String displayAllSalespersons() {
-        List<Salesperson> salespersons = getAllSalespersons();
-        StringBuilder salepersonsList = new StringBuilder();
-        for (Salesperson saleperson : salespersons) {
-            salepersonsList.append(saleperson.toString()).append("\n");
-        }
-        return salepersonsList.toString();
-    }
-
-    public static void deleteUser(String userID) {
-        userList.removeIf(user -> user.getUserID().equals(userID));
-        System.out.println("User deleted with ID: " + userID);
-    }
-
-    public static void modifyUser(String userID, int option, String newValue) throws Exception {
-        for (User user : userList) {
+    public static void modifyUser(String userID, int option) throws Exception {
+        for (User user : UserMenu.getUserList()) {
             if (user.getUserID().equals(userID)) {
-                user.modifyProfile(option, newValue);
+                user.modifyProfile(option);
                 System.out.println("User modified with ID: " + userID);
                 return;
             }
@@ -176,23 +118,27 @@ public class User implements Serializable {
         System.out.println("User not found with ID: " + userID);
     }
 
-    public static void viewAllUsers() {
-        System.out.println("Viewing all users:");
-        for (User user : userList) {
-            System.out.println("UserID: " + user.getUserID() + ", UserName: " + user.getUserName());
+
+    public static void addUser(User user) throws Exception {
+        List<User> userList = UserMenu.getUserList();
+        userList.add(user);
+        UserDatabase.saveUsersData(userList);
+        System.out.println("User added: " + user.getUserName());
+    }
+
+
+    public static void deleteUser(String userID) throws Exception {
+        User user = UserMenu.getUserById(userID);
+        if (user != null) {
+            user.setStatus("deleted");
+            UserDatabase.saveUsersData(UserMenu.getUserList());
+            System.out.println("User deleted successfully!");
+        } else {
+            System.out.println("User not found with ID: " + userID);
         }
     }
 
-    public static User login(String userName, String password) {
-        for (User user : userList) {
-            if (user.getUserName().equals(userName) && user.getPassword().equals(password)) {
-                System.out.println("Login successful for user: " + userName);
-                return user;
-            }
-        }
-        System.out.println("Invalid username or password");
-        return null;
-    }
+
 
     // Getters and Setters
     public String getUserID() {

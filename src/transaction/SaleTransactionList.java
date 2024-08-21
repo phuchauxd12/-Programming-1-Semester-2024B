@@ -1,20 +1,37 @@
 package transaction;
 
 import car.Car;
+import autoPart.autoPart;
+import data.Database;
+import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
+import data.transaction.SaleTransactionDatabase;
+import data.user.UserDatabase;
 import user.Client;
 import user.User;
+import utils.CarAndAutoPartMenu;
 import utils.Status;
+import utils.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SaleTransactionList {
-    private List<SaleTransaction> transactions;
-    public SaleTransactionList() {
-        transactions = new ArrayList<>();
+    public static List<SaleTransaction> transactions;
+    // This code run one time when create an instance of a class
+    static {
+        try {
+            if(!Database.isDatabaseExist(SaleTransactionDatabase.path)){
+                SaleTransactionDatabase.createDatabase();
+            };
+            transactions = SaleTransactionDatabase.loadSaleTransaction();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void addSaleTransaction(String salespersonId) throws Exception {
+    public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
@@ -23,25 +40,34 @@ public class SaleTransactionList {
         System.out.print("Enter client ID: ");
         String clientId = scanner.nextLine();
 
-        System.out.println("Enter item IDs purchased (seperated by space): ");
-        String carIdsInput = scanner.nextLine();
-        List<String> carIds = List.of(carIdsInput.split("\\s+"));
+        System.out.println("Enter new item IDs purchased (separated by comma): ");
+        String itemIdsInput = scanner.nextLine();
+        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                .map(String::trim)
+                .map(item -> item.replaceAll(" +", " "))
+                .collect(Collectors.toList());
 
-        SaleTransaction transaction = new SaleTransaction(transactionDate, clientId, salespersonId, carIds);
-        transactions.add(transaction);
+        SaleTransaction transaction = new SaleTransaction(transactionDate, clientId, salespersonId, newItemIds);
+        SaleTransaction.addSaleTransaction(transaction);
 
-        for (Car car : transaction.getPurchasedItems()) {
+        for (Car car : transaction.getPurchasedCars()) {
             car.setStatus(Status.SOLD);
+            CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
+        }
+        for (autoPart part : transaction.getPurchasedAutoParts()) {
+            part.setStatus(Status.SOLD);
+            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
         }
 
-        User user = User.userList.stream()
+        User user = UserMenu.getUserList().stream()
                 .filter(u -> u.getUserID().equals(clientId))
                 .findFirst()
                 .orElse(null);
 
         if (user != null && user instanceof Client) {
             Client client = (Client) user;
-            client.updateTotalSpending(transaction.getTotalAmount());  // Assuming Client class has this method
+            client.updateTotalSpending(transaction.getTotalAmount());
+            UserDatabase.saveUsersData(UserMenu.getUserList());
         }
 
         System.out.println("Sale transaction added successfully:");
@@ -49,7 +75,7 @@ public class SaleTransactionList {
 
     }
 
-    public SaleTransaction getSaleTransactionById(String transactionId) {
+    public static SaleTransaction getSaleTransactionById(String transactionId) {
         for (SaleTransaction transaction : transactions) {
             if (transaction.getTransactionId().equals(transactionId)) {
                 return transaction;
@@ -62,96 +88,26 @@ public class SaleTransactionList {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
-    public void updateSaleTransaction() throws Exception {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter transaction ID to update: ");
-        String transactionId = scanner.nextLine();
-
-        SaleTransaction transaction = getSaleTransactionById(transactionId);
-        if (transaction != null && !transaction.isDeleted()) {
-            System.out.println("Which field would you like to update?");
-            System.out.println("1. Transaction Date");
-            System.out.println("2. Purchased Items");
-            System.out.println("3. Additional Notes");
-            System.out.print("Enter the number corresponding to the field (or multiple numbers separated by space): ");
-            String choiceInput = scanner.nextLine();
-            List<String> choices = List.of(choiceInput.split("\\s+"));
-
-            for (String choice : choices) {
-                switch (choice) {
-                    case "1":
-                        System.out.print("Enter new transaction date (YYYY-MM-DD): ");
-                        LocalDate newDate = LocalDate.parse(scanner.nextLine());
-                        transaction.setTransactionDate(newDate);
-                        break;
-                    case "2":
-                        // Set old cars' status to "AVAILABLE"
-                        for (Car car : transaction.getPurchasedItems()) {
-                            car.setStatus(Status.AVAILABLE);
-                        }
-
-                        System.out.println("Enter new item IDs purchased (separated by space): ");
-                        String carIdsInput = scanner.nextLine();
-                        List<String> newCarIds = List.of(carIdsInput.split("\\s+"));
-
-                        List<Car> newPurchasedItems = transaction.retrieveCars(newCarIds);
-                        transaction.setPurchasedItems(newPurchasedItems);
-
-                        // Set new cars' status to "SOLD"
-                        for (Car car : newPurchasedItems) {
-                            car.setStatus(Status.SOLD);
-                        }
-
-                        // Update total amount and discount based on new cars
-                        double newDiscount = transaction.calculateDiscount(transaction.getClientId());
-                        transaction.setDiscount(newDiscount);
-                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedItems, newDiscount);
-                        transaction.setTotalAmount(newTotalAmount);
-
-                        // Update client's total spending
-                        Client client = (Client) User.userList.stream()
-                                .filter(u -> u.getUserID().equals(transaction.getClientId()))
-                                .findFirst()
-                                .orElse(null);
-                        if (client != null) {
-                            client.updateTotalSpending(transaction.getTotalAmount());
-                        }
-                        break;
-                    case "3":
-                        System.out.print("Enter additional notes (or leave blank): ");
-                        String additionalNotes = scanner.nextLine();
-                        transaction.setNotes(additionalNotes);
-                        break;
-                    default:
-                        System.out.println("Invalid choice: " + choice);
-                }
+    public static void displayAllSaleTransactions() {
+        for (SaleTransaction transaction : transactions) {
+            if(!transaction.isDeleted()){
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
             }
-
-            System.out.println("Sale transaction updated successfully:");
-            System.out.println(transaction.getFormattedSaleTransactionDetails());
-        } else {
-            System.out.println("Transaction not found or it has been deleted.");
         }
     }
 
-
-    public void deleteSaleTransaction() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter transaction ID to delete: ");
-        String transactionId = scanner.nextLine();
-
-        SaleTransaction transaction = getSaleTransactionById(transactionId);
-        if (transaction != null) {
-            transaction.markAsDeleted();
-            System.out.println("Sale transaction marked as deleted.");
-        } else {
-            System.out.println("Transaction not found.");
-        }
+    public static void updateSaleTransaction() throws Exception {
+        displayAllSaleTransactions();
+        SaleTransaction.updateSaleTransaction();
     }
 
-    public double calculateTotalSales() {
+
+    public static void deleteSaleTransaction() throws Exception {
+        displayAllSaleTransactions();
+        SaleTransaction.deleteSaleTransaction();
+    }
+
+    public static double calculateTotalSalesRevenue() {
         double total = 0.0;
         for (SaleTransaction transaction : transactions) {
             total += transaction.getTotalAmount();
@@ -159,27 +115,38 @@ public class SaleTransactionList {
         return total;
     }
 
-    public List<SaleTransaction> getSaleTransactionsBetween(LocalDate startDate, LocalDate endDate) {
+    public static List<SaleTransaction> getSaleTransactionsBetween(LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> filteredTransactions = new ArrayList<>();
         for (SaleTransaction transaction : transactions) {
             LocalDate transactionDate = transaction.getTransactionDate();
             if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate)) &&
-                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate))) {
+                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) && !transaction.isDeleted()) {
                 filteredTransactions.add(transaction);
             }
         }
         return filteredTransactions;
     }
 
-    public int calculateCarsSold(LocalDate startDate, LocalDate endDate) {
+    public static int calculateCarsSold(LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
         int carCount = 0;
 
         for (SaleTransaction transaction : transactionsInRange) {
-            carCount += transaction.getPurchasedItems().size();
+            carCount += transaction.getPurchasedCars().size();
         }
 
         return carCount;
+    }
+
+    public static int calculateAutoPartsSold(LocalDate startDate, LocalDate endDate) {
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        int partCount = 0;
+
+        for (SaleTransaction transaction : transactionsInRange) {
+            partCount += transaction.getPurchasedAutoParts().size();
+        }
+
+        return partCount;
     }
 
     public List<Car> listCarsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
@@ -191,14 +158,29 @@ public class SaleTransactionList {
                     (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) &&
                     !transaction.isDeleted()) {
 
-                carsSold.addAll(transaction.getPurchasedItems());
+                carsSold.addAll(transaction.getPurchasedCars());
             }
         }
 
         return carsSold;
     }
 
-    public double[] calculateRevenueAndCount(LocalDate startDate, LocalDate endDate) {
+    public List<autoPart> listAutoPartsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+        List<autoPart> autoPartsSold = new ArrayList<>();
+
+        for (SaleTransaction transaction : transactions) {
+            LocalDate transactionDate = transaction.getTransactionDate();
+            if((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
+                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())){
+
+                autoPartsSold.addAll(transaction.getPurchasedAutoParts());
+            }
+        }
+
+        return autoPartsSold;
+    }
+
+    public static double[] calculateRevenueAndCount(LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
         int transactionCount = 0;
 
@@ -210,7 +192,7 @@ public class SaleTransactionList {
         return new double[]{totalSalesRevenue, transactionCount};
     }
 
-    public double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
+    public static double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
 
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
@@ -225,29 +207,62 @@ public class SaleTransactionList {
         return totalSalesRevenue;
     }
 
-    public void viewSalesStatistics(LocalDate startDate, LocalDate endDate) {
+    public static void viewSalesStatistics(LocalDate startDate, LocalDate endDate) {
         double[] revenueAndCount = calculateRevenueAndCount(startDate, endDate);
         double totalSalesRevenue = revenueAndCount[0];
         int transactionCount = (int) revenueAndCount[1];
         int carsSold = calculateCarsSold(startDate, endDate);
+        int autoPartsSold = calculateAutoPartsSold(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
+        Map<String, Integer> salespersonSales = new HashMap<>();
+        Map<String, Double> salespersonRevenue = new HashMap<>();
 
         for (SaleTransaction transaction : getSaleTransactionsBetween(startDate, endDate)) {
 
             clientRevenue.put(transaction.getClientId(), clientRevenue.getOrDefault(transaction.getClientId(), 0.0) + transaction.getTotalAmount());
+
+            String salespersonId = transaction.getSalespersonId();
+            salespersonRevenue.put(salespersonId, salespersonRevenue.getOrDefault(salespersonId, 0.0) + transaction.getTotalAmount());
+            salespersonSales.put(salespersonId, salespersonSales.getOrDefault(salespersonId, 0) + 1);
+
         }
+
+        // Find the salesperson with the top revenue
+        String topSalespersonByRevenue = salespersonRevenue.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        double maxRevenue = salespersonRevenue.getOrDefault(topSalespersonByRevenue, 0.0);
+
+        // Find top salesperson by sales count
+        String topSalespersonByCount = salespersonSales.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+        int maxSalesCount = salespersonSales.getOrDefault(topSalespersonByCount, 0);
 
         // Statistics info
         System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Sales Revenue: $%.2f\n", totalSalesRevenue);
         System.out.printf("Total Number of Transactions: %d\n", transactionCount);
         System.out.printf("Total Number of Cars Sold: %d\n", carsSold);
+        System.out.printf("Total Number of AutoParts Sold: %d\n", autoPartsSold);
 
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+
+        // Top salesperson by revenue count
+        if (topSalespersonByRevenue != null) {
+            System.out.printf("Top Salesperson by Revenue: ID: %s, Revenue: $%.2f\n", topSalespersonByRevenue, maxRevenue);
+        }
+
+        // top salesperson by sale count
+        if (topSalespersonByCount != null) {
+            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", topSalespersonByCount, maxSalesCount);
         }
     }
 
