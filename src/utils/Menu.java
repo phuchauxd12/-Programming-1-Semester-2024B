@@ -16,6 +16,8 @@ public class Menu {
     private final Map<Integer, String> menuItems = new LinkedHashMap<>();
     private final Map<Integer, Consumer<Scanner>> menuActions = new LinkedHashMap<>();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final User currentUser = UserSession.getCurrentUser();
+    private final CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(currentUser, this);
 
     public Menu(User user) {
         switch (user) {
@@ -40,7 +42,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
+                menuActions.put(2, _ -> carAndAutoPartMenu(this));
                 menuActions.put(3, _ -> transactionMenu(user));
                 menuActions.put(4, _ -> serviceMenu(user));
                 menuActions.put(5, _ -> statisticsMenu(user));
@@ -57,7 +59,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
+                menuActions.put(2, _ -> carAndAutoPartMenu(this));
                 menuActions.put(3, _ -> transactionMenu(user));
                 menuActions.put(4, _ -> statisticsMenu(user));
                 menuActions.put(5, _ -> activityLogMenu(user));
@@ -72,7 +74,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
+                menuActions.put(2, _ -> carAndAutoPartMenu(this));
                 menuActions.put(3, _ -> serviceMenu(user));
                 menuActions.put(4, _ -> statisticsMenu(user));
                 menuActions.put(5, _ -> activityLogMenu(user));
@@ -86,7 +88,7 @@ public class Menu {
                 menuItems.put(10, "Exit");
 
                 menuActions.put(1, _ -> manageProfileMenu(user));
-                menuActions.put(2, _ -> carAndAutoPartMenu(user, this));
+                menuActions.put(2, _ -> carAndAutoPartMenu(this));
                 menuActions.put(3, _ -> statisticsMenu(user));
                 menuActions.put(4, _ -> activityLogMenu(user));
                 menuActions.put(10, this::exit);
@@ -128,8 +130,7 @@ public class Menu {
         System.out.println("Transaction Menu");
     }
 
-    private void carAndAutoPartMenu(User user, Menu mainMenu) {
-        CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu(user, mainMenu);
+    private void carAndAutoPartMenu(Menu mainMenu) {
         try {
             carAndAutoPartMenu.mainMenu(mainMenu);
         } catch (Exception e) {
