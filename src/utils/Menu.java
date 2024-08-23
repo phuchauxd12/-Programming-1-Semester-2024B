@@ -63,14 +63,14 @@ public class Menu {
                 menuItems.put(3, "Transaction Menu");
                 menuItems.put(4, "Statistics Menu");
                 menuItems.put(5, "Activity Log Menu");
-                menuItems.put(10, "Exit");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::manageProfileMenu);
                 menuActions.put(2, this::carAndAutoPartMenu);
                 menuActions.put(3, this::transactionMenu);
                 menuActions.put(4, this::statisticsMenu);
                 menuActions.put(5, this::activityLogMenu);
-                menuActions.put(10, this::exit);
+                menuActions.put(0, this::exit);
             }
             case MECHANIC -> {
                 menuItems.put(1, "Manage Profile Menu");
@@ -78,27 +78,27 @@ public class Menu {
                 menuItems.put(3, "Service Menu");
                 menuItems.put(4, "Statistics Menu");
                 menuItems.put(5, "Activity Log Menu");
-                menuItems.put(10, "Exit");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::manageProfileMenu);
                 menuActions.put(2, this::carAndAutoPartMenu);
                 menuActions.put(3, this::serviceMenu);
                 menuActions.put(4, this::statisticsMenu);
                 menuActions.put(5, this::activityLogMenu);
-                menuActions.put(10, this::exit);
+                menuActions.put(0, this::exit);
             }
             case CLIENT -> {
                 menuItems.put(1, "Manage Profile Menu");
                 menuItems.put(2, "Car And Auto Part Menu");
                 menuItems.put(3, "Statistics Menu");
                 menuItems.put(4, "Activity Log Menu");
-                menuItems.put(10, "Exit");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::manageProfileMenu);
                 menuActions.put(2, this::carAndAutoPartMenu);
                 menuActions.put(3, this::statisticsMenu);
                 menuActions.put(4, this::activityLogMenu);
-                menuActions.put(10, this::exit);
+                menuActions.put(0, this::exit);
             }
         }
     }
