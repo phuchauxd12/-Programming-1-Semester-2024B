@@ -6,7 +6,7 @@ import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.Client;
 import user.User;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -14,19 +14,19 @@ import java.util.stream.Collectors;
 
 public class ServiceList {
     public static List<Service> services;
+
     // This code run one time when create an instance of a class
     static {
         try {
-            if(!Database.isDatabaseExist(ServiceDatabase.path)){
+            if (!Database.isDatabaseExist(ServiceDatabase.path)) {
                 ServiceDatabase.createDatabase();
-            };
+            }
+            ;
             services = ServiceDatabase.loadService();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
 
 
     public static void addService(String mechanicId) throws Exception {
@@ -44,9 +44,9 @@ public class ServiceList {
         System.out.println("Enter name of replaced parts (separate by comma): ");
         String partNamesInput = scanner.nextLine();
         List<String> partNames = Arrays.stream(partNamesInput.split(","))
-                                        .map(String::trim)
-                                        .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
-                                        .collect(Collectors.toList());
+                .map(String::trim)
+                .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
+                .collect(Collectors.toList());
 
         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
         int serviceByInput = Integer.parseInt(scanner.nextLine());
@@ -88,9 +88,9 @@ public class ServiceList {
     }
 
     // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
-    public static void displayAllServices(){
+    public static void displayAllServices() {
         for (Service service : services) {
-            if(!service.isDeleted()) {
+            if (!service.isDeleted()) {
                 System.out.println(service.getFormattedServiceDetails());
                 System.out.println("___________________________________");
             }

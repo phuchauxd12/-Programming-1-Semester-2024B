@@ -1,4 +1,4 @@
-package utils;
+package utils.menu;
 
 public enum MenuOption {
     MANAGER,

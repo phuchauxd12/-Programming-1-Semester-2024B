@@ -2,8 +2,8 @@ import autoPart.autoPart;
 import data.autoPart.AutoPartDatabase;
 import data.user.UserDatabase;
 import user.*;
-import utils.LoginMenu;
-import utils.Menu;
+import utils.menu.LoginMenu;
+import utils.menu.MainMenu;
 
 import java.time.LocalDate;
 
@@ -102,8 +102,8 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu mainMenu = new Menu();
-        mainMenu.mainMenu();
+        MainMenu menu = new MainMenu();
+        menu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();

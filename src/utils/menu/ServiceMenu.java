@@ -1,36 +1,32 @@
-package utils;
+package utils.menu;
 
 import services.Service;
 import services.ServiceList;
-import user.*;
+import user.Manager;
+import user.Mechanic;
+import user.User;
+import utils.DatePrompt;
+import utils.UserSession;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
 
-import static utils.Menu.getOption;
-
-public class ServiceMenu {
-    private static final Scanner input = new Scanner(System.in);
-    private final Map<Integer, String> menuItems = new LinkedHashMap<>();
-    private final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
+public class ServiceMenu extends FunctionalMenu {
 
 
     // Constructor to initialize the menuList and menuActions
-    public ServiceMenu(User user) {
-        switch (user) {
+    public ServiceMenu(MainMenu mainMenu) {
+        super(mainMenu);
+        switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Mechanic m -> initializeMenu(MenuOption.MECHANIC);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption) {
-        menuItems.put(2, "Create a Service");
-        menuItems.put(3, "Update a Service");
-        menuItems.put(4, "Search a service by ID");
-        menuItems.put(5, "Search between specific dates");
-        menuItems.put(6, "Delete a Service");
-        menuItems.put(0, "Exit");
+    @Override
+    protected void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Display All Services");
@@ -55,29 +51,20 @@ public class ServiceMenu {
                 menuActions.put(0, this::exit);
             }
         }
+        menuItems.put(2, "Create a Service");
+        menuItems.put(3, "Update a Service");
+        menuItems.put(4, "Search a service by ID");
+        menuItems.put(5, "Search between specific dates");
+        menuItems.put(6, "Delete a Service");
+        menuItems.put(0, "Exit");
+
     }
 
     // Method to display the menu
-    public void displayMenu() {
-        System.out.println("Welcome to the Service Menu!");
-        System.out.println("---------------------");
-        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
-        System.out.println("---------------------");
-    }
 
-    public void mainMenu(Menu mainMenu) {
-        int option = 100;
-        do {
-            displayMenu();
-            option = getOption(option, input);
-            Runnable action = menuActions.get(option);
-            if (action != null) {
-                action.run();
-            } else {
-                System.out.println("Invalid option. Please try again.");
-            }
-        } while (option != 0);
-        mainMenu.mainMenu();
+    protected void mainMenu() {
+        System.out.println("Welcome to the Service Menu");
+        super.mainMenu();
     }
 
     // Placeholder methods for menu actions
@@ -147,8 +134,8 @@ public class ServiceMenu {
 
     private void searchServiceByDate() {
         System.out.println("Searching service between ...");
-        LocalDate startDate = Menu.getStartDate();
-        LocalDate endDate = Menu.getEndDate(startDate);
+        LocalDate startDate = DatePrompt.getStartDate();
+        LocalDate endDate = DatePrompt.getEndDate(startDate);
         List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
         if (!servicesBetween.isEmpty()) {
             System.out.println("Service found!");
@@ -161,7 +148,4 @@ public class ServiceMenu {
         System.out.println("Non service done between : " + startDate + " to " + endDate);
     }
 
-    private void exit() {
-        System.out.println("Exiting...");
-    }
 }

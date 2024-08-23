@@ -1,32 +1,28 @@
-package utils;
+package utils.menu;
 
 import services.ServiceList;
 import transaction.SaleTransactionList;
-import user.*;
+import user.Manager;
+import user.Salesperson;
+import user.User;
+import utils.UserSession;
 
-import java.util.*;
+import java.util.Scanner;
 
-import static utils.Menu.getOption;
+public class SaleTransactionMenu extends FunctionalMenu {
 
-public class SaleTransactionMenu {
-    private static final Scanner input = new Scanner(System.in);
-    private final Map<Integer, String> menuItems = new LinkedHashMap<>();
-    private final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
 
-    public SaleTransactionMenu(User user) {
-        switch (user) {
+    public SaleTransactionMenu(MainMenu mainMenu) {
+        super(mainMenu);
+        switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption) {
-        menuItems.put(2, "Search a transaction by ID");
-        menuItems.put(3, "Delete a transaction");
-        menuItems.put(4, "Create a new transaction");
-        menuItems.put(5, "Update a transaction");
-        menuItems.put(0, "Exit");
+    @Override
+    protected void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Display all transactions");
@@ -50,6 +46,11 @@ public class SaleTransactionMenu {
                 menuActions.put(0, this::exit);
             }
         }
+        menuItems.put(2, "Search a transaction by ID");
+        menuItems.put(3, "Delete a transaction");
+        menuItems.put(4, "Create a new transaction");
+        menuItems.put(5, "Update a transaction");
+        menuItems.put(0, "Exit");
     }
 
     private void createTransactionWrapper() {
@@ -115,29 +116,9 @@ public class SaleTransactionMenu {
         SaleTransactionList.updateSaleTransaction();
     }
 
-    private void exit() {
-        System.out.println("Exiting...");
-    }
-
-    public void displayMenu() {
-        System.out.println("Welcome to the Sales Transaction Menu!");
-        System.out.println("---------------------");
-        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
-        System.out.println("---------------------");
-    }
-
-    public void mainMenu(Menu mainMenu) {
-        int option = 100;
-        do {
-            displayMenu();
-            option = getOption(option, input);
-            Runnable action = menuActions.get(option);
-            if (action != null) {
-                action.run();
-            } else {
-                System.out.println("Invalid option. Please try again.");
-            }
-        } while (option != 0);
-        mainMenu.mainMenu();
+    @Override
+    protected void mainMenu() {
+        System.out.println("Welcome to the Sale Transaction Menu!");
+        super.mainMenu();
     }
 }
