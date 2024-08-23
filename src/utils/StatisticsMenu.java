@@ -27,9 +27,9 @@ public class StatisticsMenu {
     public StatisticsMenu(User user) {
         switch (user) {
             case Manager c -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson  c-> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic  c-> initializeMenu(MenuOption.MECHANIC, user);
-            case Client  c-> initializeMenu(MenuOption.CLIENT, user);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC, user);
+            case Client c -> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -56,8 +56,8 @@ public class StatisticsMenu {
                 menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
                 menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
-                menuActions.put(8, c -> getAllSalespersonSales(user));
-                menuActions.put(9, c -> getAllMechanicServices(user));
+                menuActions.put(8, c -> getAllSalespersonSales());
+                menuActions.put(9, c -> getAllMechanicServices());
                 menuActions.put(10, this::exit);
                 break;
 
@@ -71,8 +71,8 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add salesperson-specific actions here
-                menuActions.put(1, c -> getAllSalespersonSales(user));
-                menuActions.put(2, c-> getAllTransactionsByMeInSpecificPeriod(user));
+                menuActions.put(1, c -> getAllSalespersonSales());
+                menuActions.put(2, c -> getAllTransactionsByMeInSpecificPeriod(user));
                 menuActions.put(3, c -> getAllCarsSoldBySalesperson(user));
                 menuActions.put(4, c -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
                 menuActions.put(5, c -> SalespersonRevenue(user));
@@ -88,7 +88,7 @@ public class StatisticsMenu {
                 menuItems.put(10, "Exit");
 
                 // Add mechanic-specific actions here
-                menuActions.put(1, c -> getAllMechanicServices(user));
+                menuActions.put(1, c -> getAllMechanicServices());
                 menuActions.put(2, c -> getAllMechanicServicesInSpecificPeriod(user));
                 menuActions.put(3, c -> getRevenueOfServices(user));
                 menuActions.put(4, c -> getRevenueOfServicesInSpecificPeriod(user));
@@ -105,7 +105,7 @@ public class StatisticsMenu {
                 // Add client-specific actions here
                 menuActions.put(1, c -> getAllClientServices(user));
                 menuActions.put(2, c -> getAllClientServicesInSpecificPeriod(user));
-                menuActions.put(3, c-> getAllClientSalesTransactions(user));
+                menuActions.put(3, c -> getAllClientSalesTransactions(user));
                 menuActions.put(4, c -> getAllClientTransactionsInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
@@ -362,7 +362,8 @@ public class StatisticsMenu {
         }
     }
 
-    private void getAllMechanicServices(User loggedInUser) {
+    private void getAllMechanicServices() {
+        User loggedInUser = UserSession.getCurrentUser();
         if (loggedInUser instanceof Mechanic mechanic) {
             mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
         } else if (loggedInUser instanceof Manager) {
@@ -387,7 +388,8 @@ public class StatisticsMenu {
         }
     }
 
-    private void getAllSalespersonSales(User loggedInUser) {
+    private void getAllSalespersonSales() {
+        User loggedInUser = UserSession.getCurrentUser();
         if (loggedInUser instanceof Salesperson salesperson) {
             salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
         } else if (loggedInUser instanceof Manager) {

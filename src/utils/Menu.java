@@ -25,8 +25,8 @@ public class Menu {
         this.currentUser = UserSession.getCurrentUser();
         carAndAutoPartMenu = new CarAndAutoPartMenu(currentUser);
         statisticsMenu = new StatisticsMenu(currentUser);
-        saleTransactionMenu = new SaleTransactionMenu();
-        serviceMenu = new ServiceMenu();
+        saleTransactionMenu = new SaleTransactionMenu(currentUser);
+        serviceMenu = new ServiceMenu(currentUser);
         switch (currentUser) {
             case Manager _ -> initializeMenu(MenuOption.MANAGER);
             case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);

@@ -2,31 +2,54 @@ package utils;
 
 import services.ServiceList;
 import transaction.SaleTransactionList;
-import user.User;
+import user.*;
 
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+
+import static utils.Menu.getOption;
 
 public class SaleTransactionMenu {
-    HashSet<String> menuList = new HashSet<String>();
-    private Map<Integer, Runnable> menuActions = new HashMap<>();
+    private static final Scanner input = new Scanner(System.in);
+    private final Map<Integer, String> menuItems = new LinkedHashMap<>();
+    private final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
 
-    public SaleTransactionMenu() {
-        menuList.add("Display all transactions");
-        menuList.add("Search a transaction by ID");
-        menuList.add("Delete a transaction");
-        menuList.add("Create a new transaction");
-        menuList.add("Update a transaction");
-        menuList.add("Exit");
+    public SaleTransactionMenu(User user) {
+        switch (user) {
+            case Manager m -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
+            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+        }
+    }
 
-        menuActions.put(1, this::displayAllTransactions);
-        menuActions.put(2, this::searchTransactionById);
-        menuActions.put(3, this::deleteTransactionWrapper);
-        menuActions.put(4, this::createTransactionWrapper);
-        menuActions.put(5, this::updateTransactionWrapper);
-        menuActions.put(6, this::exit);
+    private void initializeMenu(MenuOption menuOption) {
+        menuItems.put(2, "Search a transaction by ID");
+        menuItems.put(3, "Delete a transaction");
+        menuItems.put(4, "Create a new transaction");
+        menuItems.put(5, "Update a transaction");
+        menuItems.put(0, "Exit");
+        switch (menuOption) {
+            case MANAGER -> {
+                menuItems.put(1, "Display all transactions");
+
+                menuActions.put(1, this::displayAllTransactions);
+                menuActions.put(2, this::searchTransactionById);
+                menuActions.put(3, this::deleteTransactionWrapper);
+                menuActions.put(4, this::createTransactionWrapper);
+                menuActions.put(5, this::updateTransactionWrapper);
+                menuActions.put(0, this::exit);
+            }
+            case SALESPERSON -> {
+                menuItems.put(1, "Display all transactions by me");
+
+
+                menuActions.put(1, this::displayAllTransactions); // TODO: Display all transactions by salesperson
+                menuActions.put(2, this::searchTransactionById); // TODO: Search transactions by salesperson
+                menuActions.put(3, this::deleteTransactionWrapper); // TODO: Delete transactions by salesperson
+                menuActions.put(4, this::createTransactionWrapper); // TODO: Create transactions by salesperson
+                menuActions.put(5, this::updateTransactionWrapper); // TODO: Update transactions by salesperson
+                menuActions.put(0, this::exit);
+            }
+        }
     }
 
     private void createTransactionWrapper() {
@@ -97,37 +120,24 @@ public class SaleTransactionMenu {
     }
 
     public void displayMenu() {
-        int currentIndex = 1;
-
-        System.out.println("This is the Sale Transaction Menu.");
-        for (String menuItem : menuList) {
-            System.out.printf("%d  %s \n", currentIndex, menuItem);
-            currentIndex++;
-        }
-    }
-
-    private int getOption(Scanner input) {
-        System.out.print("Enter your choice: ");
-        while (!input.hasNextInt()) {
-            System.out.println("Invalid input. Please enter a number.");
-            input.next();
-        }
-        return input.nextInt();
+        System.out.println("Welcome to the Sales Transaction Menu!");
+        System.out.println("---------------------");
+        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
+        System.out.println("---------------------");
     }
 
     public void mainMenu(Menu mainMenu) {
-        Scanner input = new Scanner(System.in);
-        int option = 0;
-        while (option != 6) {
+        int option = 100;
+        do {
             displayMenu();
-            option = getOption(input);
+            option = getOption(option, input);
             Runnable action = menuActions.get(option);
             if (action != null) {
                 action.run();
             } else {
                 System.out.println("Invalid option. Please try again.");
             }
-        }
+        } while (option != 0);
         mainMenu.mainMenu();
     }
 }

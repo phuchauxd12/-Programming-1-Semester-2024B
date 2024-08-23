@@ -262,7 +262,7 @@ public class CarAndAutoPartMenu {
                 System.out.println(car);
             }
         } else {
-            System.out.println("Displaying all cars with" + status + " status:");
+            System.out.println("Displaying all cars with " + status + " status:");
             for (Car car : carsList) {
 
                 if (car.getStatus() == status) {

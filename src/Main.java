@@ -1,20 +1,11 @@
-import activityLog.ActivityLog;
-import user.Manager;
-import user.Mechanic;
-import user.Membership;
-import user.User;
-import utils.ActivityLogMenu;
 import autoPart.autoPart;
 import data.autoPart.AutoPartDatabase;
 import data.user.UserDatabase;
-import services.Service;
-import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
 import utils.Menu;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Main {
@@ -120,9 +111,9 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
         // Add some activity logs
-        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
-        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
-        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
+//        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
+//        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
+//        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
 
     }
 
