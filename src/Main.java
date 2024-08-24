@@ -1,6 +1,9 @@
 import activityLog.ActivityLog;
 import autoPart.autoPart;
+import car.Car;
 import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
+import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import services.Service;
 import services.ServiceBy;
@@ -36,7 +39,10 @@ public class Main {
         System.out.println("s3975133, Doan Nguyen Phu Chau");
 //        Membership membership = new Membership();
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-
+        Car car = new Car("Honda", "Civic", 2018, "Black", 45000, 15999.99, "Clean title, no accidents", Status.AVAILABLE);
+        CarDatabase.createDatabase();
+//        Car.addCarToList(car);
+        System.out.println(CarDatabase.loadCars());
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
@@ -95,9 +101,9 @@ public class Main {
         System.out.println(listUser);
 
 
-//        ServiceDatabase.createDatabase();
-//        Service.addService(service2);
-
+        ServiceDatabase.createDatabase();
+        Service.addService(service2);
+        System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
         LoginMenu.displayLoginMenu();
