@@ -23,10 +23,10 @@ public class CarAndAutoPartMenu {
 
     public CarAndAutoPartMenu(User user) {
         switch (user) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
-            case Client _ -> initializeMenu(MenuOption.CLIENT);
+            case Manager c -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
+            case Client c -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -104,7 +104,8 @@ public class CarAndAutoPartMenu {
 
     private void searchForCar() {
         System.out.println("Enter the car ID:");
-        String carID = input.nextLine();
+        Scanner newInput = new Scanner(System.in);
+        String carID = newInput.nextLine();
         Car car = findCarByID(carID);
         if (car != null) {
             System.out.println(car.toStringDetailed());
@@ -115,7 +116,8 @@ public class CarAndAutoPartMenu {
 
     private void searchForPart() {
         System.out.println("Enter the part ID:");
-        String partID = input.nextLine();
+        Scanner newInput = new Scanner(System.in);
+        String partID = newInput.nextLine();
         autoPart part = findAutoPartByID(partID);
         if (part != null) {
             System.out.println(part.toStringDetailed());

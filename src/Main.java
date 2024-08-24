@@ -1,20 +1,12 @@
 import activityLog.ActivityLog;
-import user.Manager;
-import user.Mechanic;
-import user.Membership;
-import user.User;
-import utils.ActivityLogMenu;
 import autoPart.autoPart;
 import data.autoPart.AutoPartDatabase;
 import data.user.UserDatabase;
-import services.Service;
-import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
 import utils.Menu;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Main {
@@ -84,9 +76,9 @@ public class Main {
 ////        partlist.add(part2.getPartName());
 ////        partlist.add(part3.getPartName());
 //        AutoPartDatabase.createDatabase();
-//        autoPart.addPartToList(part1);
-//        autoPart.addPartToList(part2);
-//        autoPart.addPartToList(part3);
+        autoPart.addPartToList(part1);
+        autoPart.addPartToList(part2);
+        autoPart.addPartToList(part3);
         AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
 //        AutoPartDatabase.updateAutoPart("p-e383be13-38ff-4cce-8650-04f8a194329f",1);
 //        UserDatabase.createDatabase();
