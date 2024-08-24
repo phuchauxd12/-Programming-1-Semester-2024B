@@ -21,7 +21,8 @@ public class Service implements Serializable {
     private LocalDate serviceDate;
     private String clientId;
     private String mechanicId;
-    private String serviceType;
+    private serviceType serviceType;
+    private String serviceTypeName;
     private List<autoPart> replacedParts;
     private ServiceBy serviceBy;
     private String carId;
@@ -30,14 +31,27 @@ public class Service implements Serializable {
     private boolean isDeleted;
     private String additionalNotes;
 
+    public enum Category {
+        ROUTINE_MAINTENANCE,
+        SYSTEM_REPAIR,
+        BODY_AND_INTERIOR
+    }
+
+    public static enum serviceType {
+        Maintenance,
+        System_Repair,
+        Body_and_Interior,
+        Accessory_Installation,
+
+    }
 
     // Constructor
-    public Service(LocalDate serviceDate, String clientId, String mechanicId, String serviceType, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
+    public Service(LocalDate serviceDate, String clientId, String mechanicId, serviceType type, String serviceTypeName, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
         this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
         this.mechanicId = mechanicId;
-        this.serviceType = serviceType;
+        this.serviceType = type;
         this.replacedParts = retrieveParts(partIds);
         this.serviceBy = serviceBy;
         this.carId = carId;

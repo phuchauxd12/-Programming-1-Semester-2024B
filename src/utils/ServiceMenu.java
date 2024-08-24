@@ -54,7 +54,8 @@ public class ServiceMenu {
                 System.out.println("Invalid option. Please try again.");
             }
         }
-        Menu.mainMenu(user);
+        Menu mainMenu = new Menu(user);
+        mainMenu.mainMenu();
     }
 
     // Method to get the user's option

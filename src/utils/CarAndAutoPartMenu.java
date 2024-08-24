@@ -164,7 +164,8 @@ public class CarAndAutoPartMenu {
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         } while (option != 10);
-        Menu.mainMenu(user);
+        Menu mainMenu = new Menu(user);
+        mainMenu.mainMenu();
     }
 
     // Static helper functions

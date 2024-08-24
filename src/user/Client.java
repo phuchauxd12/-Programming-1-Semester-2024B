@@ -20,6 +20,10 @@ public class Client extends User {
         this.totalSpending = 0.0;
     }
 
+    static final double PlatinumValue = 250000000;
+    static final double GoldValue = 100000000;
+    static final double SilverValue = 30000000;
+
     public SaleTransactionList getSaleTransactionList() {
         return saleTransactionList;
     }
@@ -41,11 +45,11 @@ public class Client extends User {
     }
 
     public void updateMembership() {
-        if (totalSpending < 30000000) {
+        if (totalSpending < SilverValue) {
             membership.setMembershipType(Membership.MembershipType.Normal);
-        } else if (totalSpending <= 100000000) {
+        } else if (totalSpending <= GoldValue) {
             membership.setMembershipType(Membership.MembershipType.Silver);
-        } else if (totalSpending <= 250000000) {
+        } else if (totalSpending <= PlatinumValue) {
             membership.setMembershipType(Membership.MembershipType.Gold);
         } else {
             membership.setMembershipType(Membership.MembershipType.Platinum);

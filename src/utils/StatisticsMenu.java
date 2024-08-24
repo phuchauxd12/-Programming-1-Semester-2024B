@@ -130,7 +130,8 @@ public class StatisticsMenu {
             option = getOption(option, input);
             menuActions.getOrDefault(option, _ -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
-        Menu.mainMenu(user);
+        Menu mainMenu = new Menu(user);
+        mainMenu.mainMenu();
     }
 
     // Manager functions
@@ -235,7 +236,7 @@ public class StatisticsMenu {
     private static void viewAutoPartStatistics() {
         int totalPartsInStock = 0;
         int totalPartsSold = 0;
-        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
+        Map<autoPart.Condition, Integer> partConditionStats = new HashMap<>();
 
         for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
             if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){

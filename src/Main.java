@@ -1,3 +1,4 @@
+import activityLog.ActivityLog;
 import autoPart.autoPart;
 import data.autoPart.AutoPartDatabase;
 import data.user.UserDatabase;
@@ -5,12 +6,11 @@ import services.Service;
 import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
-import utils.Menu;
+import utils.ActivityLogMenu;
 import utils.UserSession;
 
 import java.time.LocalDate;
 import java.util.List;
-
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -40,8 +40,8 @@ public class Main {
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", "Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Maintenance, "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.System_Repair,"Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
 
 //        ServiceList serviceList = new ServiceList();
 //        Service service1 = new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
@@ -115,7 +115,13 @@ public class Main {
 //
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
+        // Add some activity logs
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
+        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
+        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
 
+        ActivityLogMenu menu = new ActivityLogMenu();
+        menu.mainMenu();
     }
 
     //

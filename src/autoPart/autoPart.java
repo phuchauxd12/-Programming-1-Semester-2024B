@@ -282,7 +282,7 @@ public class autoPart implements Serializable {
                     System.out.println(part);
                     break;
                 case 7:
-                    AutoPartDatabase.saveAutoPartData(AutoPartDatabase.loadAutoParts());
+                    AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                     CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
                     menu.mainMenu(user);
                     break;
