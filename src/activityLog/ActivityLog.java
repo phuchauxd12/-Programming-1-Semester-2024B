@@ -43,9 +43,10 @@ public class ActivityLog implements Serializable {
 
     static {
         try {
-            if(!Database.isDatabaseExist(ActivityLogDatabase.path)){
+            if (!Database.isDatabaseExist(ActivityLogDatabase.path)) {
                 ActivityLogDatabase.createDatabase();
-            };
+            }
+            ;
             activityLogs = ActivityLogDatabase.loadActivityLogs();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -53,7 +54,7 @@ public class ActivityLog implements Serializable {
     }
 
     public static void addActivityLog(String userId, LocalDate date, String activityName) throws Exception {
-        ActivityLog newLog = new ActivityLog( userId, date, activityName);
+        ActivityLog newLog = new ActivityLog(userId, date, activityName);
         activityLogs.add(newLog);
         ActivityLogDatabase.saveActivityLogData(activityLogs);
     }
@@ -67,7 +68,7 @@ public class ActivityLog implements Serializable {
         return null;
     }
 
-    public static List<ActivityLog> getActivityLogByDate(LocalDate startDate, LocalDate endDate) {
+    public List<ActivityLog> getActivityLogByDate(LocalDate startDate, LocalDate endDate) {
         return activityLogs.stream()
                 .filter(log -> (log.getDate().isEqual(startDate) || log.getDate().isAfter(startDate)) &&
                         (log.getDate().isEqual(endDate) || log.getDate().isBefore(endDate)))
@@ -87,6 +88,10 @@ public class ActivityLog implements Serializable {
     public static void viewAllActivityLog() {
         List<ActivityLog> allLogs = getAllActivityLog();
         System.out.println("All Activity Logs:");
+        displayLogs(allLogs);
+    }
+
+    public static void displayLogs(List<ActivityLog> allLogs) {
         for (ActivityLog log : allLogs) {
             System.out.println("Activity ID: " + log.getActivityId());
             System.out.println("User ID: " + log.getUserId());

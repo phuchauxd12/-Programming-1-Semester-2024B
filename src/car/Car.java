@@ -5,8 +5,8 @@ import services.Service;
 import user.Manager;
 import user.Mechanic;
 import user.User;
-import utils.CarAndAutoPartMenu;
-import utils.Menu;
+import utils.menu.CarAndAutoPartMenu;
+import utils.menu.MainMenu;
 import utils.Status;
 
 import java.io.Serializable;
@@ -253,7 +253,7 @@ public class Car implements Serializable {
             System.out.println("6. Car Price");
             System.out.println("7. Additional Notes");
             System.out.println("8. Exit");
-            option = Menu.getOption(option, input);
+            option = MainMenu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("The current car's make: " + car.carMake);

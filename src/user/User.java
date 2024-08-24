@@ -1,7 +1,7 @@
 package user;
 
 import data.user.UserDatabase;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -102,7 +102,8 @@ public class User implements Serializable {
             default:
                 System.out.println("Invalid field specified.");
                 return;
-        };
+        }
+        ;
         UserDatabase.saveUsersData(UserMenu.getUserList());
 
     }
@@ -137,7 +138,6 @@ public class User implements Serializable {
             System.out.println("User not found with ID: " + userID);
         }
     }
-
 
 
     // Getters and Setters
