@@ -35,18 +35,36 @@ public class ServiceList {
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
         LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter client ID: ");
+        System.out.print("Enter client name: ");
         String clientId = scanner.nextLine();
 
-        System.out.print("Enter serviceType: ");
-        String serviceType = scanner.nextLine();
+        System.out.println("Select a service category:");
+        Service.Category[] categories = Service.Category.values();
+        for (int i = 0; i < categories.length; i++) {
+            System.out.println((i + 1) + ". " + categories[i]);
+        }
+        int categoryIndex = scanner.nextInt() - 1;
+        Service.Category selectedCategory = categories[categoryIndex];
 
-        System.out.println("Enter name of replaced parts (separate by comma): ");
+        System.out.println("Select a service type:");
+        List<Service.serviceType> serviceTypes = Service.serviceType.getByCategory(selectedCategory);
+        for (int i = 0; i < serviceTypes.size(); i++) {
+            System.out.println((i + 1) + ". " + serviceTypes.get(i));
+        }
+        int serviceTypeIndex = scanner.nextInt() - 1;
+        Service.serviceType selectedServiceType = serviceTypes.get(serviceTypeIndex);
+
+        double serviceCost = selectedServiceType.getPrice();
+
+        scanner.nextLine();
+
+        System.out.println("Enter ID of replaced parts (separate by comma, or leave empty if none): ");
         String partNamesInput = scanner.nextLine();
-        List<String> partNames = Arrays.stream(partNamesInput.split(","))
-                                        .map(String::trim)
-                                        .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
-                                        .collect(Collectors.toList());
+        List<String> partNames = partNamesInput.isEmpty() ? Collections.emptyList() :
+                Arrays.stream(partNamesInput.split(","))
+                        .map(String::trim)
+                        .map(partName -> partName.replaceAll(" +", " "))
+                        .collect(Collectors.toList());
 
         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
         int serviceByInput = Integer.parseInt(scanner.nextLine());
@@ -55,10 +73,7 @@ public class ServiceList {
         System.out.print("Enter car ID: ");
         String carId = scanner.nextLine();
 
-        System.out.print("Enter service cost: ");
-        double serviceCost = scanner.nextDouble();
-
-        Service service = new Service(transactionDate, clientId, mechanicId, serviceType, partNames, serviceBy, carId, serviceCost);
+        Service service = new Service(transactionDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost);
         Service.addService(service);
 
         User user = UserMenu.getUserList().stream()
@@ -69,10 +84,10 @@ public class ServiceList {
         if (user != null && user instanceof Client) {
             Client client = (Client) user;
             client.updateTotalSpending(service.getTotalCost());
-            UserDatabase.saveUsersData(UserMenu.getUserList());// Assuming Client class has this method
+            UserDatabase.saveUsersData(UserMenu.getUserList());
         }
-
     }
+
 
     public static Service getServiceById(String serviceId) {
         for (Service service : services) {
@@ -208,9 +223,9 @@ public class ServiceList {
 
             clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
 
-            String serviceType = service.getServiceType();
-            serviceUsageCount.put(serviceType, serviceUsageCount.getOrDefault(serviceType, 0) + 1);
-            serviceRevenue.put(serviceType, serviceRevenue.getOrDefault(serviceType, 0.0) + service.getTotalCost());
+            Service.serviceType serviceType = service.getServiceType();
+            serviceUsageCount.put(String.valueOf(serviceType), serviceUsageCount.getOrDefault(serviceType, 0) + 1);
+            serviceRevenue.put(String.valueOf(serviceType), serviceRevenue.getOrDefault(serviceType, 0.0) + service.getTotalCost());
 
 
             String mechanicId = service.getMechanicId(); // Assuming you have this method

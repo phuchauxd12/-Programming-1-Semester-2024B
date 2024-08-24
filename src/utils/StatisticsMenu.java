@@ -1,5 +1,6 @@
 package utils;
 
+import autoPart.autoPart;
 import car.Car;
 import services.Service;
 import services.ServiceList;
@@ -47,7 +48,8 @@ public class StatisticsMenu {
                 menuItems.put(7, "List All Services (in specific period)");
                 menuItems.put(8, "List all Sales by a salesperson");
                 menuItems.put(9, "List all Services by a mechanic");
-                menuItems.put(10, "Exit");
+                menuItems.put(10, "View autoPart statistic");
+                menuItems.put(11, "Exit");
 
                 menuActions.put(1, this::getNumberOfCarsSoldInSpecificPeriod);
                 menuActions.put(2, this::ManagerProcessMechanicRevenue);
@@ -231,34 +233,34 @@ public class StatisticsMenu {
         return clientRevenue;
     }
 
-//    private static void viewAutoPartStatistics() {
-//        int totalPartsInStock = 0;
-//        int totalPartsSold = 0;
-//        Map<autoPart.autoPart.Condition, Integer> partConditionStats = new HashMap<>();
-//
-//        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
-//            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
-//                totalPartsInStock++;
-//                if(part.getCondition() == autoPart.Condition.NEW){
-//                    partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-//                } else if(part.getCondition() == autoPart.Condition.USED){
-//                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-//                } else {
-//                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-//                }
-//            }
-//            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
-//                totalPartsSold++;
-//            }
-//        }
-//
-//        System.out.println("Auto Part Statistics:");
-//        System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
-//        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
-//
-//        System.out.println("Part Condition Statistics:");
-//        partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
-//    }
+    private static void viewAutoPartStatistics() {
+        int totalPartsInStock = 0;
+        int totalPartsSold = 0;
+        Map<autoPart.Condition, Integer> partConditionStats = new HashMap<>();
+
+        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
+            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
+                totalPartsInStock++;
+                if(part.getCondition() == autoPart.Condition.NEW){
+                    partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
+                } else if(part.getCondition() == autoPart.Condition.USED){
+                    partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.USED, 0) + 1);
+                } else {
+                    partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.REFURBISHED, 0) + 1);
+                }
+            }
+            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
+                totalPartsSold++;
+            }
+        }
+
+        System.out.println("Auto Part Statistics:");
+        System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
+        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
+
+        System.out.println("Part Condition Statistics:");
+        partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
+    }
 
     public static void viewCarStatistics(LocalDate startDate, LocalDate endDate) {
         double totalCarRevenue = calculateTotalCarSellRevenueAndCount(startDate, endDate)[0];
