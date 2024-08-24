@@ -2,7 +2,6 @@ package autoPart;
 
 
 import data.autoPart.AutoPartDatabase;
-import user.User;
 import utils.CarAndAutoPartMenu;
 import utils.Menu;
 import utils.Status;
@@ -178,7 +177,7 @@ public class autoPart implements Serializable {
 
 
     public static void deletePart() throws Exception {
-        CarAndAutoPartMenu.displayAllParts();
+        CarAndAutoPartMenu.displayAllParts(null);
         Scanner input = new Scanner(System.in);
         System.out.println("Enter the part ID of the part you want to delete: ");
         String partID = input.next();
@@ -193,8 +192,8 @@ public class autoPart implements Serializable {
         System.out.println(part);
     }
 
-    public static void updatePart(User user) throws Exception {
-        CarAndAutoPartMenu.displayAllParts();
+    public static void updatePart() throws Exception {
+        CarAndAutoPartMenu.displayAllParts(null);
         autoPart part = null;
         Scanner input = new Scanner(System.in);
         while (part == null) {
@@ -283,8 +282,6 @@ public class autoPart implements Serializable {
                     break;
                 case 7:
                     AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
-                    CarAndAutoPartMenu menu = new CarAndAutoPartMenu(user);
-                    menu.mainMenu(user);
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -292,9 +289,7 @@ public class autoPart implements Serializable {
         }
     }
 
-
-    @Override
-    public String toString() {
+    public String toStringDetailed() {
         return "{" +
                 "partID ='" + partID + '\'' +
                 ", partName ='" + partName + '\'' +
@@ -306,6 +301,16 @@ public class autoPart implements Serializable {
                 ", status = " + status +
                 ", soldDate = " + soldDate +
                 ", isDeleted = " + isDeleted +
+                '}';
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "partID ='" + partID + '\'' +
+                ", partName ='" + partName + '\'' +
+                ", partManufacturer ='" + partManufacturer + '\'' +
+                ", condition = " + condition +
                 '}';
     }
 }

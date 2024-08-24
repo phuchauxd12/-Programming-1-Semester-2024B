@@ -1,4 +1,3 @@
-import activityLog.ActivityLog;
 import autoPart.autoPart;
 import car.Car;
 import data.autoPart.AutoPartDatabase;
@@ -9,18 +8,19 @@ import services.Service;
 import services.ServiceBy;
 import user.*;
 import utils.LoginMenu;
-import utils.ActivityLogMenu;
-import utils.UserSession;
+import utils.Menu;
+import utils.Status;
 
 import java.time.LocalDate;
 import java.util.List;
 
+
 public class Main {
     public static void main(String[] args) throws Exception {
         Membership membership = new Membership();
-        Manager manager = new Manager("manager1", "pass123", "Johnny Stack",LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER, null, null );
+        Manager manager = new Manager("manager1", "pass123", "Johnny Stack", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER, null, null);
         Client client = new Client("john_doe", "password1234", "Timmy Toe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.CLIENT, membership);
-        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
+        Mechanic mechanic = new Mechanic("mechanic", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
         Salesperson sale1 = new Salesperson("salesperson1", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE, null);
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
 //        Client client1 = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, "Active", membership);
@@ -40,20 +40,20 @@ public class Main {
 //        Membership membership = new Membership();
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
         Car car = new Car("Honda", "Civic", 2018, "Black", 45000, 15999.99, "Clean title, no accidents", Status.AVAILABLE);
-        CarDatabase.createDatabase();
+//        CarDatabase.createDatabase();
 //        Car.addCarToList(car);
         System.out.println(CarDatabase.loadCars());
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Maintenance, "Oil Change", List.of("Brake Part", "Spark Plug") , ServiceBy.AUTO136, "car1", 2000000000);
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.System_Repair,"Brake Replacement", List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "car1", 2000000000);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Oil_Change, List.of("p-01bdb224-c3b7-486b-a883-8f235287ae29", "p-c428b805-081f-49d0-a8c3-b55cc6cb8d6d") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Oil_Change.getPrice());
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Brake_Service, List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Brake_Service.getPrice());
 
 //        ServiceList serviceList = new ServiceList();
-//        Service service1 = new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
-//        Service service2 = new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
-//        Service service1 = new Service(LocalDate.of(2024, 3, 10), "client3", "mechanic1", "Tire Rotation", ServiceBy.AUTO136, "car3", 49.99));
-//        Service service1 = new Service(LocalDate.of(2024, 4, 5), "client4", "mechanic3", "Battery Replacement", ServiceBy.OTHER, "car4", 119.99));
+//        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
+//        serviceList.addService(new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
+//        serviceList.addService(new Service(LocalDate.of(2024, 3, 10), "client3", "mechanic1", "Tire Rotation", ServiceBy.AUTO136, "car3", 49.99));
+//        serviceList.addService(new Service(LocalDate.of(2024, 4, 5), "client4", "mechanic3", "Battery Replacement", ServiceBy.OTHER, "car4", 119.99));
 //
 //        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", serviceList);
 //        Client client = new Client("client001", "password123", "Client One", LocalDate.of(1990, 6, 10), "789 Pine St", 123456789, "client.one@example.com", User.ROLE.CLIENT, "Active", new Membership());
@@ -101,8 +101,9 @@ public class Main {
         System.out.println(listUser);
 
 
-        ServiceDatabase.createDatabase();
-        Service.addService(service2);
+//        ServiceDatabase.createDatabase();
+//        Service.addService(service1);
+//        Service.addService(service2);
         System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
@@ -114,7 +115,8 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu.mainMenu(UserSession.getCurrentUser());
+        Menu mainMenu = new Menu();
+        mainMenu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
@@ -122,13 +124,10 @@ public class Main {
 //        ServiceMenu serviceMenu = new ServiceMenu();
 //        serviceMenu.mainMenu();
         // Add some activity logs
-        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
-        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
-        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
+//        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 15), "Login");
+//        ActivityLog.addActivityLog("user2", LocalDate.of(2024, 8, 16), "Upload Document");
+//        ActivityLog.addActivityLog("user1", LocalDate.of(2024, 8, 17), "Logout");
 
-        ActivityLogMenu menu = new ActivityLogMenu();
-        menu.mainMenu();
     }
 
-    //
 }

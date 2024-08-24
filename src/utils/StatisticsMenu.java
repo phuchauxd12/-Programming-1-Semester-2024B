@@ -28,9 +28,9 @@ public class StatisticsMenu {
     public StatisticsMenu(User user) {
         switch (user) {
             case Manager c -> initializeMenu(MenuOption.MANAGER, user);
-            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON, user);
-            case Mechanic c -> initializeMenu(MenuOption.MECHANIC, user);
-            case Client c -> initializeMenu(MenuOption.CLIENT, user);
+            case Salesperson  c-> initializeMenu(MenuOption.SALESPERSON, user);
+            case Mechanic  c-> initializeMenu(MenuOption.MECHANIC, user);
+            case Client  c-> initializeMenu(MenuOption.CLIENT, user);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -60,8 +60,7 @@ public class StatisticsMenu {
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
                 menuActions.put(8, c -> getAllSalespersonSales(user));
                 menuActions.put(9, c -> getAllMechanicServices(user));
-                menuActions.put(10, c -> viewAutoPartStatistics());
-                menuActions.put(11, this::exit);
+                menuActions.put(10, this::exit);
                 break;
 
             case SALESPERSON:
@@ -75,7 +74,7 @@ public class StatisticsMenu {
 
                 // Add salesperson-specific actions here
                 menuActions.put(1, c -> getAllSalespersonSales(user));
-                menuActions.put(2, c -> getAllTransactionsByMeInSpecificPeriod(user));
+                menuActions.put(2, c-> getAllTransactionsByMeInSpecificPeriod(user));
                 menuActions.put(3, c -> getAllCarsSoldBySalesperson(user));
                 menuActions.put(4, c -> getAllCarsSoldBySalespersonInSpecificPeriod(user));
                 menuActions.put(5, c -> SalespersonRevenue(user));
@@ -108,7 +107,7 @@ public class StatisticsMenu {
                 // Add client-specific actions here
                 menuActions.put(1, c -> getAllClientServices(user));
                 menuActions.put(2, c -> getAllClientServicesInSpecificPeriod(user));
-                menuActions.put(3, c -> getAllClientSalesTransactions(user));
+                menuActions.put(3, c-> getAllClientSalesTransactions(user));
                 menuActions.put(4, c -> getAllClientTransactionsInSpecificPeriod(user));
                 menuActions.put(10, this::exit);
                 break;
@@ -125,14 +124,13 @@ public class StatisticsMenu {
     }
 
 
-    public void mainMenu(User user) throws Exception {
+    public void mainMenu(Menu mainMenu) throws Exception {
         int option = 0;
         while (option != 10) { // 10 is assumed to be the exit option
             displayMenu();
             option = getOption(option, input);
             menuActions.getOrDefault(option, c -> System.out.println("Invalid option. Please try again.")).accept(input);
         }
-        Menu mainMenu = new Menu(user);
         mainMenu.mainMenu();
     }
 
@@ -152,7 +150,7 @@ public class StatisticsMenu {
         if (mechanic != null) {
             LocalDate startDate = Menu.getStartDate();
             LocalDate endDate = Menu.getEndDate(startDate);
-            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
+            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
             System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
         } else {
             System.out.println("Mechanic not found. Please try again.");
@@ -177,10 +175,10 @@ public class StatisticsMenu {
     private void ManagerProcessTotalRevenue(Scanner s) {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
-        double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[0];
-        double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[0];
-        int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate,endDate)[1];
-        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate,endDate)[1];
+        double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[0];
+        double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[0];
+        int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[1];
+        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[1];
 
         double totalRevenue = totalSalesRevenue + totalServiceRevenue;
         int totalTransactions = totalSalesTransactions + totalServiceTransactions;
@@ -275,7 +273,7 @@ public class StatisticsMenu {
         Map<String, Integer> carsInRepair = new HashMap<>();
 
         for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
-            for (Car car : transaction.getPurchasedCars()){
+            for (Car car : transaction.getPurchasedCars()) {
                 String carType = car.getCarModel();
                 revenueByCarModel.put(carType, revenueByCarModel.getOrDefault(carType, 0.0) + transaction.getTotalAmount());
                 carsSoldByModel.put(carType, carsSoldByModel.getOrDefault(carType, 0) + 1);
@@ -332,7 +330,7 @@ public class StatisticsMenu {
         double totalRevenue = 0.0;
         int totalCarsSold = 0;
         for (SaleTransaction transaction : SaleTransactionList.getSaleTransactionsBetween(startDate, endDate)) {
-            for (Car car : transaction.getPurchasedCars()){
+            for (Car car : transaction.getPurchasedCars()) {
                 totalRevenue += car.getPrice();
                 totalCarsSold++;
             }
@@ -426,7 +424,7 @@ public class StatisticsMenu {
 
     private void SalespersonRevenue(User loggedInUser) {
         Salesperson salesperson = (Salesperson) loggedInUser;
-        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(),LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
     }
 
@@ -462,13 +460,13 @@ public class StatisticsMenu {
         LocalDate startDate = Menu.getStartDate();
         LocalDate endDate = Menu.getEndDate(startDate);
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),startDate, endDate);
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 
     private void getRevenueOfServices(User loggedInUser) {
         Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(),LocalDate.of(1970, 1, 1), LocalDate.now());
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), LocalDate.of(1970, 1, 1), LocalDate.now());
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
     }
 

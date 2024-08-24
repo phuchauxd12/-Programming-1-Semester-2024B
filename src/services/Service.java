@@ -21,7 +21,7 @@ public class Service implements Serializable {
     private LocalDate serviceDate;
     private String clientId;
     private String mechanicId;
-    private serviceType serviceType;
+    private static serviceType serviceType;
     private String serviceTypeName;
     private List<autoPart> replacedParts;
     private ServiceBy serviceBy;
@@ -37,16 +37,50 @@ public class Service implements Serializable {
         BODY_AND_INTERIOR
     }
 
-    public static enum serviceType {
-        Maintenance,
-        System_Repair,
-        Body_and_Interior,
-        Accessory_Installation,
+    public enum serviceType {
+        Oil_Change(Category.ROUTINE_MAINTENANCE, 1500000),
+        Tire_Rotation(Category.ROUTINE_MAINTENANCE, 300000),
+        Air_Filter(Category.ROUTINE_MAINTENANCE, 300000),
+        General_Maintenance_L1(Category.ROUTINE_MAINTENANCE, 1800000),
+        General_Maintenance_L2(Category.ROUTINE_MAINTENANCE, 2500000),
+        General_Maintenance_L3(Category.ROUTINE_MAINTENANCE, 4000000),
+        Brake_Service(Category.SYSTEM_REPAIR, 1300000),
+        Transmission_Repair(Category.SYSTEM_REPAIR, 15000000),
+        Steering_Repair(Category.SYSTEM_REPAIR, 3000000),
+        Cooling_System_Repair(Category.SYSTEM_REPAIR, 2400000),
+        Fuel_Injection_Repair(Category.SYSTEM_REPAIR, 3000000),
+        Exhaust_System_Repair(Category.SYSTEM_REPAIR, 3000000),
+        CarWash(Category.BODY_AND_INTERIOR, 300000),
+        Paint_Job(Category.BODY_AND_INTERIOR, 2500000),
+        Interior_Cleaning(Category.BODY_AND_INTERIOR, 800000),
+        Seat_Upholstery_Replacement(Category.BODY_AND_INTERIOR, 3000000),
+        Accessory_Installation(Category.BODY_AND_INTERIOR, 1200000);
+
+        private final Category category;
+        private final double price;
+
+        serviceType(Category category, double price) {
+            this.category = category;
+            this.price = price;
+        }
+        public Category getCategory() {
+            return category;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public static List<serviceType> getByCategory(Category category) {
+            return Arrays.stream(values())
+                    .filter(serviceType -> serviceType.getCategory() == category)
+                    .collect(Collectors.toList());
+        }
 
     }
 
     // Constructor
-    public Service(LocalDate serviceDate, String clientId, String mechanicId, serviceType type, String serviceTypeName, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
+    public Service(LocalDate serviceDate, String clientId, String mechanicId, serviceType type, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost) throws Exception {
         this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
@@ -137,7 +171,6 @@ public class Service implements Serializable {
     public static void updateService() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-
         System.out.print("Enter service ID to update: ");
         String serviceId = scanner.nextLine();
 
@@ -163,9 +196,19 @@ public class Service implements Serializable {
                         service.setServiceDate(newDate);
                         break;
                     case "2":
-                        System.out.print("Enter new service type: ");
-                        String newType = scanner.nextLine();
-                        service.setServiceType(newType);
+                        System.out.println("Available service types:");
+                        for (int i = 0; i < serviceType.values().length; i++) {
+                            System.out.println((i + 1) + ". " + serviceType.values()[i]);
+                        }
+                        System.out.print("Enter new service type (number): ");
+                        int serviceTypeChoice = scanner.nextInt();
+                        scanner.nextLine(); // consume newline
+                        serviceType newServiceType = serviceType.values()[serviceTypeChoice - 1];
+                        service.setServiceType(newServiceType);
+
+                        // Update the cost based on the new service type
+                        double newCost = newServiceType.getPrice();
+                        service.setServiceCost(newCost);
                         break;
                     case "3":
                         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
@@ -179,45 +222,50 @@ public class Service implements Serializable {
                         service.setCarId(newCarId);
                         break;
                     case "5":
+                        // Mark old parts as available
                         for (autoPart part : service.getReplacedParts()) {
                             part.setStatus(Status.AVAILABLE);
-                            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                         }
+                        AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
 
-                        System.out.println("Enter new replaced parts (part Ids separated by comma): ");
+                        // Get new parts
+                        System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
                         String partIdsInput = scanner.nextLine();
-                        List<String> partIds = Arrays.stream(partIdsInput.split(","))
+                        List<String> partIds = partIdsInput.isEmpty() ? Collections.emptyList() : Arrays.stream(partIdsInput.split(","))
                                 .map(String::trim)
-                                .map(partName -> partName.replaceAll(" +", " "))  // Replace multiple spaces with a single space
+                                .map(partId -> partId.replaceAll(" +", " "))  // Replace multiple spaces with a single space
                                 .collect(Collectors.toList());
 
                         List<autoPart> newReplacedParts = service.retrieveParts(partIds);
                         service.setReplacedParts(newReplacedParts);
 
+                        // Update total cost
                         double newDiscount = service.calculateDiscount(service.getClientId());
-                        double newservice = service.calculateTotalAmount(newReplacedParts, newDiscount, service.getServiceCost());
-                        service.setTotalCost(newservice);
+                        double newTotalCost = service.calculateTotalAmount(newReplacedParts, newDiscount, service.getServiceCost());
+                        service.setTotalCost(newTotalCost);
 
+                        // Mark new parts as sold
                         for (autoPart part : newReplacedParts) {
                             part.setStatus(Status.SOLD);
-                            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                         }
-                        
+                        AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
+
+                        // Update client spending
                         Client client = (Client) UserMenu.getUserList().stream()
                                 .filter(u -> u.getUserID().equals(service.getClientId()))
                                 .findFirst()
                                 .orElse(null);
                         if (client != null) {
-                            client.updateTotalSpending(service.getTotalCost());
+                            client.updateTotalSpending(newTotalCost);
                             UserDatabase.saveUsersData(UserMenu.getUserList());
                         } else {
                             System.out.println("Client not found");
                         }
-
                         break;
                     case "6":
-                        System.out.print("Enter service cost: ");
+                        System.out.print("Enter new service cost: ");
                         double serviceCost = scanner.nextDouble();
+                        scanner.nextLine(); // consume newline
                         service.setServiceCost(serviceCost);
                         break;
                     case "7":
@@ -232,13 +280,14 @@ public class Service implements Serializable {
                 ServiceDatabase.saveService(ServiceList.services);
             }
 
-            // Update the service in the list successfully
+            // Display updated service details
             System.out.println("Service updated successfully:");
             System.out.println(service.getFormattedServiceDetails());
         } else {
             System.out.println("Service not found or it has been deleted.");
         }
     }
+
 
     public static void deleteService() throws Exception {
         Scanner scanner = new Scanner(System.in);
@@ -317,7 +366,7 @@ public class Service implements Serializable {
         return mechanicId;
     }
 
-    public String getServiceType() {
+    public serviceType getServiceType() {
         return serviceType;
     }
 
@@ -366,7 +415,7 @@ public class Service implements Serializable {
         this.mechanicId = id;
     }
 
-    public void setServiceType(String type) {
+    public void setServiceType(serviceType type) {
         this.serviceType = type;
     }
 
@@ -422,6 +471,24 @@ public class Service implements Serializable {
 //        return sb.toString();
 //    }
 
+    @Override
+    public String toString() {
+        return "Service{" +
+                "serviceId='" + serviceId + '\'' +
+                ", serviceDate=" + serviceDate +
+                ", clientId='" + clientId + '\'' +
+                ", mechanicId='" + mechanicId + '\'' +
+                ", serviceTypeName='" + serviceTypeName + '\'' +
+                ", replacedParts=" + replacedParts +
+                ", serviceBy=" + serviceBy +
+                ", carId='" + carId + '\'' +
+                ", serviceCost=" + serviceCost +
+                ", totalCost=" + totalCost +
+                ", isDeleted=" + isDeleted +
+                ", additionalNotes='" + additionalNotes + '\'' +
+                '}';
+    }
+
     public String getFormattedServiceDetails() {
         StringBuilder sb = new StringBuilder();
 
@@ -442,6 +509,8 @@ public class Service implements Serializable {
         } else {
             sb.append("Replaced Parts: None\n");
         }
+
+        sb.append("Total Cost: $").append(String.format("%.2f", totalCost)).append("\n");
 
         if (!additionalNotes.isEmpty()) {
             sb.append("Notes: ").append(additionalNotes).append("\n");

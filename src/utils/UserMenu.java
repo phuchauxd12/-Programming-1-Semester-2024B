@@ -44,7 +44,7 @@ public class UserMenu {
         System.out.println("----------------");
     }
 
-    public static void mainMenu() throws Exception {
+    public static void mainMenu(Menu mainMenu) throws Exception {
         int option = 0;
         Scanner input = new Scanner(System.in);
         do {
@@ -96,8 +96,8 @@ public class UserMenu {
                     System.out.println("Update User");
                     System.out.println("Please input the user ID:");
                     String userIDforUpdate = input.nextLine();
-                    var userUpdate =getUserById(userIDforUpdate);
-                    if(userUpdate!= null) {
+                    var userUpdate = getUserById(userIDforUpdate);
+                    if (userUpdate != null) {
                         boolean continueUpdate = true;
                         int updateOption = 0;
                         do {
@@ -111,13 +111,12 @@ public class UserMenu {
                             System.out.println("7. Email");
                             System.out.println("8. Exit");
                             updateOption = Menu.getOption(updateOption, input);
-                            User.modifyUser(userIDforUpdate,updateOption);
+                            User.modifyUser(userIDforUpdate, updateOption);
                             if (updateOption == 8) {
                                 continueUpdate = false;
                             }
                         } while (continueUpdate);
-                    }
-                    else {
+                    } else {
                         System.out.println("No userID match the account in the database.");
                     }
                     break;
@@ -128,7 +127,7 @@ public class UserMenu {
                     System.out.println("Invalid option");
             }
         } while (option != 6);
-//        Menu.mainMenu();
+        mainMenu.mainMenu();
     }
 
     public static User getUserById(String userId) {
@@ -197,8 +196,8 @@ public class UserMenu {
         try {
             List<User> userByRoleList = new ArrayList<>();
 
-            for(User user : UserList){
-                if(user.getRole() == role){
+            for (User user : UserList) {
+                if (user.getRole() == role) {
                     userByRoleList.add(user);
                 }
             }

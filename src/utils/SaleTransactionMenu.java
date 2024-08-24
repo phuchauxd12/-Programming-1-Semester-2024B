@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class SaleTransactionMenu {
     HashSet<String> menuList = new HashSet<String>();
-    private Map<Integer, Runnable> menuActions= new HashMap<>();
+    private Map<Integer, Runnable> menuActions = new HashMap<>();
 
     public SaleTransactionMenu() {
         menuList.add("Display all transactions");
@@ -63,7 +63,7 @@ public class SaleTransactionMenu {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        if(ServiceList.getServiceById(transactionID) != null){
+        if (ServiceList.getServiceById(transactionID) != null) {
             System.out.println("Transaction found!");
             System.out.println(SaleTransactionList.getSaleTransactionById(transactionID).getFormattedSaleTransactionDetails());
         }
@@ -77,12 +77,12 @@ public class SaleTransactionMenu {
 
     private void createNewTransaction() throws Exception {
         System.out.println("Creating a new transaction...");
-        if(UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER){
+        if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
             Scanner input = new Scanner(System.in);
             System.out.println("Enter saleperson ID: ");
             String salepersonID = input.nextLine();
             SaleTransactionList.addSaleTransaction(salepersonID);
-        }else {
+        } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
     }
@@ -115,7 +115,7 @@ public class SaleTransactionMenu {
         return input.nextInt();
     }
 
-    public void mainMenu(User user) {
+    public void mainMenu(Menu mainMenu) {
         Scanner input = new Scanner(System.in);
         int option = 0;
         while (option != 6) {
@@ -128,5 +128,6 @@ public class SaleTransactionMenu {
                 System.out.println("Invalid option. Please try again.");
             }
         }
+        mainMenu.mainMenu();
     }
 }

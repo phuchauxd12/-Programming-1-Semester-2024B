@@ -64,11 +64,10 @@ public class ActivityLogMenu {
     }
 
     private void filterActivityLogByDate() {
-        DatePrompt dateInput = new DatePrompt();
         System.out.println("Enter the start date:");
-        LocalDate startDate = dateInput.promptForDate();
+        LocalDate startDate = Menu.getStartDate();
         System.out.println("Enter the end date:");
-        LocalDate endDate = dateInput.promptForDate();
+        LocalDate endDate = Menu.getStartDate();
 
         List<ActivityLog> logsByDate = ActivityLog.getActivityLogByDate(startDate, endDate);
         if (!logsByDate.isEmpty()) {
