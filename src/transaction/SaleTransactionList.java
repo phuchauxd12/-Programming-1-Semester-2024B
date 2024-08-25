@@ -9,9 +9,9 @@ import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
 import user.Client;
 import user.User;
-import utils.CarAndAutoPartMenu;
+import utils.menu.CarAndAutoPartMenu;
 import utils.Status;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -19,12 +19,14 @@ import java.util.stream.Collectors;
 
 public class SaleTransactionList {
     public static List<SaleTransaction> transactions;
+
     // This code run one time when create an instance of a class
     static {
         try {
-            if(!Database.isDatabaseExist(SaleTransactionDatabase.path)){
+            if (!Database.isDatabaseExist(SaleTransactionDatabase.path)) {
                 SaleTransactionDatabase.createDatabase();
-            };
+            }
+            ;
             transactions = SaleTransactionDatabase.loadSaleTransaction();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -90,7 +92,7 @@ public class SaleTransactionList {
 
     public static void displayAllSaleTransactions() {
         for (SaleTransaction transaction : transactions) {
-            if(!transaction.isDeleted()){
+            if (!transaction.isDeleted()) {
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
             }
         }
@@ -170,8 +172,8 @@ public class SaleTransactionList {
 
         for (SaleTransaction transaction : transactions) {
             LocalDate transactionDate = transaction.getTransactionDate();
-            if((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
-                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())){
+            if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
+                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())) {
 
                 autoPartsSold.addAll(transaction.getPurchasedAutoParts());
             }

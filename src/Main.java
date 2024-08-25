@@ -4,15 +4,11 @@ import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import services.Service;
-import services.ServiceBy;
 import user.*;
-import utils.LoginMenu;
-import utils.Menu;
-import utils.Status;
+import utils.menu.LoginMenu;
+
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Main {
@@ -39,15 +35,10 @@ public class Main {
         System.out.println("s3975133, Doan Nguyen Phu Chau");
 //        Membership membership = new Membership();
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-        Car car = new Car("Honda", "Civic", 2018, "Black", 45000, 15999.99, "Clean title, no accidents", Status.AVAILABLE);
-//        CarDatabase.createDatabase();
-//        Car.addCarToList(car);
-        System.out.println(CarDatabase.loadCars());
+
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Oil_Change, List.of("p-01bdb224-c3b7-486b-a883-8f235287ae29", "p-c428b805-081f-49d0-a8c3-b55cc6cb8d6d") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Oil_Change.getPrice());
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Brake_Service, List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Brake_Service.getPrice());
 
 //        ServiceList serviceList = new ServiceList();
 //        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
@@ -115,8 +106,8 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu mainMenu = new Menu();
-        mainMenu.mainMenu();
+        MainMenu menu = new MainMenu();
+        menu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();
