@@ -42,10 +42,10 @@ public class UserProfileMenu extends FunctionalMenu {
             System.out.println("1. User Name");
             System.out.println("2. Password");
             System.out.println("3. Name");
-            System.out.println("4. Date of Birth");
-            System.out.println("5. Address");
-            System.out.println("6. Phone Number");
-            System.out.println("7. Email");
+            System.out.println("4. Address");
+            System.out.println("5. Phone Number");
+            System.out.println("6. Email");
+            System.out.println("7. Date of Birth");
             System.out.println("8. Exit");
             updateOption = MainMenu.getOption(updateOption, input);
             try {

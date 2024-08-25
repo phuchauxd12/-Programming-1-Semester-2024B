@@ -142,10 +142,10 @@ public class UserMenu extends FunctionalMenu {
                 System.out.println("1. User Name");
                 System.out.println("2. Password");
                 System.out.println("3. Name");
-                System.out.println("4. Date of Birth");
-                System.out.println("5. Address");
-                System.out.println("6. Phone Number");
-                System.out.println("7. Email");
+                System.out.println("4. Address");
+                System.out.println("5. Phone Number");
+                System.out.println("6. Email");
+                System.out.println("7. Date of Birth");
                 System.out.println("8. Exit");
                 updateOption = getOption(updateOption, input);
 
@@ -181,7 +181,7 @@ public class UserMenu extends FunctionalMenu {
         System.out.println("View User by ID");
         System.out.println("Please input the user ID:");
         String userIDforview = input.nextLine();
-        getUserById(userIDforview);
+        System.out.println(getUserById(userIDforview));
     }
 
     public void viewUsersByRole() {
