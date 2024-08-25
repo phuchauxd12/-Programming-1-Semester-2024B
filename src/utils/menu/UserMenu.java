@@ -29,14 +29,14 @@ public class UserMenu extends FunctionalMenu {
                 menuItems.put(3, "View User by ID");
                 menuItems.put(4, "Delete User");
                 menuItems.put(5, "Update User");
-                menuItems.put(6, "Exit");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::viewAllUsers);
                 menuActions.put(2, this::viewUsersByRole);
                 menuActions.put(3, this::viewUserById);
                 menuActions.put(4, this::deleteUser);
                 menuActions.put(5, this::updateUser);
-                menuActions.put(6, this::exit);
+                menuActions.put(0, this::exit);
             }
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }

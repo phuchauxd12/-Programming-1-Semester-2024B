@@ -92,6 +92,7 @@ public class Main {
 //        ServiceDatabase.createDatabase();
 //        Service.addService(service2);
 
+//        System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
         LoginMenu.displayLoginMenu();
