@@ -2,8 +2,8 @@ package autoPart;
 
 
 import data.autoPart.AutoPartDatabase;
-import utils.CarAndAutoPartMenu;
-import utils.Menu;
+import utils.menu.CarAndAutoPartMenu;
+import utils.menu.MainMenu;
 import utils.Status;
 
 import java.io.Serializable;
@@ -169,7 +169,7 @@ public class autoPart implements Serializable {
     }
 
     public static void addPartToList(autoPart part) throws Exception {
-        List<autoPart> autoPartList = AutoPartDatabase.loadAutoParts();
+        List<autoPart> autoPartList = CarAndAutoPartMenu.getAutoPartsList();
         autoPartList.add(part);
         AutoPartDatabase.saveAutoPartData(autoPartList);
         System.out.println("Part successfully added to list!");
@@ -214,7 +214,7 @@ public class autoPart implements Serializable {
             System.out.println("5. Price");
             System.out.println("6. Additional Notes");
             System.out.println("7. Exit");
-            option = Menu.getOption(option, input);
+            option = MainMenu.getOption(option, input);
             switch (option) {
                 case 1:
                     System.out.println("Enter new part name: ");

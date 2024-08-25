@@ -6,7 +6,7 @@ import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.Client;
 import user.User;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -14,19 +14,19 @@ import java.util.stream.Collectors;
 
 public class ServiceList {
     public static List<Service> services;
+
     // This code run one time when create an instance of a class
     static {
         try {
-            if(!Database.isDatabaseExist(ServiceDatabase.path)){
+            if (!Database.isDatabaseExist(ServiceDatabase.path)) {
                 ServiceDatabase.createDatabase();
-            };
+            }
+            ;
             services = ServiceDatabase.loadService();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
-
 
 
     public static void addService(String mechanicId) throws Exception {
@@ -103,9 +103,9 @@ public class ServiceList {
     }
 
     // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
-    public static void displayAllServices(){
+    public static void displayAllServices() {
         for (Service service : services) {
-            if(!service.isDeleted()) {
+            if (!service.isDeleted()) {
                 System.out.println(service.getFormattedServiceDetails());
                 System.out.println("___________________________________");
             }

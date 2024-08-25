@@ -9,9 +9,9 @@ import data.user.UserDatabase;
 import user.Client;
 import user.Membership;
 import user.User;
-import utils.CarAndAutoPartMenu;
+import utils.menu.CarAndAutoPartMenu;
 import utils.Status;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -49,16 +49,16 @@ public class SaleTransaction implements Serializable {
 
     public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
         SaleTransactionList.transactions.add(saleTransaction);
-        for(User user: UserMenu.getUserList()){
-            if(user.getUserName().equals(saleTransaction.clientId)){
+        for (User user : UserMenu.getUserList()) {
+            if (user.getUserName().equals(saleTransaction.clientId)) {
                 Client client = (Client) user;
                 client.updateTotalSpending(saleTransaction.totalAmount);
             }
         }
-        for(Car car : saleTransaction.purchasedCars){
+        for (Car car : saleTransaction.purchasedCars) {
             car.setStatus(Status.SOLD);
         }
-        for(autoPart autoPart : saleTransaction.purchasedAutoParts){
+        for (autoPart autoPart : saleTransaction.purchasedAutoParts) {
             autoPart.setStatus(Status.SOLD);
         }
 
@@ -160,6 +160,7 @@ public class SaleTransaction implements Serializable {
             System.out.println("Transaction not found or it has been deleted.");
         }
     }
+
     public static void deleteSaleTransaction() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
@@ -175,6 +176,7 @@ public class SaleTransaction implements Serializable {
             System.out.println("Transaction not found.");
         }
     }
+
     private List<Car> retrieveCars(List<String> itemIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         List<Car> allCars = CarDatabase.loadCars();
@@ -224,7 +226,7 @@ public class SaleTransaction implements Serializable {
                 total += car.getPrice();
             }
         }
-        if(!parts.isEmpty()) {
+        if (!parts.isEmpty()) {
             for (autoPart autoPart : parts) {
                 total += autoPart.getPrice();
             }
@@ -260,7 +262,9 @@ public class SaleTransaction implements Serializable {
         return purchasedCars;
     }
 
-    public List<autoPart> getPurchasedAutoParts() {return purchasedAutoParts;}
+    public List<autoPart> getPurchasedAutoParts() {
+        return purchasedAutoParts;
+    }
 
     public double getDiscount() {
         return discount;
@@ -299,7 +303,9 @@ public class SaleTransaction implements Serializable {
         this.purchasedCars = purchasedCars;
     }
 
-    public void setPurchasedAutoParts(List<autoPart> purchasedAutoParts) {this.purchasedAutoParts = purchasedAutoParts;}
+    public void setPurchasedAutoParts(List<autoPart> purchasedAutoParts) {
+        this.purchasedAutoParts = purchasedAutoParts;
+    }
 
     public void setDiscount(double discount) {
         this.discount = discount;
@@ -322,13 +328,13 @@ public class SaleTransaction implements Serializable {
         sb.append("Salesperson ID: ").append(salespersonId).append("\n");
         sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");
         sb.append("Amount: $").append(String.format("%.2f", totalAmount)).append("\n");
-         if (!purchasedCars.isEmpty()) {
-             List<String> cars = new ArrayList<>();
-             for (Car car : purchasedCars) {
-                 cars.add(car.getCarModel());
-             }
-             sb.append("Purchased Items: ").append(String.join(", ", cars)).append("\n");
-         }
+        if (!purchasedCars.isEmpty()) {
+            List<String> cars = new ArrayList<>();
+            for (Car car : purchasedCars) {
+                cars.add(car.getCarModel());
+            }
+            sb.append("Purchased Items: ").append(String.join(", ", cars)).append("\n");
+        }
         if (!purchasedAutoParts.isEmpty()) {
             List<String> carIds = new ArrayList<>();
             for (autoPart part : purchasedAutoParts) {

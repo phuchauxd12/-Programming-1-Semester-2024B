@@ -1,7 +1,8 @@
-package utils;
+package utils.menu;
 
 import data.user.UserDatabase;
 import user.User;
+import utils.UserSession;
 
 import java.util.Optional;
 import java.util.Scanner;

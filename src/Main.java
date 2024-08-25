@@ -1,17 +1,12 @@
 import autoPart.autoPart;
-import car.Car;
-import data.car.CarDatabase;
-import data.transaction.SaleTransactionDatabase;
+import data.autoPart.AutoPartDatabase;
+import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import services.Service;
-import services.ServiceBy;
 import user.*;
-import utils.LoginMenu;
-import utils.Menu;
-import utils.Status;
+import utils.menu.LoginMenu;
+import utils.menu.MainMenu;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class Main {
@@ -38,15 +33,10 @@ public class Main {
         System.out.println("s3975133, Doan Nguyen Phu Chau");
 //        Membership membership = new Membership();
 //        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-        Car car = new Car("Honda", "Civic", 2018, "Black", 45000, 15999.99, "Clean title, no accidents", Status.AVAILABLE);
-        CarDatabase.createDatabase();
-        Car.addCarToList(car);
-//        System.out.println(CarDatabase.loadCars());
+
 //        System.out.println(client);
 //        client.updateTotalSpending(300000000);
 //        System.out.println(client);
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Oil_Change, List.of("p-01bdb224-c3b7-486b-a883-8f235287ae29", "p-c428b805-081f-49d0-a8c3-b55cc6cb8d6d") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Oil_Change.getPrice());
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Brake_Service, List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Brake_Service.getPrice());
 
 //        ServiceList serviceList = new ServiceList();
 //        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
@@ -57,7 +47,7 @@ public class Main {
 //        Mechanic mechanic = new Mechanic("mechanic1", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, "Active", serviceList);
 //        Client client = new Client("client001", "password123", "Client One", LocalDate.of(1990, 6, 10), "789 Pine St", 123456789, "client.one@example.com", User.ROLE.CLIENT, "Active", new Membership());
 //
-        SaleTransactionDatabase.createDatabase();
+//        SaleTransactionList transactionList = new SaleTransactionList();
 //
 //        transactionList.addSaleTransaction(new SaleTransaction(LocalDate.of(2024, 1, 15), "client001", "salesperson001", 10.0, 150.0));
 //        transactionList.addSaleTransaction(new SaleTransaction(LocalDate.of(2024, 2, 10), "client001", "salesperson002", 5.0, 200.0));
@@ -89,7 +79,7 @@ public class Main {
 //        autoPart.addPartToList(part1);
 //        autoPart.addPartToList(part2);
 //        autoPart.addPartToList(part3);
-//        AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
+        AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
 //        AutoPartDatabase.updateAutoPart("p-e383be13-38ff-4cce-8650-04f8a194329f",1);
 //        UserDatabase.createDatabase();
 //        User.addUser(client);
@@ -103,7 +93,7 @@ public class Main {
 //        ServiceDatabase.createDatabase();
 //        Service.addService(service1);
 //        Service.addService(service2);
-//        System.out.println(ServiceDatabase.loadService());
+        System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
         LoginMenu.displayLoginMenu();
@@ -114,8 +104,8 @@ public class Main {
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
 
-        Menu mainMenu = new Menu();
-        mainMenu.mainMenu();
+        MainMenu menu = new MainMenu();
+        menu.mainMenu();
 
 //        SaleTransactionMenu transactionMenu = new SaleTransactionMenu();
 //        transactionMenu.mainMenu();

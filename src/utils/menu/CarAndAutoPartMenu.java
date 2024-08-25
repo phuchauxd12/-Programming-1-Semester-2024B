@@ -1,4 +1,4 @@
-package utils;
+package utils.menu;
 
 import autoPart.autoPart;
 import car.Car;
@@ -6,32 +6,29 @@ import data.Database;
 import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import user.*;
+import utils.Status;
+import utils.UserSession;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
-import static utils.Menu.getOption;
-
-public class CarAndAutoPartMenu {
-    private static final Scanner input = new Scanner(System.in);
-    private final Map<Integer, String> menuItems = new LinkedHashMap<>();
-    private final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
+public class CarAndAutoPartMenu extends FunctionalMenu {
 
 
-    public CarAndAutoPartMenu(User user) {
-        switch (user) {
-            case Manager c -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
-            case Client c -> initializeMenu(MenuOption.CLIENT);
+    public CarAndAutoPartMenu(MainMenu mainMenu) {
+        super(mainMenu);
+        switch (currentUser) {
+            case Manager _ -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
+            case Client _ -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
 
-    private void initializeMenu(MenuOption menuOption) {
+    @Override
+    protected void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Add a car");
@@ -102,25 +99,36 @@ public class CarAndAutoPartMenu {
         }
     }
 
+    // Display Functions
+    @Override
+    protected void mainMenu() {
+        System.out.println("Welcome to the Car and Auto Part Menu!");
+        super.mainMenu();
+    }
+
     private void searchForCar() {
+        input.nextLine();
         System.out.println("Enter the car ID:");
-        Scanner newInput = new Scanner(System.in);
-        String carID = newInput.nextLine();
+        String carID = input.nextLine();
         Car car = findCarByID(carID);
         if (car != null) {
+            System.out.println("----------------");
             System.out.println(car.toStringDetailed());
+            System.out.println("----------------");
         } else {
             System.out.println("Car not found.");
         }
     }
 
     private void searchForPart() {
+        input.nextLine();
         System.out.println("Enter the part ID:");
-        Scanner newInput = new Scanner(System.in);
-        String partID = newInput.nextLine();
+        String partID = input.nextLine();
         autoPart part = findAutoPartByID(partID);
         if (part != null) {
+            System.out.println("----------------");
             System.out.println(part.toStringDetailed());
+            System.out.println("----------------");
         } else {
             System.out.println("Part not found.");
         }
@@ -181,28 +189,6 @@ public class CarAndAutoPartMenu {
         }
     }
 
-    // Menu functions
-    public void displayMenu() {
-        System.out.println("Welcome to the Car and Auto Part Menu!");
-        System.out.println("---------------------");
-        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
-        System.out.println("---------------------");
-    }
-
-    public void mainMenu(Menu mainMenu) {
-        int option = 100;
-        do {
-            displayMenu();
-            option = getOption(option, input);
-            Runnable action = menuActions.get(option);
-            if (action != null) {
-                action.run();
-            } else {
-                System.out.println("Invalid option. Please try again.");
-            }
-        } while (option != 0);
-        mainMenu.mainMenu();
-    }
 
     // Static helper functions
     private static List<Car> carsList;
@@ -264,7 +250,7 @@ public class CarAndAutoPartMenu {
                 System.out.println(car);
             }
         } else {
-            System.out.println("Displaying all cars with" + status + " status:");
+            System.out.println("Displaying all cars with " + status + " status:");
             for (Car car : carsList) {
 
                 if (car.getStatus() == status) {
@@ -322,10 +308,4 @@ public class CarAndAutoPartMenu {
             }
         }
     }
-
-
-    private void exit() {
-        System.out.println("Exiting...");
-    }
-
 }

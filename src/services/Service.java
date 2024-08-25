@@ -6,9 +6,9 @@ import data.autoPart.AutoPartDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.*;
-import utils.CarAndAutoPartMenu;
+import utils.menu.CarAndAutoPartMenu;
 import utils.Status;
-import utils.UserMenu;
+import utils.menu.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -147,7 +147,7 @@ public class Service implements Serializable {
             System.out.println("Please input any additional notes:");
             String addNotes = input.nextLine();
             Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
-            try{
+            try {
                 Car.addCarToList(newCar);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -308,7 +308,7 @@ public class Service implements Serializable {
     List<autoPart> retrieveParts(List<String> partIds) throws Exception {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
 
-        for (String partId :partIds) {
+        for (String partId : partIds) {
             Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
                     .filter(part -> part.getPartID().equalsIgnoreCase(partId))
                     .findFirst();
