@@ -28,10 +28,10 @@ public class Menu {
         saleTransactionMenu = new SaleTransactionMenu();
         serviceMenu = new ServiceMenu();
         switch (currentUser) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
-            case Client _ -> initializeMenu(MenuOption.CLIENT);
+            case Manager c -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
+            case Client c -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
