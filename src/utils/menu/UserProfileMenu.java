@@ -16,11 +16,11 @@ public class UserProfileMenu extends FunctionalMenu {
     protected void initializeMenu(MenuOption menuOption) {
         menuItems.put(1, "Modify Account");
         menuItems.put(2, "Delete Account");
-        menuItems.put(3, "Exit");
+        menuItems.put(0, "Exit");
 
         menuActions.put(1, this::modifyAccount);
         menuActions.put(2, this::deleteAccount);
-        menuActions.put(3, this::exit);
+        menuActions.put(0, this::exit);
     }
 
     private void deleteAccount() {

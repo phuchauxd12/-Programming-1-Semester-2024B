@@ -43,8 +43,8 @@ public class StatisticsMenu extends FunctionalMenu {
                 menuItems.put(7, "List All Services (in specific period)");
                 menuItems.put(8, "List all Sales by a salesperson");
                 menuItems.put(9, "List all Services by a mechanic");
-                menuItems.put(0, "Exit");
                 menuItems.put(10, "View autoPart statistic");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::getNumberOfCarsSoldInSpecificPeriod);
                 menuActions.put(2, this::ManagerProcessMechanicRevenue);
@@ -55,8 +55,9 @@ public class StatisticsMenu extends FunctionalMenu {
                 menuActions.put(7, this::getAllServicesInSpecificPeriod);
                 menuActions.put(8, this::getAllSalespersonSales);
                 menuActions.put(9, this::getAllMechanicServices);
+                menuActions.put(10, this::viewAutoPartStatistics);
                 menuActions.put(0, this::exit);
-                break;
+
 
             case SALESPERSON:
                 menuItems.put(1, "List All Transactions by me");
@@ -75,7 +76,7 @@ public class StatisticsMenu extends FunctionalMenu {
                 menuActions.put(5, () -> SalespersonRevenue(currentUser));
                 menuActions.put(6, () -> SalespersonRevenueInSpecificPeriod(currentUser));
                 menuActions.put(0, this::exit);
-                break;
+
 
             case MECHANIC:
                 menuItems.put(1, "List All Services done by me");
@@ -217,23 +218,23 @@ public class StatisticsMenu extends FunctionalMenu {
         return clientRevenue;
     }
 
-    private static void viewAutoPartStatistics() {
+    private void viewAutoPartStatistics() {
         int totalPartsInStock = 0;
         int totalPartsSold = 0;
         Map<autoPart.Condition, Integer> partConditionStats = new HashMap<>();
 
-        for (autoPart part: CarAndAutoPartMenu.getAutoPartsList()){
-            if(part.getStatus() == Status.AVAILABLE && !part.isDeleted()){
+        for (autoPart part : CarAndAutoPartMenu.getAutoPartsList()) {
+            if (part.getStatus() == Status.AVAILABLE && !part.isDeleted()) {
                 totalPartsInStock++;
-                if(part.getCondition() == autoPart.Condition.NEW){
+                if (part.getCondition() == autoPart.Condition.NEW) {
                     partConditionStats.put(autoPart.Condition.NEW, partConditionStats.getOrDefault(autoPart.Condition.NEW, 0) + 1);
-                } else if(part.getCondition() == autoPart.Condition.USED){
+                } else if (part.getCondition() == autoPart.Condition.USED) {
                     partConditionStats.put(autoPart.Condition.USED, partConditionStats.getOrDefault(autoPart.Condition.USED, 0) + 1);
                 } else {
                     partConditionStats.put(autoPart.Condition.REFURBISHED, partConditionStats.getOrDefault(autoPart.Condition.REFURBISHED, 0) + 1);
                 }
             }
-            if(part.getStatus() == Status.SOLD && !part.isDeleted()){
+            if (part.getStatus() == Status.SOLD && !part.isDeleted()) {
                 totalPartsSold++;
             }
         }
