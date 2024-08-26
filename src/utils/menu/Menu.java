@@ -10,20 +10,37 @@ import java.util.Scanner;
 
 abstract class Menu {
     protected static Scanner input = new Scanner(System.in);
-    protected final Map<Integer, String> menuItems = new LinkedHashMap<>();
-    protected final Map<Integer, Runnable> menuActions = new LinkedHashMap<>();
+    protected  Map<Integer, String> menuItems ;
+    protected  Map<Integer, Runnable> menuActions;
     protected final User currentUser = UserSession.getCurrentUser();
 
+    public Menu() {
+        this.menuItems = new LinkedHashMap<>();
+        this.menuActions = new LinkedHashMap<>();
+    }
 
     protected abstract void initializeMenu(MenuOption menuOption);
 
-    protected void displayMenu() {
-        System.out.println("---------------------");
-        menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
-        System.out.println("---------------------");
+    protected void displayMenu(String welcomeMessage) {
+        int option = 100;
+        do {
+            System.out.println(welcomeMessage);
+            //Display menu base on Type of Menu, Menu Role .This function is used only for children class
+            System.out.println("---------------------");
+            menuItems.forEach((key, value) -> System.out.println(key + ". " + value));
+            System.out.println("---------------------");
+
+            option = getOption(option, input);
+            Runnable action = menuActions.get(option);
+            if (action != null) {
+                action.run();
+            } else {
+                System.out.println("Invalid option. Please try again.");
+            }
+        } while (option != 0);
     }
 
-    protected abstract void mainMenu();
+//    protected abstract void mainMenu();
 
     public static int getOption(int option, Scanner input) {
         boolean validInput = false;

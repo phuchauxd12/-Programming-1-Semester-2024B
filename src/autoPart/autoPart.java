@@ -169,7 +169,7 @@ public class autoPart implements Serializable {
     }
 
     public static void addPartToList(autoPart part) throws Exception {
-        List<autoPart> autoPartList = AutoPartDatabase.loadAutoParts();
+        List<autoPart> autoPartList = CarAndAutoPartMenu.getAutoPartsList();
         autoPartList.add(part);
         AutoPartDatabase.saveAutoPartData(autoPartList);
         System.out.println("Part successfully added to list!");

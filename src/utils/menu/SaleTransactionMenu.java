@@ -9,11 +9,11 @@ import utils.UserSession;
 
 import java.util.Scanner;
 
-public class SaleTransactionMenu extends FunctionalMenu {
+public class SaleTransactionMenu extends Menu {
 
 
-    public SaleTransactionMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public SaleTransactionMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
@@ -87,7 +87,7 @@ public class SaleTransactionMenu extends FunctionalMenu {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        if (ServiceList.getServiceById(transactionID) != null) {
+        if (SaleTransactionList.getSaleTransactionById(transactionID) != null) {
             System.out.println("Transaction found!");
             System.out.println(SaleTransactionList.getSaleTransactionById(transactionID).getFormattedSaleTransactionDetails());
         }
@@ -103,9 +103,27 @@ public class SaleTransactionMenu extends FunctionalMenu {
         System.out.println("Creating a new transaction...");
         if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
             Scanner input = new Scanner(System.in);
-            System.out.println("Enter saleperson ID: ");
-            String salepersonID = input.nextLine();
-            SaleTransactionList.addSaleTransaction(salepersonID);
+            User saleperson = null;
+            while (saleperson == null) {
+                System.out.println("Enter saleperson ID: ");
+                String saleprsonId = input.nextLine();
+
+                String finalClientId = saleprsonId;
+                saleperson = UserMenu.getUserList().stream()
+                        .filter(u -> u.getUserID().equals(finalClientId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (saleperson == null) {
+                    System.out.print("Invalid client ID. Please press enter to retype or 'quit' to exit: ");
+                    saleprsonId = input.nextLine();
+                    if (saleprsonId.equalsIgnoreCase("quit")) {
+                        System.out.println("Exiting..");
+                        return;
+                    }
+                }
+            }
+            SaleTransactionList.addSaleTransaction(saleperson.getUserID());
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
@@ -116,9 +134,5 @@ public class SaleTransactionMenu extends FunctionalMenu {
         SaleTransactionList.updateSaleTransaction();
     }
 
-    @Override
-    protected void mainMenu() {
-        System.out.println("Welcome to the Sale Transaction Menu!");
-        super.mainMenu();
-    }
+
 }

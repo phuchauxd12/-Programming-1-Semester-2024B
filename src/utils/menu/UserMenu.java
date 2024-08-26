@@ -11,9 +11,9 @@ import java.util.Scanner;
 import static user.User.ROLE;
 
 
-public class UserMenu extends FunctionalMenu {
-    public UserMenu(MainMenu mainMenu) {
-        super(mainMenu);
+public class UserMenu extends Menu {
+    public UserMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
@@ -29,23 +29,17 @@ public class UserMenu extends FunctionalMenu {
                 menuItems.put(3, "View User by ID");
                 menuItems.put(4, "Delete User");
                 menuItems.put(5, "Update User");
-                menuItems.put(6, "Exit");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::viewAllUsers);
                 menuActions.put(2, this::viewUsersByRole);
                 menuActions.put(3, this::viewUserById);
                 menuActions.put(4, this::deleteUser);
                 menuActions.put(5, this::updateUser);
-                menuActions.put(6, this::exit);
+                menuActions.put(0, this::exit);
             }
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
-    }
-
-
-    public void mainMenu() {
-        System.out.println("Welcome to the User Menu");
-        super.mainMenu();
     }
 
 
@@ -142,10 +136,10 @@ public class UserMenu extends FunctionalMenu {
                 System.out.println("1. User Name");
                 System.out.println("2. Password");
                 System.out.println("3. Name");
-                System.out.println("4. Date of Birth");
-                System.out.println("5. Address");
-                System.out.println("6. Phone Number");
-                System.out.println("7. Email");
+                System.out.println("4. Address");
+                System.out.println("5. Phone Number");
+                System.out.println("6. Email");
+                System.out.println("7. Date of Birth");
                 System.out.println("8. Exit");
                 updateOption = getOption(updateOption, input);
 
@@ -181,7 +175,7 @@ public class UserMenu extends FunctionalMenu {
         System.out.println("View User by ID");
         System.out.println("Please input the user ID:");
         String userIDforview = input.nextLine();
-        getUserById(userIDforview);
+        System.out.println(getUserById(userIDforview));
     }
 
     public void viewUsersByRole() {

@@ -1,16 +1,10 @@
 package transaction;
 
-import car.Car;
 import autoPart.autoPart;
+import car.Car;
 import data.Database;
-import data.autoPart.AutoPartDatabase;
-import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
-import data.user.UserDatabase;
-import user.Client;
 import user.User;
-import utils.menu.CarAndAutoPartMenu;
-import utils.Status;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -39,8 +33,26 @@ public class SaleTransactionList {
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
         LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter client ID: ");
-        String clientId = scanner.nextLine();
+        User client = null;
+        while (client == null) {
+            System.out.print("Enter client ID: ");
+            String clientId = scanner.nextLine();
+
+            String finalClientId = clientId;
+            client = UserMenu.getUserList().stream()
+                    .filter(u -> u.getUserID().equals(finalClientId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (client == null) {
+                System.out.print("Invalid client ID. Please press enter to re-enter client ID or type 'quit' to exit: ");
+                clientId = scanner.nextLine();
+                if (clientId.equalsIgnoreCase("quit")) {
+                    System.out.println("Exiting..");
+                    return;
+                }
+            }
+        }
 
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
@@ -49,28 +61,8 @@ public class SaleTransactionList {
                 .map(item -> item.replaceAll(" +", " "))
                 .collect(Collectors.toList());
 
-        SaleTransaction transaction = new SaleTransaction(transactionDate, clientId, salespersonId, newItemIds);
+        SaleTransaction transaction = new SaleTransaction(transactionDate, client.getUserID(), salespersonId, newItemIds);
         SaleTransaction.addSaleTransaction(transaction);
-
-        for (Car car : transaction.getPurchasedCars()) {
-            car.setStatus(Status.SOLD);
-            CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
-        }
-        for (autoPart part : transaction.getPurchasedAutoParts()) {
-            part.setStatus(Status.SOLD);
-            AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
-        }
-
-        User user = UserMenu.getUserList().stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
-            client.updateTotalSpending(transaction.getTotalAmount());
-            UserDatabase.saveUsersData(UserMenu.getUserList());
-        }
 
         System.out.println("Sale transaction added successfully:");
         System.out.println(transaction.getFormattedSaleTransactionDetails());
