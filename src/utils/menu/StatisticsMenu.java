@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class StatisticsMenu extends FunctionalMenu {
+public class StatisticsMenu extends Menu {
 
 
-    public StatisticsMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public StatisticsMenu() {
+        super();
         switch (currentUser) {
             case Manager c -> initializeMenu(MenuOption.MANAGER);
             case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
@@ -109,13 +109,6 @@ public class StatisticsMenu extends FunctionalMenu {
                 break;
 
         }
-    }
-
-
-    @Override
-    protected void mainMenu() {
-        System.out.println("Welcome to the Statistics Menu!");
-        super.mainMenu();
     }
 
 

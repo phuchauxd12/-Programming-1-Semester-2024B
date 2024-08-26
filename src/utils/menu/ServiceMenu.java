@@ -12,12 +12,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
-public class ServiceMenu extends FunctionalMenu {
+public class ServiceMenu extends Menu {
 
 
     // Constructor to initialize the menuList and menuActions
-    public ServiceMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public ServiceMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Mechanic m -> initializeMenu(MenuOption.MECHANIC);
@@ -60,12 +60,9 @@ public class ServiceMenu extends FunctionalMenu {
 
     }
 
-    // Method to display the menu
 
-    protected void mainMenu() {
-        System.out.println("Welcome to the Service Menu");
-        super.mainMenu();
-    }
+
+
 
     // Placeholder methods for menu actions
 
