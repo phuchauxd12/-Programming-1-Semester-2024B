@@ -11,18 +11,17 @@ import utils.UserSession;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Scanner;
 
-public class CarAndAutoPartMenu extends FunctionalMenu {
+public class CarAndAutoPartMenu extends Menu {
 
 
-    public CarAndAutoPartMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public CarAndAutoPartMenu() {
+        super();
         switch (currentUser) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
-            case Client _ -> initializeMenu(MenuOption.CLIENT);
+            case Manager c -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
+            case Client c -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -99,12 +98,7 @@ public class CarAndAutoPartMenu extends FunctionalMenu {
         }
     }
 
-    // Display Functions
-    @Override
-    protected void mainMenu() {
-        System.out.println("Welcome to the Car and Auto Part Menu!");
-        super.mainMenu();
-    }
+
 
     private void searchForCar() {
         input.nextLine();

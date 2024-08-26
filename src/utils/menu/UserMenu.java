@@ -11,9 +11,9 @@ import java.util.Scanner;
 import static user.User.ROLE;
 
 
-public class UserMenu extends FunctionalMenu {
-    public UserMenu(MainMenu mainMenu) {
-        super(mainMenu);
+public class UserMenu extends Menu {
+    public UserMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
@@ -40,12 +40,6 @@ public class UserMenu extends FunctionalMenu {
             }
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
-    }
-
-
-    public void mainMenu() {
-        System.out.println("Welcome to the User Menu");
-        super.mainMenu();
     }
 
 
