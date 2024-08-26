@@ -101,7 +101,18 @@ public class ServiceMenu extends Menu {
             Scanner input = new Scanner(System.in);
             System.out.println("Enter mechanic ID: ");
             String mechanicID = input.nextLine();
-            ServiceList.addService(mechanicID);
+
+            boolean mechanicFound = false;
+            for (User user : UserMenu.getUserList()) {
+                if (user.getUserID().equals(mechanicID) && user instanceof Mechanic) {
+                    ServiceList.addService(mechanicID);
+                    mechanicFound = true;
+                    break;
+                }
+            }
+            if (!mechanicFound) {
+                throw new Exception("Mechanic ID not found.");
+            }
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
