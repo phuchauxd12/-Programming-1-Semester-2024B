@@ -13,12 +13,14 @@ import java.util.stream.Collectors;
 public class ActivityLog implements Serializable {
     private String activityId;
     private String userId;
+    private String username;
     private LocalDate date;
     private String activityName;
 
-    public ActivityLog(String userId, LocalDate date, String activityName) {
+    public ActivityLog(String userId, String username, LocalDate date, String activityName) {
         this.activityId = generateActivityId();
         this.userId = userId;
+        this.username = username;
         this.date = date;
         this.activityName = activityName;
     }
@@ -29,6 +31,10 @@ public class ActivityLog implements Serializable {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public LocalDate getDate() {
@@ -53,8 +59,8 @@ public class ActivityLog implements Serializable {
         }
     }
 
-    public static void addActivityLog(String userId, LocalDate date, String activityName) throws Exception {
-        ActivityLog newLog = new ActivityLog(userId, date, activityName);
+    public static void addActivityLog(String userId, String username, LocalDate date, String activityName) throws Exception {
+        ActivityLog newLog = new ActivityLog(userId, username, date, activityName);
         activityLogs.add(newLog);
         ActivityLogDatabase.saveActivityLogData(activityLogs);
     }
