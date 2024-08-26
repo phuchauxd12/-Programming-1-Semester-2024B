@@ -3,7 +3,6 @@ package services;
 import autoPart.autoPart;
 import data.Database;
 import data.service.ServiceDatabase;
-import data.user.UserDatabase;
 import user.Client;
 import user.User;
 import utils.menu.UserMenu;
@@ -35,8 +34,18 @@ public class ServiceList {
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
         LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter client name: ");
+        System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
+        boolean clientFound = false;
+        for(User user: UserMenu.getUserList()){
+            if(user.getUserID().equals(clientId) && user instanceof Client){
+                clientFound = true;
+                break;
+            }
+        }
+        if (!clientFound) {
+            throw new Exception("Client ID not found.");
+        }
 
         System.out.println("Select a service category:");
         Service.Category[] categories = Service.Category.values();
@@ -70,22 +79,12 @@ public class ServiceList {
         int serviceByInput = Integer.parseInt(scanner.nextLine());
         ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
 
-        System.out.print("Enter car ID: ");
+        System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
 
         Service service = new Service(transactionDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost);
         Service.addService(service);
 
-        User user = UserMenu.getUserList().stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
-            client.updateTotalSpending(service.getTotalCost());
-            UserDatabase.saveUsersData(UserMenu.getUserList());
-        }
     }
 
 

@@ -1,6 +1,5 @@
 import autoPart.autoPart;
 import data.autoPart.AutoPartDatabase;
-import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.*;
 import utils.menu.LoginMenu;
@@ -94,7 +93,6 @@ public class Main {
 //        ServiceDatabase.createDatabase();
 //        Service.addService(service1);
 //        Service.addService(service2);
-        System.out.println(ServiceDatabase.loadService());
 //        var listUser2 = UserDatabase.loadUsers();
 //        System.out.println(listUser2);
         LoginMenu.displayLoginMenu();
@@ -104,7 +102,6 @@ public class Main {
 //        UserProfileMenu.mainMenu();
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
-
         MainMenu menu = new MainMenu();
         menu.mainMenu();
 
