@@ -5,10 +5,10 @@ import user.User;
 import java.util.Scanner;
 
 
-public class UserProfileMenu extends FunctionalMenu {
+public class UserProfileMenu extends Menu {
 
-    public UserProfileMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public UserProfileMenu() {
+        super();
         initializeMenu(MenuOption.MANAGER); // All users have the same menu option
     }
 
@@ -59,10 +59,7 @@ public class UserProfileMenu extends FunctionalMenu {
         } while (continueUpdate);
     }
 
-    public void mainMenu() {
-        System.out.println("Welcome to the User Profile Menu");
-        super.mainMenu();
-    }
+
 }
 
 

@@ -9,11 +9,11 @@ import utils.UserSession;
 
 import java.util.Scanner;
 
-public class SaleTransactionMenu extends FunctionalMenu {
+public class SaleTransactionMenu extends Menu {
 
 
-    public SaleTransactionMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public SaleTransactionMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
@@ -116,9 +116,5 @@ public class SaleTransactionMenu extends FunctionalMenu {
         SaleTransactionList.updateSaleTransaction();
     }
 
-    @Override
-    protected void mainMenu() {
-        System.out.println("Welcome to the Sale Transaction Menu!");
-        super.mainMenu();
-    }
+
 }

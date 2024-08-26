@@ -6,27 +6,27 @@ import user.Mechanic;
 import user.Salesperson;
 
 public class MainMenu extends Menu {
-    private final CarAndAutoPartMenu carAndAutoPartMenu;
-    private final StatisticsMenu statisticsMenu;
-    private final SaleTransactionMenu saleTransactionMenu;
-    private final ServiceMenu serviceMenu;
-    private final ActivityLogMenu activityLogMenu;
-    private final UserMenu userMenu;
-    private final UserProfileMenu UserProfileMenu;
+    private final CarAndAutoPartMenu carAndAutoPartMenu= new CarAndAutoPartMenu();
+    private final StatisticsMenu statisticsMenu= new StatisticsMenu();
+    private final SaleTransactionMenu saleTransactionMenu= new SaleTransactionMenu();
+    private final ServiceMenu serviceMenu = new ServiceMenu();
+    private final ActivityLogMenu activityLogMenu= new ActivityLogMenu();
+    private final UserMenu userMenu = new UserMenu();
+    private final UserProfileMenu UserProfileMenu= new UserProfileMenu();
 
     public MainMenu() {
-        carAndAutoPartMenu = new CarAndAutoPartMenu(this);
-        statisticsMenu = new StatisticsMenu(this);
-        saleTransactionMenu = new SaleTransactionMenu(this);
-        serviceMenu = new ServiceMenu(this);
-        activityLogMenu = new ActivityLogMenu(this);
-        userMenu = new UserMenu(this);
-        UserProfileMenu = new UserProfileMenu(this);
+            super();
+//        statisticsMenu = new StatisticsMenu(this);
+//        saleTransactionMenu = new SaleTransactionMenu(this);
+//        serviceMenu = new ServiceMenu(this);
+//        activityLogMenu = new ActivityLogMenu(this);
+//        userMenu = new UserMenu(this);
+//        UserProfileMenu = new UserProfileMenu(this);
         switch (currentUser) {
-            case Manager _ -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
-            case Client _ -> initializeMenu(MenuOption.CLIENT);
+            case Manager c -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
+            case Client c -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -103,7 +103,7 @@ public class MainMenu extends Menu {
     // Menu actions
     private void activityLogMenu() {
         try {
-            activityLogMenu.mainMenu();
+            activityLogMenu.displayMenu("Welcome to the Activity Log Menu");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -113,7 +113,7 @@ public class MainMenu extends Menu {
     private void manageUsersMenu() {
         if (currentUser instanceof Manager) {
             try {
-                userMenu.mainMenu();
+                userMenu.displayMenu("Welcome to the User Menu");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -124,7 +124,8 @@ public class MainMenu extends Menu {
 
     private void statisticsMenu() {
         try {
-            statisticsMenu.mainMenu();
+
+            statisticsMenu.displayMenu("Welcome to the Statistics Menu!");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -132,7 +133,7 @@ public class MainMenu extends Menu {
 
     private void serviceMenu() {
         try {
-            serviceMenu.mainMenu();
+            serviceMenu.displayMenu("Welcome to the Service Menu");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -140,7 +141,7 @@ public class MainMenu extends Menu {
 
     private void transactionMenu() {
         try {
-            saleTransactionMenu.mainMenu();
+            saleTransactionMenu.displayMenu("Welcome to the Sale Transaction Menu!");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -148,7 +149,7 @@ public class MainMenu extends Menu {
 
     private void carAndAutoPartMenu() {
         try {
-            carAndAutoPartMenu.mainMenu();
+            carAndAutoPartMenu.displayMenu("Welcome to the Car and Auto Part Menu!");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -156,7 +157,7 @@ public class MainMenu extends Menu {
 
     private void manageProfileMenu() {
         try {
-            UserProfileMenu.mainMenu();
+            UserProfileMenu.displayMenu("Welcome to the User Profile Menu");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -165,18 +166,7 @@ public class MainMenu extends Menu {
     // menu functions
 
     public void mainMenu() {
-        int option = 100;
-        do {
-            System.out.println("Welcome to the Main Menu!");
-            displayMenu();
-            option = getOption(option, input);
-            Runnable action = menuActions.get(option);
-            if (action != null) {
-                action.run();
-            } else {
-                System.out.println("Invalid option. Please try again.");
-            }
-        } while (option != 0);
+        displayMenu("Welcome to the Main Menu!");
         System.exit(0);
     }
 

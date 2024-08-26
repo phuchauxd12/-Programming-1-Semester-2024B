@@ -16,11 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class StatisticsMenu extends FunctionalMenu {
+public class StatisticsMenu extends Menu {
 
 
-    public StatisticsMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public StatisticsMenu() {
+        super();
         switch (currentUser) {
             case Manager c -> initializeMenu(MenuOption.MANAGER);
             case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
@@ -58,7 +58,7 @@ public class StatisticsMenu extends FunctionalMenu {
                 menuActions.put(10, this::viewAutoPartStatistics);
                 menuActions.put(0, this::exit);
 
-
+                break;
             case SALESPERSON:
                 menuItems.put(1, "List All Transactions by me");
                 menuItems.put(2, "List Transactions by me (Day/week/month)");
@@ -77,7 +77,7 @@ public class StatisticsMenu extends FunctionalMenu {
                 menuActions.put(6, () -> SalespersonRevenueInSpecificPeriod(currentUser));
                 menuActions.put(0, this::exit);
 
-
+                break;
             case MECHANIC:
                 menuItems.put(1, "List All Services done by me");
                 menuItems.put(2, "List Services done by me (Day/week/month)");
@@ -109,13 +109,6 @@ public class StatisticsMenu extends FunctionalMenu {
                 break;
 
         }
-    }
-
-
-    @Override
-    protected void mainMenu() {
-        System.out.println("Welcome to the Statistics Menu!");
-        super.mainMenu();
     }
 
 

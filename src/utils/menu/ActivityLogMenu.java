@@ -8,11 +8,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
-public class ActivityLogMenu extends FunctionalMenu {
+public class ActivityLogMenu extends Menu {
 
 
-    public ActivityLogMenu(MainMenu mainMenu) {
-        super(mainMenu);
+    public ActivityLogMenu() {
+        super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             // All other users have the same menu options
@@ -49,10 +49,6 @@ public class ActivityLogMenu extends FunctionalMenu {
         }
     }
 
-    public void mainMenu() {
-        System.out.println("Welcome to the Activity Log Menu");
-        super.mainMenu();
-    }
 
     private void viewAllActivityLogs() {
         ActivityLog.viewAllActivityLog();
