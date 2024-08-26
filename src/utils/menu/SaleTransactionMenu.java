@@ -1,6 +1,7 @@
 package utils.menu;
 
 import services.ServiceList;
+import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 import user.Manager;
 import user.Salesperson;
@@ -18,7 +19,7 @@ public class SaleTransactionMenu extends Menu {
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> initializeMenu(null);
         }
     }
 
@@ -39,13 +40,14 @@ public class SaleTransactionMenu extends Menu {
                 menuItems.put(1, "Display all transactions by me");
 
 
-                menuActions.put(1, this::displayAllTransactions); // TODO: Display all transactions by salesperson
-                menuActions.put(2, this::searchTransactionById); // TODO: Search transactions by salesperson
-                menuActions.put(3, this::deleteTransactionWrapper); // TODO: Delete transactions by salesperson
-                menuActions.put(4, this::createTransactionWrapper); // TODO: Create transactions by salesperson
-                menuActions.put(5, this::updateTransactionWrapper); // TODO: Update transactions by salesperson
+                menuActions.put(1, this::displayAllTransactions);
+                menuActions.put(2, this::searchTransactionById);
+                menuActions.put(3, this::deleteTransactionWrapper);
+                menuActions.put(4, this::createTransactionWrapper);
+                menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
             }
+            case null, default -> System.out.print("");
         }
         menuItems.put(2, "Search a transaction by ID");
         menuItems.put(3, "Delete a transaction");
@@ -96,9 +98,27 @@ public class SaleTransactionMenu extends Menu {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        if (ServiceList.getServiceById(transactionID) != null) {
-            System.out.println("Transaction found!");
-            System.out.println(SaleTransactionList.getSaleTransactionById(transactionID).getFormattedSaleTransactionDetails());
+        User currentUser = UserSession.getCurrentUser();
+        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionID);
+        if (currentUser.getRole() == User.ROLE.MANAGER){
+            if (transaction != null && !transaction.isDeleted()) {
+                System.out.println("Transaction found!");
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+            }
+            System.out.println("No transaction found with ID: " + transactionID);
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
+            if (currentUser instanceof Salesperson){
+                if(transaction != null && !transaction.isDeleted()){
+                    if(transaction.getSalespersonId().equals(currentUser.getUserID())){
+                        System.out.println("Transaction found!");
+                        System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    } else {
+                        System.out.println("You are not allow to access this transaction: " + transactionID);
+                    }
+                } else {
+                    System.out.println("No transaction found with ID: " + transactionID);
+                }
+            }
         }
         System.out.println("No transaction found with ID: " + transactionID);
 
@@ -111,7 +131,14 @@ public class SaleTransactionMenu extends Menu {
 
     private void deleteTransaction() throws Exception {
         System.out.println("Deleting a transaction...");
-        SaleTransactionList.deleteSaleTransaction();
+        User currentUser = UserSession.getCurrentUser();
+        if (currentUser.getRole() == User.ROLE.MANAGER){
+            SaleTransactionList.deleteSaleTransaction();
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
+            if (currentUser instanceof Salesperson){
+                //TODO: 
+            }
+        }
 
         try{
             CommonFunc.addActivityLogForCurrentUser("Delete sale transaction");
@@ -124,9 +151,27 @@ public class SaleTransactionMenu extends Menu {
         System.out.println("Creating a new transaction...");
         if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
             Scanner input = new Scanner(System.in);
-            System.out.println("Enter saleperson ID: ");
-            String salepersonID = input.nextLine();
-            SaleTransactionList.addSaleTransaction(salepersonID);
+            User salesperson = null;
+            while (salesperson == null) {
+                System.out.println("Enter salesperson ID: ");
+                String salespersonId = input.nextLine();
+
+                String finalSalespersonId = salespersonId;
+                salesperson = UserMenu.getUserList().stream()
+                        .filter(u -> u.getUserID().equals(finalSalespersonId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (salesperson == null) {
+                    System.out.print("Invalid client ID. Please press enter to retype or 'quit' to exit: ");
+                    salespersonId = input.nextLine();
+                    if (salespersonId.equalsIgnoreCase("quit")) {
+                        System.out.println("Exiting..");
+                        return;
+                    }
+                }
+            }
+            SaleTransactionList.addSaleTransaction(salesperson.getUserID());
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }

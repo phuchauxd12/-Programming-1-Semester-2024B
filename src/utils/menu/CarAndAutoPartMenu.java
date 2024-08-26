@@ -11,7 +11,9 @@ import utils.Status;
 import utils.UserSession;
 
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 public class CarAndAutoPartMenu extends Menu {
 
@@ -44,13 +46,13 @@ public class CarAndAutoPartMenu extends Menu {
                 menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::addCar);
-                menuActions.put(2, () -> displayAllCars(null));
+                menuActions.put(2, this::displayCars);
                 menuActions.put(3, this::addAutoPart);
-                menuActions.put(4, () -> displayAllParts(null));
-                menuActions.put(5, this::deleteCar);
-                menuActions.put(6, this::deletePart);
-                menuActions.put(7, this::updateCar);
-                menuActions.put(8, this::updatePart);
+                menuActions.put(4, this::displayParts);
+                menuActions.put(5, this::deleteCarWrapper);
+                menuActions.put(6, this::deletePartWrapper);
+                menuActions.put(7, this::updateCarWrapper);
+                menuActions.put(8, this::updatePartWrapper);
                 menuActions.put(9, this::searchForCar);
                 menuActions.put(10, this::searchForPart);
                 menuActions.put(0, this::exit);
@@ -62,23 +64,23 @@ public class CarAndAutoPartMenu extends Menu {
                 menuItems.put(4, "Search for an auto part");
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, () -> displayAllCars(Status.AVAILABLE));
+                menuActions.put(1, this::displayCars);
                 menuActions.put(2, this::searchForCar);
-                menuActions.put(3, () -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(3, this::displayParts);
                 menuActions.put(4, this::searchForPart);
                 menuActions.put(0, this::exit);
             }
             case MECHANIC -> {
-                menuItems.put(1, "Display all cars");
-                menuItems.put(2, "Add car");
-                menuItems.put(3, "Display all auto parts");
-                menuItems.put(4, "Search for car");
-                menuItems.put(5, "Search for auto part");
+                menuItems.put(1, "Display all cars"); // that are for repair
+                menuItems.put(2, "Add car"); // only able to add cars for walk in
+                menuItems.put(3, "Display all auto parts"); // that are for sale
+                menuItems.put(4, "Search for car"); // that are not deleted
+                menuItems.put(5, "Search for auto part"); // that are not deleted
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, () -> displayAllCars(Status.WALK_IN));
+                menuActions.put(1, this::displayCars);
                 menuActions.put(2, this::addCar);
-                menuActions.put(3, () -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(3, this::displayParts);
                 menuActions.put(4, this::searchForCar);
                 menuActions.put(5, this::searchForPart);
                 menuActions.put(0, this::exit);
@@ -86,19 +88,18 @@ public class CarAndAutoPartMenu extends Menu {
             case CLIENT -> {
                 menuItems.put(1, "Display all cars"); // Display cars that are for sale
                 menuItems.put(2, "Display all auto parts"); // Display auto parts that are for sale
-                menuItems.put(3, "Search for car");
-                menuItems.put(4, "Search for auto part");
+                menuItems.put(3, "Search for car"); // that are not deleted
+                menuItems.put(4, "Search for auto part"); // that are not deleted
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, () -> displayAllCars(Status.AVAILABLE));
-                menuActions.put(2, () -> displayAllParts(Status.AVAILABLE));
+                menuActions.put(1, this::displayCars);
+                menuActions.put(2, this::displayParts);
                 menuActions.put(3, this::searchForCar);
                 menuActions.put(4, this::searchForPart);
                 menuActions.put(0, this::exit);
             }
         }
     }
-
 
 
     private void searchForCar() {
@@ -145,67 +146,92 @@ public class CarAndAutoPartMenu extends Menu {
 
 
     // MANAGER Functions
+    // Menu Functions
     private void addCar() {
-        User user = UserSession.getCurrentUser();
-        Car car = Car.createCar(user);
+        Car car = createCar();
         try {
-            Car.addCarToList(car);
             CommonFunc.addActivityLogForCurrentUser("Add new car");
+            addCarToList(car);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-
     private void addAutoPart() {
-        autoPart part = autoPart.createPart();
+        autoPart part = createPart();
         try {
-            autoPart.addPartToList(part);
+            addPartToList(part);
             CommonFunc.addActivityLogForCurrentUser("Add new auto part");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-
-    private void deleteCar() {
+    private void deleteCarWrapper() {
         try {
-            Car.deleteCar();
+            carsList.stream().filter(car -> !car.isDeleted()).forEach(System.out::println); // Get all cars that are not deleted
+            Scanner input = new Scanner(System.in);
+            System.out.println("Enter the car ID of the car you want to delete:");
+            String carID = input.next();
+            Car car = findCarByID(carID);
+            deleteCar(car);
             CommonFunc.addActivityLogForCurrentUser("Delete car");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void deletePart() {
+    private void deletePartWrapper() {
         try {
-            autoPart.deletePart();
+            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println); // Get all parts that are not deleted
+            Scanner input = new Scanner(System.in);
+            System.out.println("Enter the part ID of the part you want to delete: ");
+            String partID = input.next();
+            autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
+            deletePart(part);
             CommonFunc.addActivityLogForCurrentUser("Delete auto part");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void updateCar() {
+    private void updateCarWrapper() {
         try {
-            Car.updateCar();
-            CommonFunc.addActivityLogForCurrentUser("Update car");
+            Scanner input = new Scanner(System.in);
+            System.out.println("Please input the car's ID to update:");
+            String carID = input.next();
+            Car car = findCarByID(carID);
+            if (car == null) {
+                System.out.println("Not found/invalid car ID. Please try again.");
+            } else {
+                updateCar(car);
+            }
+
+            CommonFunc.addActivityLogForCurrentUser("Update car wrapper");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void updatePart() {
+    private void updatePartWrapper() {
         try {
-            autoPart.updatePart();
-            CommonFunc.addActivityLogForCurrentUser("Update auto part");
+            Scanner input = new Scanner(System.in);
+            System.out.println("Please input the part's ID to update:");
+            String partID = input.next();
+            autoPart part = findAutoPartByID(partID);
+            if (part == null) {
+                System.out.println("Not found/invalid car ID. Please try again.");
+            } else {
+                updatePart(part);
+            }
+
+            CommonFunc.addActivityLogForCurrentUser("Update auto part wrapper");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-
-    // Static helper functions
+    // List functions
     private static List<Car> carsList;
 
     static {
@@ -258,20 +284,46 @@ public class CarAndAutoPartMenu extends Menu {
         return null;
     }
 
-    public static void displayAllCars(Status status) {
-        if (status == null) {
-            System.out.println("Displaying all cars:");
-            for (Car car : carsList) {
-                System.out.println(car);
-            }
-        } else {
-            System.out.println("Displaying all cars with " + status + " status:");
-            for (Car car : carsList) {
-
-                if (car.getStatus() == status) {
-                    System.out.println(car);
+    public void displayCars() {
+        int deletedOption = 0;
+        User user = UserSession.getCurrentUser();
+        if (user instanceof Manager) {
+            System.out.println("Would you like to include deleted cars?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            while (true) {
+                try {
+                    System.out.println("Enter an option: ");
+                    deletedOption = input.nextInt();
+                    if (deletedOption == 1 || deletedOption == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option. Please input 1 or 2");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please try again.");
+                    input.nextLine(); // Clear the invalid input
                 }
             }
+            boolean includeDeleted = deletedOption == 1;
+            if (includeDeleted) {
+                carsList.forEach(System.out::println);
+            } else {
+                carsList.stream()
+                        .filter(car -> !car.isDeleted())
+                        .forEach(System.out::println);
+            }
+        } else if (user instanceof Mechanic) {
+            System.out.println("Displaying all cars for repair:");
+            carsList.stream()
+                    .filter(car -> car.getStatus() == Status.WALK_IN && !car.isDeleted())
+                    .forEach(System.out::println);
+        } else {
+            System.out.println("Displaying all cars for sale:");
+            carsList.stream()
+                    .filter(car -> car.getStatus() == Status.AVAILABLE && !car.isDeleted())
+                    .forEach(System.out::println);
+
         }
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific car, please use the search function!");
@@ -284,19 +336,42 @@ public class CarAndAutoPartMenu extends Menu {
         }
     }
 
-    public static void displayAllParts(Status status) {
-        if (status == null) {
-            System.out.println("Displaying all Auto Parts:");
-            for (autoPart part : autoPartsList) {
-                System.out.println(part);
-            }
-        } else {
-            System.out.println("Displaying all Auto Parts with" + status + " status:");
-            for (autoPart part : autoPartsList) {
-                if (part.getStatus() == status) {
-                    System.out.println(part);
+    public void displayParts() {
+        int option = 0;
+        int statusOption = 0;
+        int deletedOption = 0;
+        User user = UserSession.getCurrentUser();
+        if (user instanceof Manager) {
+            System.out.println("Would you like to include deleted parts?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            while (true) {
+                try {
+                    System.out.println("Enter an option: ");
+                    deletedOption = input.nextInt();
+                    if (deletedOption == 1 || deletedOption == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option. Please input 1 or 2");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please try again.");
+                    input.nextLine(); // Clear the invalid input
                 }
             }
+            boolean includeDeleted = deletedOption == 1;
+            if (includeDeleted) {
+                autoPartsList.forEach(System.out::println);
+            } else {
+                autoPartsList.stream()
+                        .filter(part -> !part.isDeleted())
+                        .forEach(System.out::println);
+            }
+        } else {
+            System.out.println("Displaying all parts for sale:");
+            autoPartsList.stream()
+                    .filter(part -> part.getStatus() == Status.AVAILABLE && !part.isDeleted())
+                    .forEach(System.out::println);
         }
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific part, please use the search function!");
@@ -308,15 +383,399 @@ public class CarAndAutoPartMenu extends Menu {
         }
     }
 
-
-    public static void displayAllPartsForSale() {
-        System.out.println("Displaying all Auto Parts for sale:");
-        for (autoPart part : getAutoPartsList()) {
-            if (part.getStatus() == Status.AVAILABLE) {
-                System.out.println(part);
+    // Car CRUD functions
+    public static Car createCar() {
+        User user = UserSession.getCurrentUser();
+        Scanner input = new Scanner(System.in);
+        Status status;
+        if (user instanceof Manager) {
+            int option;
+            while (true) {
+                System.out.println("Car for sale or a customer car for repair?");
+                System.out.println("1. New Car for Sale");
+                System.out.println("2. Car for Repair");
+                try {
+                    System.out.println("Enter an option: ");
+                    option = input.nextInt();
+                    if (option == 1 || option == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option. Please input 1 or 2.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please input 1 or 2.");
+                    input.nextLine(); // Clear the invalid input
+                }
+            }
+            status = switch (option) {
+                case 1 -> Status.AVAILABLE;
+                case 2 -> Status.WALK_IN;
+                default -> throw new IllegalStateException("Unexpected value: " + option);
+            };
+        } else if (user instanceof Mechanic) {
+            status = Status.WALK_IN;
+        } else {
+            status = Status.AVAILABLE;
+        }
+        System.out.println("Please input the car's make:");
+        String carMake = input.next();
+        System.out.println("Please input the car's model:");
+        String carModel = input.next();
+        int carYear = CarAndAutoPartMenu.getNewCarYear(input);
+        System.out.println("Please input the car's color:");
+        String color = input.next().toUpperCase();
+        double mileage;
+        while (true) {
+            try {
+                System.out.println("Please input the car's mileage:");
+                mileage = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid mileage");
+                input.nextLine();
             }
         }
-        System.out.println("----------------");
+        double price;
+        while (true) {
+            try {
+                System.out.println("Please input the car's price:");
+                price = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid price");
+                input.nextLine();
+            }
+        }
+        input.nextLine();
+        System.out.println("Please input any additional notes:");
+        String addNotes = input.nextLine();
+        Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
+        System.out.println("Car created successfully!");
+        System.out.println(newCar);
+        return newCar;
+    }
+
+    public void deleteCar(Car car) throws Exception {
+        if (car != null) {
+            car.setDeleted(true);
+            CarDatabase.saveCarData(carsList);
+            System.out.println("Car deleted successfully!");
+        } else {
+            System.out.println("Car not found.");
+        }
+    }
+
+    public static void updateCar(Car car) throws Exception {
+        int option = 100;
+        do {
+            System.out.println("What would you like to update?");
+            System.out.println("1. Car Make");
+            System.out.println("2. Car Model");
+            System.out.println("3. Car Year");
+            System.out.println("4. Car Color");
+            System.out.println("5. Car Mileage");
+            System.out.println("6. Car Price");
+            System.out.println("7. Additional Notes");
+            System.out.println("0. Exit");
+            option = MainMenu.getOption(option, input);
+            switch (option) {
+                case 1:
+                    System.out.println("The current car's make: " + car.getCarMake());
+                    System.out.println("Please input the car's make:");
+                    String newCarMake = input.next();
+                    car.setCarMake(newCarMake);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 2:
+                    System.out.println("The current car's model: " + car.getCarModel());
+                    System.out.println("Please input the car's model:");
+                    String newCarModel = input.next();
+                    car.setCarModel(newCarModel);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 3:
+                    System.out.println("The current car's year: " + car.getCarModel());
+                    int newCarYear;
+                    newCarYear = CarAndAutoPartMenu.getNewCarYear(input);
+                    car.setCarYear(newCarYear);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 4:
+                    System.out.println("The current car's color: " + car.getColor());
+                    System.out.println("Please input the car's color:");
+                    car.setColor(input.next().toUpperCase());
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 5:
+                    System.out.println("The current car's mileage: " + car.getMileage());
+                    double newMileage;
+                    while (true) {
+                        try {
+                            System.out.println("Please input the car's mileage:");
+                            newMileage = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please input a valid mileage");
+                            input.nextLine();
+                        }
+                    }
+                    car.setMileage(newMileage);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 6:
+                    System.out.println("The current car's price: " + car.getPrice());
+                    double newPrice;
+                    while (true) {
+                        try {
+                            System.out.println("Please input the car's price:");
+                            newPrice = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please input a valid price");
+                            input.nextLine();
+                        }
+                    }
+                    car.setPrice(newPrice);
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 7:
+                    System.out.println("The current additional notes: " + car.getAddNotes());
+                    input.nextLine();
+                    System.out.println("Please input any additional notes:");
+                    car.setAddNotes(input.nextLine());
+                    System.out.println("Updated successfully!");
+                    System.out.println(car);
+                    break;
+                case 0:
+                    CarDatabase.saveCarData(carsList);// Save into database
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+                    break;
+            }
+        } while (option != 0);
+    }
+
+    public static int getNewCarYear(Scanner input) {
+        int newCarYear;
+        while (true) {
+            try {
+                System.out.println("Please input the car's year:");
+                newCarYear = input.nextInt();
+                if (newCarYear > 1900) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. The year must be over 1900.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please input a valid year");
+                input.nextLine();
+            }
+        }
+        return newCarYear;
+    }
+
+    public static void addCarToList(Car car) throws Exception {
+        carsList.add(car);
+        CarDatabase.saveCarData(carsList);
+        System.out.println("Car successfully added to list!");
+    }
+
+    private void searchForCar() {
+        User user = UserSession.getCurrentUser();
+        input.nextLine();
+        System.out.println("Enter the car ID:");
+        String carID = input.nextLine();
+        Car car = findCarByID(carID);
+        if (car != null) {
+            if (!(user instanceof Manager)) {
+                if (car.isDeleted()) {
+                    System.out.println("Car has been deleted.");
+                    return;
+                }
+            }
+            System.out.println("----------------");
+            System.out.println(car.toStringDetailed());
+            System.out.println("----------------");
+        } else {
+            System.out.println("Car not found.");
+        }
+    }
+
+    // AutoPart CRUD functions
+    public static autoPart createPart() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Enter part name: ");
+        String partName = input.next();
+        System.out.println("Enter part manufacturer: ");
+        String partManufacturer = input.next();
+        System.out.println("Enter part condition (NEW, USED, REFURBISHED): ");
+        autoPart.Condition condition;
+        try {
+            condition = autoPart.Condition.valueOf(input.next().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid condition. Please enter NEW, USED, or REFURBISHED.");
+            condition = autoPart.Condition.valueOf(input.next().toUpperCase());
+        }
+        System.out.println("Enter warranty duration (in months): ");
+        int warrantyMonths;
+        while (true) {
+            try {
+                warrantyMonths = input.nextInt();
+                break; // Exit loop if input is valid
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        double price;
+        System.out.println("Enter price: ");
+        while (true) {
+            try {
+                price = input.nextDouble();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                input.next();
+            }
+        }
+        input.nextLine();
+        System.out.println("Enter additional notes: ");
+        String addNotes = input.nextLine();
+        autoPart part = new autoPart(partName, partManufacturer, condition, warrantyMonths, price, addNotes);
+        System.out.println("Part created successfully.");
+        System.out.println(part);
+        return part;
+    }
+
+    public static void addPartToList(autoPart part) throws Exception {
+        autoPartsList.add(part);
+        AutoPartDatabase.saveAutoPartData(autoPartsList);
+        System.out.println("Part successfully added to list!");
+    }
+
+    public void deletePart(autoPart part) throws Exception {
+        if (part == null) {
+            System.out.println("Part not found.");
+            return;
+        }
+        part.setDeleted(true);
+        AutoPartDatabase.saveAutoPartData(autoPartsList);
+        System.out.println("Part deleted successfully.");
+        System.out.println(part);
+    }
+
+    public void updatePart(autoPart part) throws Exception {
+        int option = 0;
+        while (option != 7) {
+            System.out.println("What would you like to update?");
+            System.out.println("1. Part Name");
+            System.out.println("2. Part Manufacturer");
+            System.out.println("3. Condition");
+            System.out.println("4. Warranty Duration");
+            System.out.println("5. Price");
+            System.out.println("6. Additional Notes");
+            System.out.println("7. Exit");
+            option = MainMenu.getOption(option, input);
+            switch (option) {
+                case 1:
+                    System.out.println("Enter new part name: ");
+                    part.setPartName(input.next());
+                    System.out.println("Part name updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 2:
+                    System.out.println("Enter new part manufacturer: ");
+                    part.setPartManufacturer(input.next());
+                    System.out.println("Part manufacturer updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 3:
+                    System.out.println("Enter new part condition (NEW, USED, REFURBISHED): ");
+                    autoPart.Condition condition;
+                    try {
+                        condition = autoPart.Condition.valueOf(input.next().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid condition. Please enter NEW, USED, or REFURBISHED.");
+                        condition = autoPart.Condition.valueOf(input.next().toUpperCase());
+                    }
+                    part.setCondition(condition);
+                    System.out.println("Part condition updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 4:
+                    System.out.println("Enter new warranty duration (in months): ");
+                    int warrantyMonths;
+                    while (true) {
+                        try {
+                            warrantyMonths = input.nextInt();
+                            break; // Exit loop if input is valid
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            input.next(); // Clear the invalid input from the scanner buffer
+                        }
+                    }
+                    part.setWarrantyMonths(warrantyMonths);
+                    System.out.println("Warranty duration updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 5:
+                    System.out.println("Enter new price: ");
+                    double price;
+                    while (true) {
+                        try {
+                            price = input.nextDouble();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            input.next();
+                        }
+                    }
+                    part.setPrice(price);
+                    System.out.println("Price updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 6:
+                    input.nextLine();
+                    System.out.println("Enter new additional notes: ");
+                    part.setAddNotes(input.nextLine());
+                    System.out.println("Additional notes updated successfully.");
+                    System.out.println(part);
+                    break;
+                case 7:
+                    AutoPartDatabase.saveAutoPartData(autoPartsList);
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    public void searchForPart() {
+        User user = UserSession.getCurrentUser();
+        input.nextLine();
+        System.out.println("Enter the part ID:");
+        String partID = input.nextLine();
+        autoPart part = findAutoPartByID(partID);
+        if (part != null) {
+            if (!(user instanceof Manager)) {
+                if (part.isDeleted()) {
+                    System.out.println("Part has been deleted.");
+                    return;
+                }
+            }
+            System.out.println("----------------");
+            System.out.println(part.toStringDetailed());
+            System.out.println("----------------");
+        } else {
+            System.out.println("Part not found.");
+        }
     }
 
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {

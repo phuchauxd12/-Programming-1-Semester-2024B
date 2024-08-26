@@ -23,10 +23,10 @@ public class StatisticsMenu extends Menu {
     public StatisticsMenu() {
         super();
         switch (currentUser) {
-            case Manager c -> initializeMenu(MenuOption.MANAGER);
-            case Salesperson c -> initializeMenu(MenuOption.SALESPERSON);
-            case Mechanic c -> initializeMenu(MenuOption.MECHANIC);
-            case Client c -> initializeMenu(MenuOption.CLIENT);
+            case Manager _ -> initializeMenu(MenuOption.MANAGER);
+            case Salesperson _ -> initializeMenu(MenuOption.SALESPERSON);
+            case Mechanic _ -> initializeMenu(MenuOption.MECHANIC);
+            case Client _ -> initializeMenu(MenuOption.CLIENT);
             case null, default -> throw new IllegalArgumentException("Unsupported user type");
         }
     }
@@ -58,7 +58,7 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(9, this::getAllMechanicServices);
                 menuActions.put(10, this::viewAutoPartStatistics);
                 menuActions.put(0, this::exit);
-
+                break;
 
             case SALESPERSON:
                 menuItems.put(1, "List All Transactions by me");
@@ -77,7 +77,7 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(5, () -> SalespersonRevenue(currentUser));
                 menuActions.put(6, () -> SalespersonRevenueInSpecificPeriod(currentUser));
                 menuActions.put(0, this::exit);
-
+                break;
 
             case MECHANIC:
                 menuItems.put(1, "List All Services done by me");
