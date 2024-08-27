@@ -63,6 +63,7 @@ public class Service implements Serializable {
             this.category = category;
             this.price = price;
         }
+
         public Category getCategory() {
             return category;
         }
@@ -128,7 +129,7 @@ public class Service implements Serializable {
             String carMake = input.next();
             System.out.println("Please input the car's model:");
             String carModel = input.next();
-            int carYear = Car.getNewCarYear(input);
+            int carYear = CarAndAutoPartMenu.getNewCarYear(input);
             System.out.println("Please input the car's color:");
             String color = input.next().toUpperCase();
             double mileage;
@@ -148,7 +149,7 @@ public class Service implements Serializable {
             String addNotes = input.nextLine();
             Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
             try {
-                Car.addCarToList(newCar);
+                CarAndAutoPartMenu.addCarToList(newCar);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

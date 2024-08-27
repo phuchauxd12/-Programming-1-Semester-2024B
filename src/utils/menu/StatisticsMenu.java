@@ -57,7 +57,7 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(9, this::getAllMechanicServices);
                 menuActions.put(10, this::viewAutoPartStatistics);
                 menuActions.put(0, this::exit);
-
+                break;
 
             case SALESPERSON:
                 menuItems.put(1, "List All Transactions by me");
@@ -76,7 +76,7 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(5, () -> SalespersonRevenue(currentUser));
                 menuActions.put(6, () -> SalespersonRevenueInSpecificPeriod(currentUser));
                 menuActions.put(0, this::exit);
-
+                break;
 
             case MECHANIC:
                 menuItems.put(1, "List All Services done by me");

@@ -1,12 +1,6 @@
 package car;
 
-import data.car.CarDatabase;
 import services.Service;
-import user.Manager;
-import user.Mechanic;
-import user.User;
-import utils.menu.CarAndAutoPartMenu;
-import utils.menu.MainMenu;
 import utils.Status;
 
 import java.io.Serializable;
@@ -25,7 +19,7 @@ public class Car implements Serializable {
     private String addNotes;
     private LocalDate soldDate = null;
     private boolean isDeleted = false;
-    private ArrayList<Service> serviceHistory;
+    private List<Service> serviceHistory = new ArrayList<>();
 
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
@@ -128,234 +122,23 @@ public class Car implements Serializable {
         this.isDeleted = deleted;
     }
 
-    public ArrayList<Service> getServiceHistory() {
+    public List<Service> getServiceHistory() {
         return serviceHistory;
     }
 
-    public void setServiceHistory(ArrayList<Service> serviceHistory) {
-        this.serviceHistory = serviceHistory;
+
+    public void addServiceToHistory(Service service) {
+        serviceHistory.add(service);
     }
 
-
-    public static Car createCar(User user) {
-        Scanner input = new Scanner(System.in);
-        Status status;
-        if (user instanceof Manager) {
-            int option;
-            while (true) {
-                System.out.println("Car for sale or a customer car for repair?");
-                System.out.println("1. New Car for Sale");
-                System.out.println("2. Car for Repair");
-                try {
-                    System.out.println("Enter an option: ");
-                    option = input.nextInt();
-                    if (option == 1 || option == 2) {
-                        break;
-                    } else {
-                        System.out.println("Invalid option. Please input 1 or 2.");
-                    }
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please input 1 or 2.");
-                    input.nextLine(); // Clear the invalid input
-                }
-            }
-            status = switch (option) {
-                case 1 -> Status.AVAILABLE;
-                case 2 -> Status.WALK_IN;
-                default -> throw new IllegalStateException("Unexpected value: " + option);
-            };
-        } else if (user instanceof Mechanic) {
-            status = Status.WALK_IN;
-        } else {
-            status = Status.AVAILABLE;
+    public void displayServiceHistory() {
+        for (Service service : serviceHistory) {
+            System.out.println("Service By: " + service.getServiceBy());
+            System.out.println("Service Date: " + service.getServiceDate());
+            System.out.println("Service Type: " + service.getServiceType());
         }
-        System.out.println("Please input the car's make:");
-        String carMake = input.next();
-        System.out.println("Please input the car's model:");
-        String carModel = input.next();
-        int carYear = getNewCarYear(input);
-        System.out.println("Please input the car's color:");
-        String color = input.next().toUpperCase();
-        double mileage;
-        while (true) {
-            try {
-                System.out.println("Please input the car's mileage:");
-                mileage = input.nextDouble();
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please input a valid mileage");
-                input.nextLine();
-            }
-        }
-        double price;
-        while (true) {
-            try {
-                System.out.println("Please input the car's price:");
-                price = input.nextDouble();
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please input a valid price");
-                input.nextLine();
-            }
-        }
-        input.nextLine();
-        System.out.println("Please input any additional notes:");
-        String addNotes = input.nextLine();
-        Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
-        System.out.println("Car created successfully!");
-        System.out.println(newCar);
-        return newCar;
     }
 
-    public static void addCarToList(Car car) throws Exception {
-        List<Car> carList = CarAndAutoPartMenu.getCarsList();
-        carList.add(car);
-        CarDatabase.saveCarData(carList);
-        System.out.println("Car successfully added to list!");
-    }
-
-    public static void deleteCar() throws Exception {
-        CarAndAutoPartMenu.displayAllCars(null);
-        Scanner input = new Scanner(System.in);
-        System.out.println("Please input the car's ID to delete:");
-        String carID = input.next();
-        Car car = CarAndAutoPartMenu.findCarByID(carID);
-        if (car != null) {
-            car.setDeleted(true);
-            CarDatabase.saveCarData(CarDatabase.loadCars());
-            System.out.println("Car deleted successfully!");
-        } else {
-            System.out.println("Car not found.");
-        }
-        System.out.println(car);
-    }
-
-    public static void updateCar() throws Exception {
-        CarAndAutoPartMenu.displayAllCars(null);
-        Car car = null;
-        Scanner input = new Scanner(System.in);
-        while (car == null) {
-            System.out.println("Please input the car's ID to update:");
-            String carID = input.next();
-            car = CarAndAutoPartMenu.findCarByID(carID);
-            if (car == null) {
-                System.out.println("Not found/invalid car ID. Please try again.");
-            }
-        }
-        int option = 0;
-        do {
-            System.out.println("What would you like to update?");
-            System.out.println("1. Car Make");
-            System.out.println("2. Car Model");
-            System.out.println("3. Car Year");
-            System.out.println("4. Car Color");
-            System.out.println("5. Car Mileage");
-            System.out.println("6. Car Price");
-            System.out.println("7. Additional Notes");
-            System.out.println("8. Exit");
-            option = MainMenu.getOption(option, input);
-            switch (option) {
-                case 1:
-                    System.out.println("The current car's make: " + car.carMake);
-                    System.out.println("Please input the car's make:");
-                    String newCarMake = input.next();
-                    car.setCarMake(newCarMake);
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 2:
-                    System.out.println("The current car's model: " + car.carModel);
-                    System.out.println("Please input the car's model:");
-                    String newCarModel = input.next();
-                    car.setCarModel(newCarModel);
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 3:
-                    System.out.println("The current car's year: " + car.carYear);
-                    int newCarYear;
-                    newCarYear = getNewCarYear(input);
-                    car.setCarYear(newCarYear);
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 4:
-                    System.out.println("The current car's color: " + car.color);
-                    System.out.println("Please input the car's color:");
-                    car.setColor(input.next().toUpperCase());
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 5:
-                    System.out.println("The current car's mileage: " + car.mileage);
-                    double newMileage;
-                    while (true) {
-                        try {
-                            System.out.println("Please input the car's mileage:");
-                            newMileage = input.nextDouble();
-                            break;
-                        } catch (InputMismatchException e) {
-                            System.out.println("Invalid input. Please input a valid mileage");
-                            input.nextLine();
-                        }
-                    }
-                    car.setMileage(newMileage);
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 6:
-                    System.out.println("The current car's price: " + car.price);
-                    double newPrice;
-                    while (true) {
-                        try {
-                            System.out.println("Please input the car's price:");
-                            newPrice = input.nextDouble();
-                            break;
-                        } catch (InputMismatchException e) {
-                            System.out.println("Invalid input. Please input a valid price");
-                            input.nextLine();
-                        }
-                    }
-                    car.setPrice(newPrice);
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 7:
-                    System.out.println("The current additional notes: " + car.addNotes);
-                    input.nextLine();
-                    System.out.println("Please input any additional notes:");
-                    car.setAddNotes(input.nextLine());
-                    System.out.println("Updated successfully!");
-                    System.out.println(car);
-                    break;
-                case 8:
-                    CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());// Save into database
-                    break;
-                default:
-                    System.out.println("Invalid option.");
-                    break;
-            }
-        } while (option != 8);
-    }
-
-    public static int getNewCarYear(Scanner input) {
-        int newCarYear;
-        while (true) {
-            try {
-                System.out.println("Please input the car's year:");
-                newCarYear = input.nextInt();
-                if (newCarYear > 1900) {
-                    break;
-                } else {
-                    System.out.println("Invalid input. The year must be over 1900.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please input a valid year");
-                input.nextLine();
-            }
-        }
-        return newCarYear;
-    }
 
     public String toStringDetailed() {
         return "Car ID: " + carID + "\n" +
