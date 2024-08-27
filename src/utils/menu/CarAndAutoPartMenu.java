@@ -45,9 +45,9 @@ public class CarAndAutoPartMenu extends Menu {
                 menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::addCar);
-                menuActions.put(2, this::displayAllCars);
+                menuActions.put(2, this::displayCars);
                 menuActions.put(3, this::addAutoPart);
-                menuActions.put(4, this::displayAllParts);
+                menuActions.put(4, this::displayParts);
                 menuActions.put(5, this::deleteCarWrapper);
                 menuActions.put(6, this::deletePartWrapper);
                 menuActions.put(7, this::updateCarWrapper);
@@ -63,23 +63,23 @@ public class CarAndAutoPartMenu extends Menu {
                 menuItems.put(4, "Search for an auto part");
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, this::displayAllCars);
+                menuActions.put(1, this::displayCars);
                 menuActions.put(2, this::searchForCar);
-                menuActions.put(3, this::displayAllParts);
+                menuActions.put(3, this::displayParts);
                 menuActions.put(4, this::searchForPart);
                 menuActions.put(0, this::exit);
             }
             case MECHANIC -> {
-                menuItems.put(1, "Display all cars");
-                menuItems.put(2, "Add car");
-                menuItems.put(3, "Display all auto parts");
-                menuItems.put(4, "Search for car");
-                menuItems.put(5, "Search for auto part");
+                menuItems.put(1, "Display all cars"); // that are for repair
+                menuItems.put(2, "Add car"); // only able to add cars for walk in
+                menuItems.put(3, "Display all auto parts"); // that are for sale
+                menuItems.put(4, "Search for car"); // that are not deleted
+                menuItems.put(5, "Search for auto part"); // that are not deleted
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, this::displayAllCars);
+                menuActions.put(1, this::displayCars);
                 menuActions.put(2, this::addCar);
-                menuActions.put(3, this::displayAllParts);
+                menuActions.put(3, this::displayParts);
                 menuActions.put(4, this::searchForCar);
                 menuActions.put(5, this::searchForPart);
                 menuActions.put(0, this::exit);
@@ -87,12 +87,12 @@ public class CarAndAutoPartMenu extends Menu {
             case CLIENT -> {
                 menuItems.put(1, "Display all cars"); // Display cars that are for sale
                 menuItems.put(2, "Display all auto parts"); // Display auto parts that are for sale
-                menuItems.put(3, "Search for car");
-                menuItems.put(4, "Search for auto part");
+                menuItems.put(3, "Search for car"); // that are not deleted
+                menuItems.put(4, "Search for auto part"); // that are not deleted
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, this::displayAllCars);
-                menuActions.put(2, this::displayAllParts);
+                menuActions.put(1, this::displayCars);
+                menuActions.put(2, this::displayParts);
                 menuActions.put(3, this::searchForCar);
                 menuActions.put(4, this::searchForPart);
                 menuActions.put(0, this::exit);
@@ -111,7 +111,6 @@ public class CarAndAutoPartMenu extends Menu {
         }
     }
 
-
     private void addAutoPart() {
         autoPart part = createPart();
         try {
@@ -121,12 +120,11 @@ public class CarAndAutoPartMenu extends Menu {
         }
     }
 
-
     private void deleteCarWrapper() {
         try {
-            displayAllCars();
+            carsList.stream().filter(car -> !car.isDeleted()).forEach(System.out::println); // Get all cars that are not deleted
             Scanner input = new Scanner(System.in);
-            System.out.println("Please input the car's ID to delete:");
+            System.out.println("Enter the car ID of the car you want to delete:");
             String carID = input.next();
             Car car = findCarByID(carID);
             deleteCar(car);
@@ -137,7 +135,12 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void deletePartWrapper() {
         try {
-            deletePart();
+            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println); // Get all parts that are not deleted
+            Scanner input = new Scanner(System.in);
+            System.out.println("Enter the part ID of the part you want to delete: ");
+            String partID = input.next();
+            autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
+            deletePart(part);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -145,18 +148,15 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updateCarWrapper() {
         try {
-            displayAllCars();
-            Car car = null;
             Scanner input = new Scanner(System.in);
-            while (car == null) {
-                System.out.println("Please input the car's ID to update:");
-                String carID = input.next();
-                car = CarAndAutoPartMenu.findCarByID(carID);
-                if (car == null) {
-                    System.out.println("Not found/invalid car ID. Please try again.");
-                }
+            System.out.println("Please input the car's ID to update:");
+            String carID = input.next();
+            Car car = findCarByID(carID);
+            if (car == null) {
+                System.out.println("Not found/invalid car ID. Please try again.");
+            } else {
+                updateCar(car);
             }
-            updateCar(car);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -164,12 +164,19 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updatePartWrapper() {
         try {
-            updatePart();
+            Scanner input = new Scanner(System.in);
+            System.out.println("Please input the part's ID to update:");
+            String partID = input.next();
+            autoPart part = findAutoPartByID(partID);
+            if (part == null) {
+                System.out.println("Not found/invalid car ID. Please try again.");
+            } else {
+                updatePart(part);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-
 
     // List functions
     private static List<Car> carsList;
@@ -224,92 +231,37 @@ public class CarAndAutoPartMenu extends Menu {
         return null;
     }
 
-    public void displayAllCars() {
-        int option = 0;
-        int statusOption = 0;
+    public void displayCars() {
         int deletedOption = 0;
         User user = UserSession.getCurrentUser();
         if (user instanceof Manager) {
-            Status status = null;
-            System.out.println("Would you like to filter your search?");
+            System.out.println("Would you like to include deleted cars?");
             System.out.println("1. Yes");
             System.out.println("2. No");
             while (true) {
                 try {
                     System.out.println("Enter an option: ");
-                    option = input.nextInt();
-                    if (option == 1 || option == 2) {
+                    deletedOption = input.nextInt();
+                    if (deletedOption == 1 || deletedOption == 2) {
                         break;
                     } else {
-                        System.out.println("Invalid option. Please input 1 or 2.");
+                        System.out.println("Invalid option. Please input 1 or 2");
                     }
                 } catch (InputMismatchException e) {
                     System.out.println("Invalid input. Please try again.");
                     input.nextLine(); // Clear the invalid input
                 }
             }
-            if (option == 1) {
-                System.out.println("Filter by status:");
-                System.out.println("1. Available");
-                System.out.println("2. Sold");
-                System.out.println("3. Walk-in");
-                while (true) {
-                    try {
-                        System.out.println("Enter an option: ");
-                        statusOption = input.nextInt();
-                        if (statusOption == 1 || statusOption == 2 || statusOption == 3) {
-                            break;
-                        } else {
-                            System.out.println("Invalid option. Please input 1, 2 or 3.");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please try again.");
-                        input.nextLine(); // Clear the invalid input
-                    }
-                }
-                switch (statusOption) {
-                    case 1 -> status = Status.AVAILABLE;
-                    case 2 -> status = Status.SOLD;
-                    case 3 -> status = Status.WALK_IN;
-                    default -> System.out.println("Invalid option.");
-                }
-            }
-            if (status != null) {
-                System.out.println("Would you like to include deleted cars?");
-                System.out.println("1. Yes");
-                System.out.println("2. No");
-                while (true) {
-                    try {
-                        System.out.println("Enter an option: ");
-                        deletedOption = input.nextInt();
-                        if (deletedOption == 1 || deletedOption == 2) {
-                            break;
-                        } else {
-                            System.out.println("Invalid option. Please input 1 or 2");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please try again.");
-                        input.nextLine(); // Clear the invalid input
-                    }
-                }
-                boolean includeDeleted = deletedOption == 1;
-                System.out.println("Displaying all cars with " + status + " status:");
-                Status finalStatus = status;
-                if (includeDeleted) {
-                    carsList.stream()
-                            .filter(car -> car.getStatus() == finalStatus)
-                            .forEach(System.out::println);
-                } else {
-                    carsList.stream()
-                            .filter(car -> car.getStatus() == finalStatus && !car.isDeleted())
-                            .forEach(System.out::println);
-                }
-            } else {
-                System.out.println("Displaying all cars:");
+            boolean includeDeleted = deletedOption == 1;
+            if (includeDeleted) {
                 carsList.forEach(System.out::println);
+            } else {
+                carsList.stream()
+                        .filter(car -> !car.isDeleted())
+                        .forEach(System.out::println);
             }
         } else if (user instanceof Mechanic) {
-            System.out.println("Displaying all cars with walk-in status:");
+            System.out.println("Displaying all cars for repair:");
             carsList.stream()
                     .filter(car -> car.getStatus() == Status.WALK_IN && !car.isDeleted())
                     .forEach(System.out::println);
@@ -318,93 +270,42 @@ public class CarAndAutoPartMenu extends Menu {
             carsList.stream()
                     .filter(car -> car.getStatus() == Status.AVAILABLE && !car.isDeleted())
                     .forEach(System.out::println);
+
         }
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific car, please use the search function!");
     }
 
-    public void displayAllParts() {
+    public void displayParts() {
         int option = 0;
         int statusOption = 0;
         int deletedOption = 0;
         User user = UserSession.getCurrentUser();
         if (user instanceof Manager) {
-            Status status = null;
-            System.out.println("Would you like to filter your search?");
+            System.out.println("Would you like to include deleted parts?");
             System.out.println("1. Yes");
             System.out.println("2. No");
             while (true) {
                 try {
                     System.out.println("Enter an option: ");
-                    option = input.nextInt();
-                    if (option == 1 || option == 2) {
+                    deletedOption = input.nextInt();
+                    if (deletedOption == 1 || deletedOption == 2) {
                         break;
                     } else {
-                        System.out.println("Invalid option. Please input 1 or 2.");
+                        System.out.println("Invalid option. Please input 1 or 2");
                     }
                 } catch (InputMismatchException e) {
                     System.out.println("Invalid input. Please try again.");
                     input.nextLine(); // Clear the invalid input
                 }
             }
-            if (option == 1) {
-                System.out.println("Filter by status:");
-                System.out.println("1. Available");
-                System.out.println("2. Sold");
-                while (true) {
-                    try {
-                        System.out.println("Enter an option: ");
-                        statusOption = input.nextInt();
-                        if (statusOption == 1 || statusOption == 2) {
-                            break;
-                        } else {
-                            System.out.println("Invalid option. Please input 1 or 2");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please try again.");
-                        input.nextLine(); // Clear the invalid input
-                    }
-                }
-                switch (statusOption) {
-                    case 1 -> status = Status.AVAILABLE;
-                    case 2 -> status = Status.SOLD;
-                    case 3 -> status = Status.WALK_IN;
-                    default -> System.out.println("Invalid option.");
-                }
-            }
-            if (status != null) {
-                System.out.println("Would you like to include deleted parts?");
-                System.out.println("1. Yes");
-                System.out.println("2. No");
-                while (true) {
-                    try {
-                        System.out.println("Enter an option: ");
-                        deletedOption = input.nextInt();
-                        if (deletedOption == 1 || deletedOption == 2) {
-                            break;
-                        } else {
-                            System.out.println("Invalid option. Please input 1 or 2");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please try again.");
-                        input.nextLine(); // Clear the invalid input
-                    }
-                }
-                boolean includeDeleted = deletedOption == 1;
-                System.out.println("Displaying all parts with " + status + " status:");
-                Status finalStatus = status;
-                if (includeDeleted) {
-                    autoPartsList.stream()
-                            .filter(part -> part.getStatus() == finalStatus)
-                            .forEach(System.out::println);
-                } else {
-                    autoPartsList.stream()
-                            .filter(part -> part.getStatus() == finalStatus && !part.isDeleted())
-                            .forEach(System.out::println);
-                }
+            boolean includeDeleted = deletedOption == 1;
+            if (includeDeleted) {
+                autoPartsList.forEach(System.out::println);
             } else {
-                System.out.println("Displaying all parts:");
-                carsList.forEach(System.out::println);
+                autoPartsList.stream()
+                        .filter(part -> !part.isDeleted())
+                        .forEach(System.out::println);
             }
         } else {
             System.out.println("Displaying all parts for sale:");
@@ -621,11 +522,18 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
     private void searchForCar() {
+        User user = UserSession.getCurrentUser();
         input.nextLine();
         System.out.println("Enter the car ID:");
         String carID = input.nextLine();
         Car car = findCarByID(carID);
         if (car != null) {
+            if (!(user instanceof Manager)) {
+                if (car.isDeleted()) {
+                    System.out.println("Car has been deleted.");
+                    return;
+                }
+            }
             System.out.println("----------------");
             System.out.println(car.toStringDetailed());
             System.out.println("----------------");
@@ -633,7 +541,6 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("Car not found.");
         }
     }
-
 
     // AutoPart CRUD functions
     public static autoPart createPart() {
@@ -687,12 +594,7 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("Part successfully added to list!");
     }
 
-    public void deletePart() throws Exception {
-        displayAllParts();
-        Scanner input = new Scanner(System.in);
-        System.out.println("Enter the part ID of the part you want to delete: ");
-        String partID = input.next();
-        autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
+    public void deletePart(autoPart part) throws Exception {
         if (part == null) {
             System.out.println("Part not found.");
             return;
@@ -703,18 +605,7 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println(part);
     }
 
-    public void updatePart() throws Exception {
-        displayAllParts();
-        autoPart part = null;
-        Scanner input = new Scanner(System.in);
-        while (part == null) {
-            System.out.println("Enter the part ID of the part you want to update: ");
-            String partID = input.next();
-            part = CarAndAutoPartMenu.findAutoPartByID(partID);
-            if (part == null) {
-                System.out.println("Not found/invalid part ID. Please try again.");
-            }
-        }
+    public void updatePart(autoPart part) throws Exception {
         int option = 0;
         while (option != 7) {
             System.out.println("What would you like to update?");
@@ -801,11 +692,18 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
     public void searchForPart() {
+        User user = UserSession.getCurrentUser();
         input.nextLine();
         System.out.println("Enter the part ID:");
         String partID = input.nextLine();
         autoPart part = findAutoPartByID(partID);
         if (part != null) {
+            if (!(user instanceof Manager)) {
+                if (part.isDeleted()) {
+                    System.out.println("Part has been deleted.");
+                    return;
+                }
+            }
             System.out.println("----------------");
             System.out.println(part.toStringDetailed());
             System.out.println("----------------");

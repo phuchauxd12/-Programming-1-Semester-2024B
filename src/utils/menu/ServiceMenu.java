@@ -21,7 +21,7 @@ public class ServiceMenu extends Menu {
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Mechanic m -> initializeMenu(MenuOption.MECHANIC);
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> initializeMenu(null);
         }
     }
 
@@ -50,6 +50,7 @@ public class ServiceMenu extends Menu {
                 menuActions.put(6, this::deleteServiceWrapper); // TODO: Only able to delete services by mechanic
                 menuActions.put(0, this::exit);
             }
+            case null, default -> System.out.print("");
         }
         menuItems.put(2, "Create a Service");
         menuItems.put(3, "Update a Service");
@@ -59,9 +60,6 @@ public class ServiceMenu extends Menu {
         menuItems.put(0, "Exit");
 
     }
-
-
-
 
 
     // Placeholder methods for menu actions

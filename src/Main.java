@@ -3,7 +3,6 @@ import data.autoPart.AutoPartDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.*;
-import utils.menu.CarAndAutoPartMenu;
 import utils.menu.LoginMenu;
 import utils.menu.MainMenu;
 
@@ -76,10 +75,10 @@ public class Main {
 ////        partlist.add(part1.getPartName());
 ////        partlist.add(part2.getPartName());
 ////        partlist.add(part3.getPartName());
-        AutoPartDatabase.createDatabase();
-        CarAndAutoPartMenu.addPartToList(part1);
-        CarAndAutoPartMenu.addPartToList(part2);
-        CarAndAutoPartMenu.addPartToList(part3);
+//        AutoPartDatabase.createDatabase();
+//        CarAndAutoPartMenu.addPartToList(part1);
+//        CarAndAutoPartMenu.addPartToList(part2);
+//        CarAndAutoPartMenu.addPartToList(part3);
         AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
 //        AutoPartDatabase.updateAutoPart("p-e383be13-38ff-4cce-8650-04f8a194329f",1);
 //        UserDatabase.createDatabase();
