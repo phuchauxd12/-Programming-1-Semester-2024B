@@ -399,7 +399,7 @@ public class CarAndAutoPartMenu extends Menu {
     public void deleteCar(Car car) throws Exception {
         if (car != null) {
             car.setDeleted(true);
-            CarDatabase.saveCarData(CarDatabase.loadCars());
+            CarDatabase.saveCarData(carsList);
             System.out.println("Car deleted successfully!");
         } else {
             System.out.println("Car not found.");
@@ -494,7 +494,7 @@ public class CarAndAutoPartMenu extends Menu {
                     System.out.println(car);
                     break;
                 case 0:
-                    CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());// Save into database
+                    CarDatabase.saveCarData(carsList);// Save into database
                     break;
                 default:
                     System.out.println("Invalid option.");
@@ -606,7 +606,7 @@ public class CarAndAutoPartMenu extends Menu {
             return;
         }
         part.setDeleted(true);
-        AutoPartDatabase.saveAutoPartData(AutoPartDatabase.loadAutoParts());
+        AutoPartDatabase.saveAutoPartData(autoPartsList);
         System.out.println("Part deleted successfully.");
         System.out.println(part);
     }
@@ -700,7 +700,7 @@ public class CarAndAutoPartMenu extends Menu {
                     System.out.println(part);
                     break;
                 case 7:
-                    AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
+                    AutoPartDatabase.saveAutoPartData(autoPartsList);
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
