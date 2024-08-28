@@ -3,11 +3,16 @@ package services;
 import autoPart.autoPart;
 import car.Car;
 import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import user.*;
-import utils.menu.CarAndAutoPartMenu;
+import user.Client;
+import user.Membership;
+import user.Salesperson;
+import user.User;
 import utils.Status;
+import utils.UserSession;
+import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
 import java.io.Serializable;
@@ -63,6 +68,7 @@ public class Service implements Serializable {
             this.category = category;
             this.price = price;
         }
+
         public Category getCategory() {
             return category;
         }
@@ -120,6 +126,14 @@ public class Service implements Serializable {
             }
         }
 
+        if (carExists) {
+            for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                if (car.getCarID().equals(service.getCarId())) {
+                    car.addServiceToHistory(service);
+                }
+            }
+        }
+
         if (!carExists) {
             System.out.println("No car exist in the database. Please create new car:");
             Scanner input = new Scanner(System.in);
@@ -128,7 +142,7 @@ public class Service implements Serializable {
             String carMake = input.next();
             System.out.println("Please input the car's model:");
             String carModel = input.next();
-            int carYear = Car.getNewCarYear(input);
+            int carYear = CarAndAutoPartMenu.getNewCarYear(input);
             System.out.println("Please input the car's color:");
             String color = input.next().toUpperCase();
             double mileage;
@@ -148,8 +162,13 @@ public class Service implements Serializable {
             String addNotes = input.nextLine();
             Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
             try {
-                Car.addCarToList(newCar);
                 service.setCarId(newCar.getCarID());
+                CarAndAutoPartMenu.addCarToList(newCar);
+                for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                    if (car.getCarID().equals(newCar.getCarID())) {
+                        car.addServiceToHistory(service);
+                    }
+                }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -167,7 +186,7 @@ public class Service implements Serializable {
             }
         }
 
-
+        CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
         UserDatabase.saveUsersData(UserMenu.getUserList());
         ServiceDatabase.saveService(ServiceList.services);
         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
@@ -176,11 +195,28 @@ public class Service implements Serializable {
 
     public static void updateService() throws Exception {
         Scanner scanner = new Scanner(System.in);
+        User current = UserSession.getCurrentUser();
 
         System.out.print("Enter service ID to update: ");
         String serviceId = scanner.nextLine();
 
-        Service service = ServiceList.getServiceById(serviceId);
+        Service service;
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            service = ServiceList.getServiceById(serviceId);
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if (current instanceof Salesperson) {
+                Service detectedService = ServiceList.getServiceById(serviceId);
+                if (detectedService.getMechanicId().equals(current.getUserID())){
+                    service = detectedService;
+                } else {
+                    service = null;
+                }
+            } else {
+                service = null;
+            }
+        } else {
+            service = null;
+        }
         if (service != null && !service.isDeleted()) {
             System.out.println("Which field would you like to update?");
             System.out.println("1. Service Date");

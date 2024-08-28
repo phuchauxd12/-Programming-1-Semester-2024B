@@ -13,7 +13,7 @@ public class LoginMenu {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("LoginMenu:");
+            System.out.println("Please login to continue:");
             System.out.print("Enter Username: ");
             String username = scanner.nextLine();
             System.out.print("Enter Password: ");

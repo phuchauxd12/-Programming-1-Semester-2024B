@@ -90,6 +90,7 @@ public class SaleTransactionList {
             for (SaleTransaction transaction : transactions) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    System.out.println("___________________________________");
                 }
             }
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
@@ -97,6 +98,7 @@ public class SaleTransactionList {
                 for (SaleTransaction transaction : transactions) {
                     if (!transaction.isDeleted() && transaction.getSalespersonId() == current.getUserID()) {
                         System.out.println(transaction.getFormattedSaleTransactionDetails());
+                        System.out.println("___________________________________");
                     }
                 }
             }

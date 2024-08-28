@@ -18,7 +18,7 @@ public class SaleTransactionMenu extends Menu {
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Salesperson s -> initializeMenu(MenuOption.SALESPERSON);
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> initializeMenu(null);
         }
     }
 
@@ -46,6 +46,7 @@ public class SaleTransactionMenu extends Menu {
                 menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
             }
+            case null, default -> System.out.print("");
         }
         menuItems.put(2, "Search a transaction by ID");
         menuItems.put(3, "Delete a transaction");
