@@ -4,7 +4,9 @@ import autoPart.autoPart;
 import car.Car;
 import data.Database;
 import data.transaction.SaleTransactionDatabase;
+import user.Salesperson;
 import user.User;
+import utils.UserSession;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -71,7 +73,7 @@ public class SaleTransactionList {
 
     public static SaleTransaction getSaleTransactionById(String transactionId) {
         for (SaleTransaction transaction : transactions) {
-            if (transaction.getTransactionId().equals(transactionId)) {
+            if (!transaction.isDeleted() && transaction.getTransactionId().equals(transactionId)) {
                 return transaction;
             }
         }
@@ -83,9 +85,23 @@ public class SaleTransactionList {
     }
 
     public static void displayAllSaleTransactions() {
-        for (SaleTransaction transaction : transactions) {
-            if (!transaction.isDeleted()) {
-                System.out.println(transaction.getFormattedSaleTransactionDetails());
+        User current = UserSession.getCurrentUser();
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            for (SaleTransaction transaction : transactions) {
+                if (!transaction.isDeleted()) {
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
+                }
+            }
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if(current instanceof Salesperson){
+                for (SaleTransaction transaction : transactions) {
+                    if (!transaction.isDeleted() && transaction.getSalespersonId() == current.getUserID()) {
+                        System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    }
+                }
+            }
+            else {
+                System.out.println("Your role is not able to access this field");
             }
         }
     }

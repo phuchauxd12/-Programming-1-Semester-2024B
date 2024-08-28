@@ -1,6 +1,7 @@
 package utils.menu;
 
 import services.ServiceList;
+import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 import user.Manager;
 import user.Salesperson;
@@ -38,11 +39,11 @@ public class SaleTransactionMenu extends Menu {
                 menuItems.put(1, "Display all transactions by me");
 
 
-                menuActions.put(1, this::displayAllTransactions); // TODO: Display all transactions by salesperson
-                menuActions.put(2, this::searchTransactionById); // TODO: Search transactions by salesperson
-                menuActions.put(3, this::deleteTransactionWrapper); // TODO: Delete transactions by salesperson
-                menuActions.put(4, this::createTransactionWrapper); // TODO: Create transactions by salesperson
-                menuActions.put(5, this::updateTransactionWrapper); // TODO: Update transactions by salesperson
+                menuActions.put(1, this::displayAllTransactions);
+                menuActions.put(2, this::searchTransactionById);
+                menuActions.put(3, this::deleteTransactionWrapper);
+                menuActions.put(4, this::createTransactionWrapper);
+                menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
             }
         }
@@ -87,16 +88,40 @@ public class SaleTransactionMenu extends Menu {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        if (SaleTransactionList.getSaleTransactionById(transactionID) != null) {
-            System.out.println("Transaction found!");
-            System.out.println(SaleTransactionList.getSaleTransactionById(transactionID).getFormattedSaleTransactionDetails());
+        User currentUser = UserSession.getCurrentUser();
+        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionID);
+        if (currentUser.getRole() == User.ROLE.MANAGER){
+            if (transaction != null && !transaction.isDeleted()) {
+                System.out.println("Transaction found!");
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+            }
+            System.out.println("No transaction found with ID: " + transactionID);
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
+            if (currentUser instanceof Salesperson){
+                if(transaction != null && !transaction.isDeleted()){
+                    if(transaction.getSalespersonId().equals(currentUser.getUserID())){
+                        System.out.println("Transaction found!");
+                        System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    } else {
+                        System.out.println("You are not allow to access this transaction: " + transactionID);
+                    }
+                } else {
+                    System.out.println("No transaction found with ID: " + transactionID);
+                }
+            }
         }
-        System.out.println("No transaction found with ID: " + transactionID);
     }
 
     private void deleteTransaction() throws Exception {
         System.out.println("Deleting a transaction...");
-        SaleTransactionList.deleteSaleTransaction();
+        User currentUser = UserSession.getCurrentUser();
+        if (currentUser.getRole() == User.ROLE.MANAGER){
+            SaleTransactionList.deleteSaleTransaction();
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
+            if (currentUser instanceof Salesperson){
+
+            }
+        }
     }
 
     private void createNewTransaction() throws Exception {
@@ -108,9 +133,9 @@ public class SaleTransactionMenu extends Menu {
                 System.out.println("Enter saleperson ID: ");
                 String saleprsonId = input.nextLine();
 
-                String finalClientId = saleprsonId;
+                String finalSalepersonId = saleprsonId;
                 saleperson = UserMenu.getUserList().stream()
-                        .filter(u -> u.getUserID().equals(finalClientId))
+                        .filter(u -> u.getUserID().equals(finalSalepersonId))
                         .findFirst()
                         .orElse(null);
 

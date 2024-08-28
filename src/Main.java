@@ -116,7 +116,6 @@ public class Main {
 //        UserProfileMenu.mainMenu();
 //        ServiceMenu.mainMenu();
 //        System.out.println(UserSession.getCurrentUser()); // chưa update được ngay sau khi modify info (Nhưng chắc cũng không cần vì role, type, ID của user không được tự thay đổi)
-
         MainMenu menu = new MainMenu();
         menu.mainMenu();
 

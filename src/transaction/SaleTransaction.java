@@ -8,8 +8,10 @@ import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
 import user.Client;
 import user.Membership;
+import user.Salesperson;
 import user.User;
 import utils.Status;
+import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -84,11 +86,23 @@ public class SaleTransaction implements Serializable {
 
     public static void updateSaleTransaction() throws Exception {
         Scanner scanner = new Scanner(System.in);
+        User current = UserSession.getCurrentUser();
 
         System.out.print("Enter transaction ID to update: ");
         String transactionId = scanner.nextLine();
 
-        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionId);
+        SaleTransaction transaction = null;
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            transaction = SaleTransactionList.getSaleTransactionById(transactionId);
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if (current instanceof Salesperson) {
+                SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
+                if (detectedTransaction.getSalespersonId().equals(current.getUserID())){
+                    transaction = detectedTransaction;
+                }
+            }
+        }
+
         if (transaction != null && !transaction.isDeleted()) {
             System.out.println("Which field would you like to update?");
             System.out.println("1. Transaction Date");
@@ -212,11 +226,22 @@ public class SaleTransaction implements Serializable {
 
     public static void deleteSaleTransaction() throws Exception {
         Scanner scanner = new Scanner(System.in);
+        User current = UserSession.getCurrentUser();
 
         System.out.print("Enter transaction ID to delete: ");
         String transactionId = scanner.nextLine();
+        SaleTransaction transaction = null;
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            transaction = SaleTransactionList.getSaleTransactionById(transactionId);
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if (current instanceof Salesperson) {
+                SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
+                if (detectedTransaction.getSalespersonId().equals(current.getUserID())){
+                    transaction = detectedTransaction;
+                }
+            }
+        }
 
-        SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionId);
         if (transaction != null) {
             transaction.markAsDeleted();
 
