@@ -46,8 +46,8 @@ public class ServiceMenu extends Menu {
                 menuActions.put(2, this::createServiceWrapper);
                 menuActions.put(3, this::updateServiceWrapper);
                 menuActions.put(4, this::searchServiceById);
-                menuActions.put(5, this::searchServiceByDate); // TODO: Only able to search services by mechanic
-                menuActions.put(6, this::deleteServiceWrapper); // TODO: Only able to delete services by mechanic
+                menuActions.put(5, this::searchServiceByDate);
+                menuActions.put(6, this::deleteServiceWrapper);
                 menuActions.put(0, this::exit);
             }
             case null, default -> System.out.print("");
@@ -133,16 +133,16 @@ public class ServiceMenu extends Menu {
         String serviceID = input.nextLine();
         User currentUser = UserSession.getCurrentUser();
         Service service = ServiceList.getServiceById(serviceID);
-        if (currentUser.getRole() == User.ROLE.MANAGER){
+        if (currentUser.getRole() == User.ROLE.MANAGER) {
             if (service != null && !service.isDeleted()) {
                 System.out.println("Service found!");
                 System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
             }
             System.out.println("No service found with ID: " + serviceID);
-        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
-            if (currentUser instanceof Mechanic){
-                if(service != null && !service.isDeleted()){
-                    if(service.getMechanicId().equals(currentUser.getUserID())){
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE) {
+            if (currentUser instanceof Mechanic) {
+                if (service != null && !service.isDeleted()) {
+                    if (service.getMechanicId().equals(currentUser.getUserID())) {
                         System.out.println("Service found!");
                         System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
                     } else {
@@ -156,15 +156,25 @@ public class ServiceMenu extends Menu {
     }
 
     private void searchServiceByDate() {
+        User user = UserSession.getCurrentUser();
         System.out.println("Searching service between ...");
         LocalDate startDate = DatePrompt.getStartDate();
         LocalDate endDate = DatePrompt.getEndDate(startDate);
         List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
-        if (!servicesBetween.isEmpty()) {
-            System.out.println("Service found!");
-            for (Service service : servicesBetween) {
-                if (!service.isDeleted()) {
-                    System.out.println(service.getFormattedServiceDetails());
+        if (user instanceof Manager) {
+            if (!servicesBetween.isEmpty()) {
+                for (Service service : servicesBetween) {
+                    if (!service.isDeleted()) {
+                        System.out.println(service.getFormattedServiceDetails());
+                    }
+                }
+            }
+        } else if (user instanceof Mechanic) {
+            if (!servicesBetween.isEmpty()) {
+                for (Service service : servicesBetween) {
+                    if (!service.isDeleted() && service.getMechanicId().equals(user.getUserID())) {
+                        System.out.println(service.getFormattedServiceDetails());
+                    }
                 }
             }
         }

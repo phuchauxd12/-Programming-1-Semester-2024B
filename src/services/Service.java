@@ -9,7 +9,7 @@ import data.user.UserDatabase;
 import user.Client;
 import user.Membership;
 import user.Salesperson;
-import user.User;
+import user.*;
 import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
@@ -178,8 +178,8 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         part.setStatus(Status.SOLD);
                     }
                 }
@@ -201,12 +201,13 @@ public class Service implements Serializable {
         String serviceId = scanner.nextLine();
 
         Service service;
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             service = ServiceList.getServiceById(serviceId);
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Salesperson) {
                 Service detectedService = ServiceList.getServiceById(serviceId);
-                if (detectedService.getMechanicId().equals(current.getUserID())){
+                assert detectedService != null;
+                if (detectedService.getMechanicId().equals(current.getUserID())) {
                     service = detectedService;
                 } else {
                     service = null;
@@ -261,7 +262,7 @@ public class Service implements Serializable {
                                 .findFirst()
                                 .orElse(null);
                         if (user != null) {
-                            user.updateTotalSpending(totalCost-previousTotalCost);
+                            user.updateTotalSpending(totalCost - previousTotalCost);
                             UserDatabase.saveUsersData(UserMenu.getUserList());
                         } else {
                             System.out.println("Client not found");
@@ -281,8 +282,8 @@ public class Service implements Serializable {
                     case "5":
                         // Mark old parts as available
                         for (autoPart oldPart : service.getReplacedParts()) {
-                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                                if(parts.getPartID().equals(oldPart.getPartID())) {
+                            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (parts.getPartID().equals(oldPart.getPartID())) {
                                     parts.setStatus(Status.AVAILABLE);
                                 }
                             }
@@ -307,8 +308,8 @@ public class Service implements Serializable {
 
                         // Mark new parts as sold
                         for (autoPart part : newReplacedParts) {
-                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                                if(parts.getPartID().equals(part.getPartID())) {
+                            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (parts.getPartID().equals(part.getPartID())) {
                                     parts.setStatus(Status.SOLD);
                                 }
                             }
@@ -321,7 +322,7 @@ public class Service implements Serializable {
                                 .findFirst()
                                 .orElse(null);
                         if (client != null) {
-                            client.updateTotalSpending(newTotalCost-oldTotalCost);
+                            client.updateTotalSpending(newTotalCost - oldTotalCost);
                             UserDatabase.saveUsersData(UserMenu.getUserList());
                         } else {
                             System.out.println("Client not found");
@@ -349,12 +350,21 @@ public class Service implements Serializable {
 
 
     public static void deleteService() throws Exception {
+        User user = UserSession.getCurrentUser();
         Scanner scanner = new Scanner(System.in);
-
+        Service service;
         System.out.print("Enter service ID to delete: ");
         String serviceId = scanner.nextLine();
-
-        Service service = ServiceList.getServiceById(serviceId);
+        if (user instanceof Manager) {
+            service = ServiceList.getServiceById(serviceId);
+        } else if (user instanceof Mechanic) {
+            service = ServiceList.services.stream()
+                    .filter(s -> s.getServiceId().equals(serviceId) && s.getMechanicId().equals(user.getUserID()))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            service = null;
+        }
         if (service != null) {
             service.markAsDeleted();
             // Update client total spending
@@ -369,9 +379,9 @@ public class Service implements Serializable {
             } else {
                 System.out.println("Client not found");
             }
-            for(autoPart part : service.getReplacedParts()){
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+            for (autoPart part : service.getReplacedParts()) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         parts.setStatus(Status.AVAILABLE);
                     }
                 }
@@ -402,8 +412,7 @@ public class Service implements Serializable {
                 .findFirst()
                 .orElse(null);
 
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
+        if (user instanceof Client client) {
             Membership membership = client.getMembership();
             if (membership != null) {
                 return membership.getDiscount();
