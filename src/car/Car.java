@@ -131,12 +131,14 @@ public class Car implements Serializable {
         serviceHistory.add(service);
     }
 
-    public void displayServiceHistory() {
+    public String displayServiceHistory() {
+        StringBuilder history = new StringBuilder();
         for (Service service : serviceHistory) {
-            System.out.println("Service By: " + service.getServiceBy());
-            System.out.println("Service Date: " + service.getServiceDate());
-            System.out.println("Service Type: " + service.getServiceType());
+            history.append("Service By: ").append(service.getServiceBy()).append("\n");
+            history.append("Service Date: ").append(service.getServiceDate()).append("\n");
+            history.append("Service Type: ").append(service.getServiceType()).append("\n");
         }
+        return history.toString();
     }
 
 
@@ -152,7 +154,7 @@ public class Car implements Serializable {
                 "Additional Notes: " + addNotes + "\n" +
                 "Sold Date: " + soldDate + "\n" +
                 "Deleted: " + isDeleted + "\n" +
-                "Service History: " + serviceHistory + "\n";
+                "Service History: " + displayServiceHistory() + "\n";
     }
 
     @Override
