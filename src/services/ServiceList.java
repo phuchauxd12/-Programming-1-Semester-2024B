@@ -4,7 +4,9 @@ import autoPart.autoPart;
 import data.Database;
 import data.service.ServiceDatabase;
 import user.Client;
+import user.Mechanic;
 import user.User;
+import utils.UserSession;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -101,12 +103,27 @@ public class ServiceList {
         return services;
     }
 
-    // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
     public static void displayAllServices() {
-        for (Service service : services) {
-            if (!service.isDeleted()) {
-                System.out.println(service.getFormattedServiceDetails());
-                System.out.println("___________________________________");
+
+        User current = UserSession.getCurrentUser();
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            for (Service service : services) {
+                if (!service.isDeleted()) {
+                    System.out.println(service.getFormattedServiceDetails());
+                    System.out.println("___________________________________");
+                }
+            }
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if(current instanceof Mechanic){
+                for (Service service : services) {
+                    if (!service.isDeleted() && service.getMechanicId() == current.getUserID()) {
+                        System.out.println(service.getFormattedServiceDetails());
+                        System.out.println("___________________________________");
+                    }
+                }
+            }
+            else {
+                System.out.println("Your role is not able to access this field");
             }
         }
     }

@@ -16,7 +16,7 @@ public class UserMenu extends Menu {
         super();
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> initializeMenu(null);
         }
     }
 
@@ -38,7 +38,7 @@ public class UserMenu extends Menu {
                 menuActions.put(5, this::updateUser);
                 menuActions.put(0, this::exit);
             }
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> System.out.print("");
         }
     }
 

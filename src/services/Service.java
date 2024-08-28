@@ -3,11 +3,16 @@ package services;
 import autoPart.autoPart;
 import car.Car;
 import data.autoPart.AutoPartDatabase;
+import data.car.CarDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import user.*;
-import utils.menu.CarAndAutoPartMenu;
+import user.Client;
+import user.Membership;
+import user.Salesperson;
+import user.User;
 import utils.Status;
+import utils.UserSession;
+import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
 import java.io.Serializable;
@@ -63,6 +68,7 @@ public class Service implements Serializable {
             this.category = category;
             this.price = price;
         }
+
         public Category getCategory() {
             return category;
         }
@@ -120,6 +126,14 @@ public class Service implements Serializable {
             }
         }
 
+        if (carExists) {
+            for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                if (car.getCarID().equals(service.getCarId())) {
+                    car.addServiceToHistory(service);
+                }
+            }
+        }
+
         if (!carExists) {
             System.out.println("No car exist in the database. Please create new car:");
             Scanner input = new Scanner(System.in);
@@ -128,7 +142,7 @@ public class Service implements Serializable {
             String carMake = input.next();
             System.out.println("Please input the car's model:");
             String carModel = input.next();
-            int carYear = Car.getNewCarYear(input);
+            int carYear = CarAndAutoPartMenu.getNewCarYear(input);
             System.out.println("Please input the car's color:");
             String color = input.next().toUpperCase();
             double mileage;
@@ -148,8 +162,13 @@ public class Service implements Serializable {
             String addNotes = input.nextLine();
             Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
             try {
-                Car.addCarToList(newCar);
                 service.setCarId(newCar.getCarID());
+                CarAndAutoPartMenu.addCarToList(newCar);
+                for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                    if (car.getCarID().equals(newCar.getCarID())) {
+                        car.addServiceToHistory(service);
+                    }
+                }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -159,11 +178,15 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                part.setStatus(Status.SOLD);
+                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if(parts.getPartID().equals(part.getPartID())) {
+                        part.setStatus(Status.SOLD);
+                    }
+                }
             }
-            }
+        }
 
-
+        CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
         UserDatabase.saveUsersData(UserMenu.getUserList());
         ServiceDatabase.saveService(ServiceList.services);
         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
@@ -172,11 +195,28 @@ public class Service implements Serializable {
 
     public static void updateService() throws Exception {
         Scanner scanner = new Scanner(System.in);
+        User current = UserSession.getCurrentUser();
 
         System.out.print("Enter service ID to update: ");
         String serviceId = scanner.nextLine();
 
-        Service service = ServiceList.getServiceById(serviceId);
+        Service service;
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            service = ServiceList.getServiceById(serviceId);
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if (current instanceof Salesperson) {
+                Service detectedService = ServiceList.getServiceById(serviceId);
+                if (detectedService.getMechanicId().equals(current.getUserID())){
+                    service = detectedService;
+                } else {
+                    service = null;
+                }
+            } else {
+                service = null;
+            }
+        } else {
+            service = null;
+        }
         if (service != null && !service.isDeleted()) {
             System.out.println("Which field would you like to update?");
             System.out.println("1. Service Date");
@@ -184,8 +224,7 @@ public class Service implements Serializable {
             System.out.println("3. Service By");
             System.out.println("4. Car ID");
             System.out.println("5. Replaced Parts");
-            System.out.println("6. Service Cost");
-            System.out.println("7. Additional Notes");
+            System.out.println("6. Additional Notes");
             System.out.print("Enter the number corresponding to the field (or multiple numbers separated by space): ");
             String choiceInput = scanner.nextLine();
             List<String> choices = List.of(choiceInput.split("\\s+"));
@@ -241,10 +280,13 @@ public class Service implements Serializable {
                         break;
                     case "5":
                         // Mark old parts as available
-                        for (autoPart part : service.getReplacedParts()) {
-                            part.setStatus(Status.AVAILABLE);
+                        for (autoPart oldPart : service.getReplacedParts()) {
+                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if(parts.getPartID().equals(oldPart.getPartID())) {
+                                    parts.setStatus(Status.AVAILABLE);
+                                }
+                            }
                         }
-                        AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
 
                         // Get new parts
                         System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
@@ -254,7 +296,6 @@ public class Service implements Serializable {
                                 .map(partId -> partId.replaceAll(" +", " "))  // Replace multiple spaces with a single space
                                 .collect(Collectors.toList());
 
-                        List<autoPart> oldReplaceParts = service.getReplacedParts();
                         List<autoPart> newReplacedParts = service.retrieveParts(partIds);
                         service.setReplacedParts(newReplacedParts);
 
@@ -266,10 +307,11 @@ public class Service implements Serializable {
 
                         // Mark new parts as sold
                         for (autoPart part : newReplacedParts) {
-                            part.setStatus(Status.SOLD);
-                        }
-                        for(autoPart part : oldReplaceParts){
-                            part.setStatus(Status.AVAILABLE);
+                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if(parts.getPartID().equals(part.getPartID())) {
+                                    parts.setStatus(Status.SOLD);
+                                }
+                            }
                         }
                         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
 
@@ -284,12 +326,6 @@ public class Service implements Serializable {
                         } else {
                             System.out.println("Client not found");
                         }
-                        break;
-                    case "6":
-                        System.out.print("Enter new service cost: ");
-                        double serviceCost = scanner.nextDouble();
-                        scanner.nextLine(); // consume newline
-                        service.setServiceCost(serviceCost);
                         break;
                     case "7":
                         System.out.print("Enter additional notes (or leave blank): ");
@@ -334,7 +370,11 @@ public class Service implements Serializable {
                 System.out.println("Client not found");
             }
             for(autoPart part : service.getReplacedParts()){
-                part.setStatus(Status.AVAILABLE);
+                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if(parts.getPartID().equals(part.getPartID())) {
+                        parts.setStatus(Status.AVAILABLE);
+                    }
+                }
             }
             AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
             ServiceDatabase.saveService(ServiceList.services);
