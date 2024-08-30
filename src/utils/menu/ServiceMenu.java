@@ -5,6 +5,7 @@ import services.ServiceList;
 import user.Manager;
 import user.Mechanic;
 import user.User;
+import utils.CommonFunc;
 import utils.DatePrompt;
 import utils.UserSession;
 
@@ -69,6 +70,7 @@ public class ServiceMenu extends Menu {
     private void createServiceWrapper() {
         try {
             createService();
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error creating service: " + e.getMessage());
         }
@@ -77,6 +79,7 @@ public class ServiceMenu extends Menu {
     private void updateServiceWrapper() {
         try {
             updateService();
+            CommonFunc.addActivityLogForCurrentUser("Update service wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -85,6 +88,7 @@ public class ServiceMenu extends Menu {
     private void deleteServiceWrapper() {
         try {
             deleteService();
+            CommonFunc.addActivityLogForCurrentUser("Delete service wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -93,6 +97,12 @@ public class ServiceMenu extends Menu {
     private void displayAllServices() {
         System.out.println("Displaying all services...");
         ServiceList.displayAllServices();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void createService() throws Exception {
@@ -102,6 +112,7 @@ public class ServiceMenu extends Menu {
             System.out.println("Enter mechanic ID: ");
             String mechanicID = input.nextLine();
             ServiceList.addService(mechanicID);
+            CommonFunc.addActivityLogForCurrentUser("Create service");
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
@@ -110,11 +121,23 @@ public class ServiceMenu extends Menu {
     private void updateService() throws Exception {
         System.out.println("Updating a service...");
         ServiceList.updateService();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Update service");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void deleteService() throws Exception {
         System.out.println("Deleting a service...");
         ServiceList.deleteService();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Delete service");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void searchServiceById() {
@@ -127,6 +150,12 @@ public class ServiceMenu extends Menu {
             System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
         }
         System.out.println("No service found with ID: " + serviceID);
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void searchServiceByDate() {
@@ -142,7 +171,14 @@ public class ServiceMenu extends Menu {
                 }
             }
         }
+
         System.out.println("Non service done between : " + startDate + " to " + endDate);
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Search service by date: " + startDate + " to " + endDate);
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
 }
