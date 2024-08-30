@@ -121,9 +121,14 @@ public class ServiceMenu extends Menu {
             if (!mechanicFound) {
                 throw new Exception("Mechanic ID not found.");
             }
-            CommonFunc.addActivityLogForCurrentUser("Create service");
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
+        }
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
         }
     }
 
