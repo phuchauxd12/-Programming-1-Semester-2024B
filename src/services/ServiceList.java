@@ -3,9 +3,10 @@ package services;
 import autoPart.autoPart;
 import data.Database;
 import data.service.ServiceDatabase;
-import data.user.UserDatabase;
 import user.Client;
+import user.Mechanic;
 import user.User;
+import utils.UserSession;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -35,8 +36,18 @@ public class ServiceList {
         System.out.print("Enter transaction date (YYYY-MM-DD): ");
         LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.print("Enter client name: ");
+        System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
+        boolean clientFound = false;
+        for(User user: UserMenu.getUserList()){
+            if(user.getUserID().equals(clientId) && user instanceof Client){
+                clientFound = true;
+                break;
+            }
+        }
+        if (!clientFound) {
+            throw new Exception("Client ID not found.");
+        }
 
         System.out.println("Select a service category:");
         Service.Category[] categories = Service.Category.values();
@@ -70,22 +81,12 @@ public class ServiceList {
         int serviceByInput = Integer.parseInt(scanner.nextLine());
         ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
 
-        System.out.print("Enter car ID: ");
+        System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
 
         Service service = new Service(transactionDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost);
         Service.addService(service);
 
-        User user = UserMenu.getUserList().stream()
-                .filter(u -> u.getUserID().equals(clientId))
-                .findFirst()
-                .orElse(null);
-
-        if (user != null && user instanceof Client) {
-            Client client = (Client) user;
-            client.updateTotalSpending(service.getTotalCost());
-            UserDatabase.saveUsersData(UserMenu.getUserList());
-        }
     }
 
 
@@ -102,12 +103,27 @@ public class ServiceList {
         return services;
     }
 
-    // TODO: display tất cả các service được thực hiện hay tất cả accs sẻvice hiện có (service type)?
     public static void displayAllServices() {
-        for (Service service : services) {
-            if (!service.isDeleted()) {
-                System.out.println(service.getFormattedServiceDetails());
-                System.out.println("___________________________________");
+
+        User current = UserSession.getCurrentUser();
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            for (Service service : services) {
+                if (!service.isDeleted()) {
+                    System.out.println(service.getFormattedServiceDetails());
+                    System.out.println("___________________________________");
+                }
+            }
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if(current instanceof Mechanic){
+                for (Service service : services) {
+                    if (!service.isDeleted() && service.getMechanicId() == current.getUserID()) {
+                        System.out.println(service.getFormattedServiceDetails());
+                        System.out.println("___________________________________");
+                    }
+                }
+            }
+            else {
+                System.out.println("Your role is not able to access this field");
             }
         }
     }

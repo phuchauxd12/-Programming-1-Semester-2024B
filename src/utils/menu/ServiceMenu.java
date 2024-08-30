@@ -21,7 +21,7 @@ public class ServiceMenu extends Menu {
         switch (currentUser) {
             case Manager m -> initializeMenu(MenuOption.MANAGER);
             case Mechanic m -> initializeMenu(MenuOption.MECHANIC);
-            case null, default -> throw new IllegalArgumentException("Unsupported user type");
+            case null, default -> initializeMenu(null);
         }
     }
 
@@ -42,14 +42,15 @@ public class ServiceMenu extends Menu {
             case MECHANIC -> {
                 menuItems.put(1, "Display All Services by me");
 
-                menuActions.put(1, this::displayAllServices); // TODO: Display all services by mechanic
+                menuActions.put(1, this::displayAllServices);
                 menuActions.put(2, this::createServiceWrapper);
-                menuActions.put(3, this::updateServiceWrapper); // TODO: Only able to update services by mechanic
-                menuActions.put(4, this::searchServiceById); // TODO: Only able to display services by mechanic
+                menuActions.put(3, this::updateServiceWrapper);
+                menuActions.put(4, this::searchServiceById);
                 menuActions.put(5, this::searchServiceByDate); // TODO: Only able to search services by mechanic
                 menuActions.put(6, this::deleteServiceWrapper); // TODO: Only able to delete services by mechanic
                 menuActions.put(0, this::exit);
             }
+            case null, default -> System.out.print("");
         }
         menuItems.put(2, "Create a Service");
         menuItems.put(3, "Update a Service");
@@ -59,9 +60,6 @@ public class ServiceMenu extends Menu {
         menuItems.put(0, "Exit");
 
     }
-
-
-
 
 
     // Placeholder methods for menu actions
@@ -101,7 +99,18 @@ public class ServiceMenu extends Menu {
             Scanner input = new Scanner(System.in);
             System.out.println("Enter mechanic ID: ");
             String mechanicID = input.nextLine();
-            ServiceList.addService(mechanicID);
+
+            boolean mechanicFound = false;
+            for (User user : UserMenu.getUserList()) {
+                if (user.getUserID().equals(mechanicID) && user instanceof Mechanic) {
+                    ServiceList.addService(mechanicID);
+                    mechanicFound = true;
+                    break;
+                }
+            }
+            if (!mechanicFound) {
+                throw new Exception("Mechanic ID not found.");
+            }
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
@@ -122,11 +131,28 @@ public class ServiceMenu extends Menu {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter service ID: ");
         String serviceID = input.nextLine();
-        if (ServiceList.getServiceById(serviceID) != null) {
-            System.out.println("Service found!");
-            System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
+        User currentUser = UserSession.getCurrentUser();
+        Service service = ServiceList.getServiceById(serviceID);
+        if (currentUser.getRole() == User.ROLE.MANAGER){
+            if (service != null && !service.isDeleted()) {
+                System.out.println("Service found!");
+                System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
+            }
+            System.out.println("No service found with ID: " + serviceID);
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
+            if (currentUser instanceof Mechanic){
+                if(service != null && !service.isDeleted()){
+                    if(service.getMechanicId().equals(currentUser.getUserID())){
+                        System.out.println("Service found!");
+                        System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
+                    } else {
+                        System.out.println("You are not allow to access this transaction: " + serviceID);
+                    }
+                } else {
+                    System.out.println("No service found with ID: " + serviceID);
+                }
+            }
         }
-        System.out.println("No service found with ID: " + serviceID);
     }
 
     private void searchServiceByDate() {
