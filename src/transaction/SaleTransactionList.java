@@ -6,6 +6,7 @@ import data.Database;
 import data.transaction.SaleTransactionDatabase;
 import user.Salesperson;
 import user.User;
+import utils.DatePrompt;
 import utils.UserSession;
 import utils.menu.UserMenu;
 
@@ -32,9 +33,9 @@ public class SaleTransactionList {
     public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter transaction date (YYYY-MM-DD): ");
-        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
-
+        System.out.print("Enter transaction date (dd/MM/yyyy): ");
+        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
+        LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
         User client = null;
         while (client == null) {
             System.out.print("Enter client ID: ");
@@ -80,6 +81,11 @@ public class SaleTransactionList {
         return null;
     }
 
+    public static List<SaleTransaction> getTransactionsByClient(String clientId) {
+        var transactionByClient = transactions.stream()
+                .filter(transaction -> transaction.getClientId().equals(clientId)).toList();
+        return transactionByClient;
+    }
     public List<SaleTransaction> getAllSaleTransactions() {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
@@ -104,6 +110,13 @@ public class SaleTransactionList {
             }
             else {
                 System.out.println("Your role is not able to access this field");
+            }
+        } else if(current.getRole().equals(User.ROLE.CLIENT)){
+            for (SaleTransaction transaction : getTransactionsByClient(current.getUserID())) {
+                if (!transaction.isDeleted()) {
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    System.out.println("___________________________________");
+                }
             }
         }
     }
