@@ -587,26 +587,7 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("Car successfully added to list!");
     }
 
-    private void searchForCar() {
-        User user = UserSession.getCurrentUser();
-        input.nextLine();
-        System.out.println("Enter the car ID:");
-        String carID = input.nextLine();
-        Car car = findCarByID(carID);
-        if (car != null) {
-            if (!(user instanceof Manager)) {
-                if (car.isDeleted()) {
-                    System.out.println("Car has been deleted.");
-                    return;
-                }
-            }
-            System.out.println("----------------");
-            System.out.println(car.toStringDetailed());
-            System.out.println("----------------");
-        } else {
-            System.out.println("Car not found.");
-        }
-    }
+
 
     // AutoPart CRUD functions
     public static autoPart createPart() {
@@ -757,26 +738,7 @@ public class CarAndAutoPartMenu extends Menu {
         }
     }
 
-    public void searchForPart() {
-        User user = UserSession.getCurrentUser();
-        input.nextLine();
-        System.out.println("Enter the part ID:");
-        String partID = input.nextLine();
-        autoPart part = findAutoPartByID(partID);
-        if (part != null) {
-            if (!(user instanceof Manager)) {
-                if (part.isDeleted()) {
-                    System.out.println("Part has been deleted.");
-                    return;
-                }
-            }
-            System.out.println("----------------");
-            System.out.println(part.toStringDetailed());
-            System.out.println("----------------");
-        } else {
-            System.out.println("Part not found.");
-        }
-    }
+
 
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;

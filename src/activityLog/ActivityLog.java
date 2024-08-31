@@ -5,6 +5,7 @@ import data.activityLog.ActivityLogDatabase;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -102,7 +103,7 @@ public class ActivityLog implements Serializable {
             System.out.println("Activity ID: " + log.getActivityId());
             System.out.println("User ID: " + log.getUserId());
             System.out.println("Username: " + log.getUsername());
-            System.out.println("Date: " + log.getDate());
+            System.out.println("Date: " + log.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             System.out.println("Activity Name: " + log.getActivityName());
             System.out.println("---------------------------");
         }

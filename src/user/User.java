@@ -236,5 +236,17 @@ public class User implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+    public String getUserInfo(){
+        var sb = new StringBuilder();
+        sb.append("User Id:").append(userID).append("\n");
+        sb.append("User name:").append(userName).append("\n");
+        sb.append("Name:").append(name).append("\n");
+        sb.append("Date of birth:").append(dob).append("\n");
+        sb.append("Address:").append(address).append("\n");
+        sb.append("Phone number:").append(phoneNum).append("\n");
+        sb.append("email:").append(email).append("\n");
+        return  sb.toString();
+    }
 }
 
