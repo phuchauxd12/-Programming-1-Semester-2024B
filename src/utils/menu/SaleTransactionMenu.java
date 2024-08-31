@@ -115,14 +115,7 @@ public class SaleTransactionMenu extends Menu {
 
     private void deleteTransaction() throws Exception {
         System.out.println("Deleting a transaction...");
-        User currentUser = UserSession.getCurrentUser();
-        if (currentUser.getRole() == User.ROLE.MANAGER){
-            SaleTransactionList.deleteSaleTransaction();
-        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
-            if (currentUser instanceof Salesperson){
-
-            }
-        }
+        SaleTransactionList.deleteSaleTransaction();
     }
 
     private void createNewTransaction() throws Exception {

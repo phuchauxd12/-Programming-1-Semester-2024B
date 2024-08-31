@@ -6,10 +6,7 @@ import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
-import user.Client;
-import user.Membership;
-import user.Salesperson;
-import user.User;
+import user.*;
 import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
@@ -350,11 +347,31 @@ public class Service implements Serializable {
 
     public static void deleteService() throws Exception {
         Scanner scanner = new Scanner(System.in);
+        User current = UserSession.getCurrentUser();
 
         System.out.print("Enter service ID to delete: ");
         String serviceId = scanner.nextLine();
 
-        Service service = ServiceList.getServiceById(serviceId);
+        Service service;
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            service = ServiceList.getServiceById(serviceId);
+        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
+            if (current instanceof Mechanic) {
+                Service detectedService = ServiceList.getServiceById(serviceId);
+                if (detectedService.getMechanicId().equals(current.getUserID())){
+                    service = detectedService;
+                } else {
+                    service = null;
+                    System.out.println("You are not allow to access this service");
+                }
+            } else {
+                service = null;
+            }
+        } else {
+            service = null;
+            System.out.println("Service not found");
+        }
+
         if (service != null) {
             service.markAsDeleted();
             // Update client total spending

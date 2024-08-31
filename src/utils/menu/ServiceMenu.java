@@ -47,7 +47,7 @@ public class ServiceMenu extends Menu {
                 menuActions.put(3, this::updateServiceWrapper);
                 menuActions.put(4, this::searchServiceById);
                 menuActions.put(5, this::searchServiceByDate); // TODO: Only able to search services by mechanic
-                menuActions.put(6, this::deleteServiceWrapper); // TODO: Only able to delete services by mechanic
+                menuActions.put(6, this::deleteServiceWrapper);
                 menuActions.put(0, this::exit);
             }
             case null, default -> System.out.print("");
@@ -169,6 +169,7 @@ public class ServiceMenu extends Menu {
             }
         }
         System.out.println("Non service done between : " + startDate + " to " + endDate);
+
     }
 
 }
