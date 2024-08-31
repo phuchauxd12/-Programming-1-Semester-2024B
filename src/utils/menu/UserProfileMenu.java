@@ -1,6 +1,7 @@
 package utils.menu;
 
 import user.User;
+import utils.CommonFunc;
 
 import java.util.Scanner;
 
@@ -25,6 +26,7 @@ public class UserProfileMenu extends Menu {
 
     private void deleteAccount() {
         try {
+            CommonFunc.addActivityLogForCurrentUser("Delete Account");
             User.deleteUser(currentUser.getUserID());
         } catch (Exception e) {
             System.out.println("Error deleting user: " + e.getMessage());
@@ -48,13 +50,15 @@ public class UserProfileMenu extends Menu {
             System.out.println("7. Date of Birth");
             System.out.println("8. Exit");
             updateOption = MainMenu.getOption(updateOption, input);
+            if (updateOption == 8) {
+                continueUpdate = false;
+                continue;
+            }
             try {
+                CommonFunc.addActivityLogForCurrentUser("Modify Account");
                 User.modifyUser(userID, updateOption);
             } catch (Exception e) {
                 System.out.println("Error updating user: " + e.getMessage());
-            }
-            if (updateOption == 8) {
-                continueUpdate = false;
             }
         } while (continueUpdate);
     }
