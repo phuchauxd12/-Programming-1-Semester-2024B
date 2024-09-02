@@ -10,6 +10,7 @@ import user.Client;
 import user.Membership;
 import user.Salesperson;
 import user.User;
+import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
@@ -232,8 +233,9 @@ public class Service implements Serializable {
             for (String choice : choices) {
                 switch (choice) {
                     case "1":
-                        System.out.print("Enter new service date (YYYY-MM-DD): ");
-                        LocalDate newDate = LocalDate.parse(scanner.nextLine());
+                        System.out.print("Enter new service date (dd/MM/yyyy): ");
+                        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
+                        LocalDate newDate = DatePrompt.validateAndParseDate(input);
                         service.setServiceDate(newDate);
                         break;
                     case "2":
@@ -572,7 +574,7 @@ public class Service implements Serializable {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Service ID: ").append(serviceId).append("\n");
-        sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ISO_LOCAL_DATE)).append("\n");
+        sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
         sb.append("Client ID: ").append(clientId).append("\n");
         sb.append("Mechanic ID: ").append(mechanicId).append("\n");
         sb.append("Service Type: ").append(serviceType).append("\n");

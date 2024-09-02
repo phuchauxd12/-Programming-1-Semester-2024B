@@ -67,7 +67,7 @@ public class Client extends User {
         System.out.println("Transaction history for client ID " + getUserName() + ":");
         boolean hasTransactions = false;
         for (SaleTransaction transaction : transactions) {
-            if (transaction.getClientId().equals(getUserName())) {
+            if (transaction.getClientId().equals(getUserID())) {
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
                 hasTransactions = true;
             }
@@ -83,7 +83,7 @@ public class Client extends User {
         System.out.println("Service history for client ID " + getUserName() + ":");
         boolean hasServices = false;
         for (Service service : servicesInRange) {
-            if (service.getClientId().equals(getUserName())) {
+            if (service.getClientId().equals(getUserID())) {
                 System.out.println(service.getFormattedServiceDetails());
                 hasServices = true;
             }
@@ -110,5 +110,14 @@ public class Client extends User {
                 ", membership=" + membership +
                 ", totalSpending=" + totalSpending +
                 '}';
+    }
+
+    @Override
+    public String getUserInfo() {
+        String info = super.getUserInfo();
+        info += "Membership: "+ membership.getMembershipType()+"\n";
+        info += "Discount: "+ membership.getDiscount() + "\n";
+        info += "Total Spending: "+ totalSpending + "\n";
+        return  info;
     }
 }

@@ -6,6 +6,7 @@ import data.service.ServiceDatabase;
 import user.Client;
 import user.Mechanic;
 import user.User;
+import utils.DatePrompt;
 import utils.UserSession;
 import utils.menu.UserMenu;
 
@@ -33,8 +34,9 @@ public class ServiceList {
     public static void addService(String mechanicId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter transaction date (YYYY-MM-DD): ");
-        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("Enter transaction date (dd/MM/yyyy): ");
+        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
+        LocalDate serviceDate = DatePrompt.validateAndParseDate(input);
 
         System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
@@ -84,7 +86,7 @@ public class ServiceList {
         System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
 
-        Service service = new Service(transactionDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost);
+        Service service = new Service(serviceDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost);
         Service.addService(service);
 
     }
@@ -99,6 +101,10 @@ public class ServiceList {
         return null;
     }
 
+    public  static List<Service> getServicesByCLient(String clientId){
+        var serviceByCLient = services.stream().filter(service -> service.getClientId().equals(clientId)).toList();
+        return  serviceByCLient;
+    }
     public List<Service> getAllServices() {
         return services;
     }
@@ -124,6 +130,13 @@ public class ServiceList {
             }
             else {
                 System.out.println("Your role is not able to access this field");
+            }
+        } else  if (current instanceof Client){
+            for (Service service : getServicesByCLient(current.getUserID())) {
+                if (!service.isDeleted()) {
+                    System.out.println(service.getFormattedServiceDetails());
+                    System.out.println("___________________________________");
+                }
             }
         }
     }

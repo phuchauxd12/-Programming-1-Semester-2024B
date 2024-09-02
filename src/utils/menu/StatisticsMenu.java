@@ -629,7 +629,7 @@ public class StatisticsMenu extends Menu {
 
     private void getAllClientSalesTransactions(User loggedInUser) {
         Client client = (Client) loggedInUser;
-        client.viewTransactionsHistory(LocalDate.of(1970, 1, 1), LocalDate.now());
+        SaleTransactionList.displayAllSaleTransactions();
 
         try{
             String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
@@ -655,7 +655,7 @@ public class StatisticsMenu extends Menu {
 
     private void getAllClientServices(User loggedInUser) {
         Client client = (Client) loggedInUser;
-        client.viewServiceHistoryInSpecificPeriod(LocalDate.of(1970, 1, 1), LocalDate.now());
+        ServiceList.displayAllServices();
 
         try{
             String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
