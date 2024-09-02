@@ -66,6 +66,7 @@ public class SaleTransactionMenu extends Menu {
     }
 
     private void updateTransactionWrapper() {
+//        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             updateTransaction();
             CommonFunc.addActivityLogForCurrentUser("Update transaction wrapper");
@@ -75,6 +76,7 @@ public class SaleTransactionMenu extends Menu {
     }
 
     private void deleteTransactionWrapper() {
+//        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             deleteTransaction();
             CommonFunc.addActivityLogForCurrentUser("Delete transaction wrapper");
@@ -94,6 +96,7 @@ public class SaleTransactionMenu extends Menu {
     }
 
     private void searchTransactionById() {
+        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(System.out::println);
         System.out.println("Searching transaction by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
@@ -105,7 +108,9 @@ public class SaleTransactionMenu extends Menu {
                 System.out.println("Transaction found!");
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
             }
-            System.out.println("No transaction found with ID: " + transactionID);
+            else {
+                System.out.println("No transaction found with ID: " + transactionID);
+            }
         } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
             if (currentUser instanceof Salesperson){
                 if(transaction != null && !transaction.isDeleted()){
@@ -120,7 +125,6 @@ public class SaleTransactionMenu extends Menu {
                 }
             }
         }
-        System.out.println("No transaction found with ID: " + transactionID);
 
         try{
             CommonFunc.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);
@@ -153,6 +157,8 @@ public class SaleTransactionMenu extends Menu {
             Scanner input = new Scanner(System.in);
             User salesperson = null;
             while (salesperson == null) {
+                System.out.println("Sale person:");
+                UserMenu.getUserList().stream().filter(user -> user instanceof Salesperson).forEach(System.out::println);
                 System.out.println("Enter salesperson ID: ");
                 String salespersonId = input.nextLine();
 
