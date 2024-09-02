@@ -103,6 +103,7 @@ public class CarAndAutoPartMenu extends Menu {
 
 
     private void searchForCar() {
+        autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
         input.nextLine();
         System.out.println("Enter the car ID:");
         String carID = input.nextLine();
@@ -123,6 +124,7 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
     private void searchForPart() {
+        autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed()));
         input.nextLine();
         System.out.println("Enter the part ID:");
         String partID = input.nextLine();
@@ -169,7 +171,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void deleteCarWrapper() {
         try {
-            carsList.stream().filter(car -> !car.isDeleted()).forEach(System.out::println); // Get all cars that are not deleted
+            carsList.stream().filter(car -> !car.isDeleted()).forEach(car -> System.out.println(car.toStringDetailed())); // Get all cars that are not deleted
             Scanner input = new Scanner(System.in);
             System.out.println("Enter the car ID of the car you want to delete:");
             String carID = input.next();
@@ -183,7 +185,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void deletePartWrapper() {
         try {
-            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println); // Get all parts that are not deleted
+            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed())); // Get all parts that are not deleted
             Scanner input = new Scanner(System.in);
             System.out.println("Enter the part ID of the part you want to delete: ");
             String partID = input.next();
@@ -197,6 +199,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updateCarWrapper() {
         try {
+            carsList.stream().filter(car -> !car.isDeleted()).forEach(car -> System.out.println(car.toStringDetailed()));
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the car's ID to update:");
             String carID = input.next();
@@ -215,6 +218,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updatePartWrapper() {
         try {
+            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed()));
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the part's ID to update:");
             String partID = input.next();

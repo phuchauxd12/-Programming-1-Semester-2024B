@@ -155,7 +155,10 @@ public class SaleTransaction implements Serializable {
                                 break;
                             }
                         }
-
+                        System.out.println("Car:");
+                        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted()).forEach(System.out::println);
+                        System.out.println("Part:");
+                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
                         System.out.println("Enter new item IDs purchased (separated by comma): ");
                         String itemIdsInput = scanner.nextLine();
                         List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
@@ -427,6 +430,21 @@ public class SaleTransaction implements Serializable {
         this.additionalNotes = additionalNotes;
     }
 
+    @Override
+    public String toString() {
+        return "SaleTransaction{" +
+                "transactionId='" + transactionId + '\'' +
+                ", transactionDate=" + transactionDate +
+                ", clientId='" + clientId + '\'' +
+                ", salespersonId='" + salespersonId + '\'' +
+                ", purchasedCars=" + purchasedCars +
+                ", purchasedAutoParts=" + purchasedAutoParts +
+                ", discount=" + discount +
+                ", totalAmount=" + totalAmount +
+                ", isDeleted=" + isDeleted +
+                ", additionalNotes='" + additionalNotes + '\'' +
+                '}';
+    }
 
     public String getFormattedSaleTransactionDetails() {
         StringBuilder sb = new StringBuilder();

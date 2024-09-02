@@ -4,10 +4,12 @@ import autoPart.autoPart;
 import car.Car;
 import data.Database;
 import data.transaction.SaleTransactionDatabase;
+import user.Client;
 import user.Salesperson;
 import user.User;
 import utils.DatePrompt;
 import utils.UserSession;
+import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -38,6 +40,8 @@ public class SaleTransactionList {
         LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
         User client = null;
         while (client == null) {
+            System.out.println("Client:");
+            UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
             System.out.print("Enter client ID: ");
             String clientId = scanner.nextLine();
 
@@ -56,7 +60,10 @@ public class SaleTransactionList {
                 }
             }
         }
-
+        System.out.println("Car:");
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted()).forEach(System.out::println);
+        System.out.println("Part:");
+        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
         List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
@@ -291,7 +298,7 @@ public class SaleTransactionList {
         }
     }
 
-    public void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
+    public static void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
 
         List<SaleTransaction> filteredTransactions = transactionsInRange.stream()

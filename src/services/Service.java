@@ -276,6 +276,8 @@ public class Service implements Serializable {
                         service.setServiceBy(newServiceBy);
                         break;
                     case "4":
+                        System.out.println("Service Car:");
+                        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.WALK_IN).forEach(System.out::println);
                         System.out.print("Enter new car ID: ");
                         String newCarId = scanner.nextLine();
                         service.setCarId(newCarId);
@@ -289,7 +291,8 @@ public class Service implements Serializable {
                                 }
                             }
                         }
-
+                        System.out.println("Part:");
+                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
                         // Get new parts
                         System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
                         String partIdsInput = scanner.nextLine();

@@ -417,7 +417,7 @@ public class StatisticsMenu extends Menu {
             mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
             activityName = "View all services made by me as a mechanic";
         } else if (loggedInUser instanceof Manager) {
-            UserMenu.displayAllMechanics();
+           System.out.println( UserMenu.displayAllMechanics());
             String mechanicId;
             Mechanic mechanic;
             Scanner input = new Scanner(System.in);
@@ -453,7 +453,7 @@ public class StatisticsMenu extends Menu {
             activityName = "View all sales made by me as a salesperson";
             salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
         } else if (loggedInUser instanceof Manager) {
-            UserMenu.displayAllSalespersons();
+            System.out.println(UserMenu.displayAllSalespersons());
             String salespersonId;
             Salesperson salesperson;
             while (true) {

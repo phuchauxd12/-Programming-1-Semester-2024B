@@ -7,7 +7,9 @@ import user.Client;
 import user.Mechanic;
 import user.User;
 import utils.DatePrompt;
+import utils.Status;
 import utils.UserSession;
+import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -37,7 +39,8 @@ public class ServiceList {
         System.out.print("Enter transaction date (dd/MM/yyyy): ");
         String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
         LocalDate serviceDate = DatePrompt.validateAndParseDate(input);
-
+        System.out.println("Client:");
+        UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
         System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
         boolean clientFound = false;
@@ -70,7 +73,8 @@ public class ServiceList {
         double serviceCost = selectedServiceType.getPrice();
 
         scanner.nextLine();
-
+        System.out.println("Part:");
+        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
         System.out.println("Enter ID of replaced parts (separate by comma, or leave empty if none): ");
         String partNamesInput = scanner.nextLine();
         List<String> partNames = partNamesInput.isEmpty() ? Collections.emptyList() :
@@ -82,7 +86,8 @@ public class ServiceList {
         System.out.print("Type 1 if the service was made by AUTO136. Type 2 if the service was made by OTHER: ");
         int serviceByInput = Integer.parseInt(scanner.nextLine());
         ServiceBy serviceBy = (serviceByInput == 1) ? ServiceBy.AUTO136 : ServiceBy.OTHER;
-
+        System.out.println("Service Car:");
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.WALK_IN).forEach(System.out::println);
         System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
 
