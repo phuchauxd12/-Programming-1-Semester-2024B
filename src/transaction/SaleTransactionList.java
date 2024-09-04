@@ -9,7 +9,9 @@ import user.Manager;
 import user.Salesperson;
 import user.User;
 import utils.DatePrompt;
+import utils.Status;
 import utils.UserSession;
+import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
 import java.time.LocalDate;
@@ -40,6 +42,8 @@ public class SaleTransactionList {
         LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
         User client = null;
         while (client == null) {
+            System.out.println("Client:");
+            UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
             System.out.print("Enter client ID: ");
             String clientId = scanner.nextLine();
 
@@ -58,7 +62,10 @@ public class SaleTransactionList {
                 }
             }
         }
-
+        System.out.println("Car:");
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
+        System.out.println("Part:");
+        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
         List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))

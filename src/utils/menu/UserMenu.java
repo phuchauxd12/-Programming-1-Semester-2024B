@@ -139,6 +139,7 @@ public class UserMenu extends Menu {
     }
 
     private void updateUser() {
+        UserList.forEach(user -> System.out.println(user.getUserInfo()));
         Scanner input = new Scanner(System.in);
         System.out.println("Update User");
         System.out.println("Please input the user ID:");
@@ -177,6 +178,7 @@ public class UserMenu extends Menu {
     }
 
     private void deleteUser() {
+        UserList.forEach(user -> System.out.println(user.getUserInfo()));
         Scanner input = new Scanner(System.in);
         System.out.println("Delete User:");
         UserMenu.displayAllUsers();
@@ -192,6 +194,7 @@ public class UserMenu extends Menu {
     }
 
     private void viewUserById() {
+        UserList.forEach(System.out::println);
         Scanner input = new Scanner(System.in);
         System.out.println("View User by ID");
         System.out.println("Please input the user ID:");
@@ -199,7 +202,13 @@ public class UserMenu extends Menu {
         String activityName = "View user with id" + userIDforview;
         try{
             CommonFunc.addActivityLogForCurrentUser(activityName);
-            System.out.println(getUserById(userIDforview));
+            var user = getUserById(userIDforview);
+            if (user != null) {
+                System.out.println(user.getUserInfo());
+            }
+            else {
+                System.out.println("User not found!");
+            }
         }catch (Exception e){
             System.out.println("Error while viewing users by role: " + e.getMessage());
         }

@@ -176,8 +176,8 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         part.setStatus(Status.SOLD);
                     }
                 }
@@ -480,9 +480,9 @@ public class Service implements Serializable {
             } else {
                 System.out.println("Client not found");
             }
-            for(autoPart part : service.getReplacedParts()){
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+            for (autoPart part : service.getReplacedParts()) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         parts.setStatus(Status.AVAILABLE);
                     }
                 }

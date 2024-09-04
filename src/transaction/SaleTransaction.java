@@ -70,7 +70,7 @@ public class SaleTransaction implements Serializable {
             }
         }
         for (autoPart autoPart : saleTransaction.purchasedAutoParts) {
-            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
                 if (parts.getPartID().equals(autoPart.getPartID())) {
                     parts.setStatus(Status.SOLD);
                     parts.setSoldDate(saleTransaction.transactionDate);
@@ -95,12 +95,12 @@ public class SaleTransaction implements Serializable {
         String transactionId = scanner.nextLine();
 
         SaleTransaction transaction = null;
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             transaction = SaleTransactionList.getSaleTransactionById(transactionId);
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Salesperson) {
                 SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
-                if (detectedTransaction.getSalespersonId().equals(current.getUserID())){
+                if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
                     transaction = detectedTransaction;
                 }
             }
@@ -159,7 +159,10 @@ public class SaleTransaction implements Serializable {
                                 break;
                             }
                         }
-
+                        System.out.println("Car:");
+                        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
+                        System.out.println("Part:");
+                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
                         System.out.println("Enter new item IDs purchased (separated by comma): ");
                         String itemIdsInput = scanner.nextLine();
                         List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
@@ -239,12 +242,12 @@ public class SaleTransaction implements Serializable {
         System.out.print("Enter transaction ID to delete: ");
         String transactionId = scanner.nextLine();
         SaleTransaction transaction = null;
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             transaction = SaleTransactionList.getSaleTransactionById(transactionId);
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Salesperson) {
                 SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
-                if (detectedTransaction.getSalespersonId().equals(current.getUserID())){
+                if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
                     transaction = detectedTransaction;
                 }
             }
@@ -435,6 +438,21 @@ public class SaleTransaction implements Serializable {
         this.additionalNotes = additionalNotes;
     }
 
+    @Override
+    public String toString() {
+        return "SaleTransaction{" +
+                "transactionId='" + transactionId + '\'' +
+                ", transactionDate=" + transactionDate +
+                ", clientId='" + clientId + '\'' +
+                ", salespersonId='" + salespersonId + '\'' +
+                ", purchasedCars=" + purchasedCars +
+                ", purchasedAutoParts=" + purchasedAutoParts +
+                ", discount=" + discount +
+                ", totalAmount=" + totalAmount +
+                ", isDeleted=" + isDeleted +
+                ", additionalNotes='" + additionalNotes + '\'' +
+                '}';
+    }
 
     public String getFormattedSaleTransactionDetails() {
         StringBuilder sb = new StringBuilder();

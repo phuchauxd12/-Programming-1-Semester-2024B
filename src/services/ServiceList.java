@@ -8,6 +8,7 @@ import user.Client;
 import user.Mechanic;
 import user.User;
 import utils.DatePrompt;
+import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
@@ -41,12 +42,13 @@ public class ServiceList {
         System.out.print("Enter transaction date (dd/MM/yyyy): ");
         String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
         LocalDate serviceDate = DatePrompt.validateAndParseDate(input);
-
+        System.out.println("Client:");
+        UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
         System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
         boolean clientFound = false;
-        for(User user: UserMenu.getUserList()){
-            if(user.getUserID().equals(clientId) && user instanceof Client){
+        for (User user : UserMenu.getUserList()) {
+            if (user.getUserID().equals(clientId) && user instanceof Client) {
                 clientFound = true;
                 break;
             }
@@ -84,6 +86,8 @@ public class ServiceList {
             serviceCost = selectedServiceType.getPrice();
 
             scanner.nextLine();
+            System.out.println("Part:");
+            CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
 
             System.out.println("Enter ID of replaced parts (separate by comma, or leave empty if none): ");
             String partNamesInput = scanner.nextLine();
@@ -101,6 +105,8 @@ public class ServiceList {
         System.out.print("Enter additional notes: ");
         String notes = scanner.nextLine();
 
+        System.out.println("Service Car:");
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.WALK_IN).forEach(System.out::println);
         System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
 
@@ -121,10 +127,11 @@ public class ServiceList {
         return null;
     }
 
-    public  static List<Service> getServicesByCLient(String clientId){
+    public static List<Service> getServicesByCLient(String clientId) {
         var serviceByCLient = services.stream().filter(service -> service.getClientId().equals(clientId)).toList();
-        return  serviceByCLient;
+        return serviceByCLient;
     }
+
     public List<Service> getAllServices() {
         return services;
     }
@@ -132,7 +139,7 @@ public class ServiceList {
     public static void displayAllServices() {
 
         User current = UserSession.getCurrentUser();
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             for (Service service : services) {
                 if (!service.isDeleted()) {
                     System.out.println(service.getFormattedServiceDetails());
@@ -140,18 +147,17 @@ public class ServiceList {
                 }
             }
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if(current instanceof Mechanic){
+            if (current instanceof Mechanic) {
                 for (Service service : services) {
                     if (!service.isDeleted() && service.getMechanicId() == current.getUserID()) {
                         System.out.println(service.getFormattedServiceDetails());
                         System.out.println("___________________________________");
                     }
                 }
-            }
-            else {
+            } else {
                 System.out.println("Your role is not able to access this field");
             }
-        } else  if (current instanceof Client){
+        } else if (current instanceof Client) {
             for (Service service : getServicesByCLient(current.getUserID())) {
                 if (!service.isDeleted()) {
                     System.out.println(service.getFormattedServiceDetails());

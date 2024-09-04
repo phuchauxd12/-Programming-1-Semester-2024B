@@ -76,6 +76,7 @@ public class ServiceMenu extends Menu {
     }
 
     private void updateServiceWrapper() {
+//        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             updateService();
             CommonFunc.addActivityLogForCurrentUser("Update service wrapper");
@@ -85,6 +86,7 @@ public class ServiceMenu extends Menu {
     }
 
     private void deleteServiceWrapper() {
+//        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             deleteService();
             CommonFunc.addActivityLogForCurrentUser("Delete service wrapper");
@@ -167,6 +169,8 @@ public class ServiceMenu extends Menu {
     private void createService() throws Exception {
         System.out.println("Creating a new service...");
         if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
+            System.out.println("Mechanic:");
+            UserMenu.getUserList().stream().filter(user -> user instanceof Mechanic).forEach(System.out::println);
             Scanner input = new Scanner(System.in);
             System.out.println("Enter mechanic ID: ");
             String mechanicID = input.nextLine();
@@ -216,6 +220,7 @@ public class ServiceMenu extends Menu {
     }
 
     private void searchServiceById() {
+        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(System.out::println);
         System.out.println("Searching service by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter service ID: ");
@@ -227,7 +232,9 @@ public class ServiceMenu extends Menu {
                 System.out.println("Service found!");
                 System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
             }
-            System.out.println("No service found with ID: " + serviceID);
+            else {
+                System.out.println("No service found with ID: " + serviceID);
+            }
         } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
             if (currentUser instanceof Mechanic){
                 if(service != null && !service.isDeleted()){
@@ -242,7 +249,6 @@ public class ServiceMenu extends Menu {
                 }
             }
         }
-        System.out.println("No service found with ID: " + serviceID);
 
         try{
             CommonFunc.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
