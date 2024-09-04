@@ -10,6 +10,7 @@ import user.Client;
 import user.Membership;
 import user.Salesperson;
 import user.User;
+import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
@@ -53,7 +54,7 @@ public class SaleTransaction implements Serializable {
     public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
         SaleTransactionList.transactions.add(saleTransaction);
         for (User user : UserMenu.getUserList()) {
-            if (user.getUserName().equals(saleTransaction.clientId)) {
+            if (user.getUserID().equals(saleTransaction.clientId)) {
                 Client client = (Client) user;
                 client.updateTotalSpending(saleTransaction.totalAmount);
                 break;
@@ -63,6 +64,7 @@ public class SaleTransaction implements Serializable {
             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                 if (car.getCarID().equals(purchasedCar.getCarID())) {
                     car.setStatus(Status.SOLD);
+                    car.setSoldDate(saleTransaction.transactionDate);
                     break;
                 }
             }
@@ -71,6 +73,7 @@ public class SaleTransaction implements Serializable {
             for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
                 if (parts.getPartID().equals(autoPart.getPartID())) {
                     parts.setStatus(Status.SOLD);
+                    parts.setSoldDate(saleTransaction.transactionDate);
                     break;
                 }
             }
@@ -116,8 +119,9 @@ public class SaleTransaction implements Serializable {
                 switch (choice) {
                     case "1":
                         try {
-                            System.out.print("Enter new transaction date (YYYY-MM-DD): ");
-                            LocalDate newDate = LocalDate.parse(scanner.nextLine());
+                            System.out.print("Enter new transaction date (dd/MM/yyyy): ");
+                            String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
+                            LocalDate newDate = DatePrompt.validateAndParseDate(input);
                             transaction.setTransactionDate(newDate);
                         } catch (DateTimeParseException e) {
                             System.out.println("Invalid date format. Please enter a valid date (YYYY-MM-DD).");
@@ -130,6 +134,7 @@ public class SaleTransaction implements Serializable {
                             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                                 if (car.getCarID().equals(oldCar.getCarID())) {
                                     car.setStatus(Status.AVAILABLE);
+                                    car.setSoldDate(null);
                                     break;
                                 }
                             }
@@ -139,6 +144,7 @@ public class SaleTransaction implements Serializable {
                             for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                                 if (autoPart.getPartID().equals(oldPart.getPartID())) {
                                     autoPart.setStatus(Status.AVAILABLE);
+                                    autoPart.setSoldDate(null);
                                     break;
                                 }
                             }
@@ -171,6 +177,7 @@ public class SaleTransaction implements Serializable {
                             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                                 if (car.getCarID().equals(newCar.getCarID())) {
                                     car.setStatus(Status.SOLD);
+                                    car.setSoldDate(transaction.transactionDate);
                                     break;
                                 }
                             }
@@ -180,6 +187,7 @@ public class SaleTransaction implements Serializable {
                             for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                                 if (autoPart.getPartID().equals(newPart.getPartID())) {
                                     autoPart.setStatus(Status.SOLD);
+                                    autoPart.setSoldDate(transaction.transactionDate);
                                     break;
                                 }
                             }
@@ -250,6 +258,7 @@ public class SaleTransaction implements Serializable {
                 for (Car car : CarAndAutoPartMenu.getCarsList()) {
                     if (car.getCarID().equals(oldCar.getCarID())) {
                         car.setStatus(Status.AVAILABLE);
+                        car.setSoldDate(null);
                         break;
                     }
                 }
@@ -259,6 +268,7 @@ public class SaleTransaction implements Serializable {
                 for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                     if (autoPart.getPartID().equals(oldPart.getPartID())) {
                         autoPart.setStatus(Status.AVAILABLE);
+                        autoPart.setSoldDate(null);
                         break;
                     }
                 }
@@ -429,7 +439,7 @@ public class SaleTransaction implements Serializable {
     public String getFormattedSaleTransactionDetails() {
         StringBuilder sb = new StringBuilder();
         sb.append("Transaction ID: ").append(transactionId).append("\n");
-        sb.append("Date: ").append(transactionDate.format(DateTimeFormatter.ISO_LOCAL_DATE)).append("\n");
+        sb.append("Date: ").append(transactionDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
         sb.append("Client ID: ").append(clientId).append("\n");
         sb.append("Salesperson ID: ").append(salespersonId).append("\n");
         sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");

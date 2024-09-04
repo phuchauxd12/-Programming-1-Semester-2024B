@@ -1,20 +1,21 @@
 package user;
 
+import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public class Salesperson extends Employee {
-    private SaleTransactionList transactionList;
+    private List<SaleTransaction> myTransaction;
 
-    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, SaleTransactionList transactionList) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, transactionList, null);
-        this.transactionList = transactionList;
+    public Salesperson(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType);
     }
 
-    public void addTransaction() throws Exception {
-        transactionList.addSaleTransaction(this.getUserName());
+    public void addMyTransaction(SaleTransaction transaction) throws Exception {
+        myTransaction.add(transaction);
     }
 
     // All sales statistics for the given date range
@@ -66,15 +67,15 @@ public class Salesperson extends Employee {
 //    }
 
 
-    public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {
-
-        String salespersonId = this.getUserName();
-        transactionList.viewTransactionsBySalesperson(salespersonId, startDate, endDate);
-    }
+//    public void saleTransactionMadeByMe(LocalDate startDate, LocalDate endDate) {
+//
+//        String salespersonId = this.getUserID();
+//        SaleTransactionList.displayAllSaleTransactions();
+//    }
 
     public void viewCarsSoldByMe(LocalDate startDate, LocalDate endDate) {
         String salespersonId = this.getUserName();
-        int carsSold = transactionList.getSaleTransactionsBetween(startDate, endDate).stream()
+        int carsSold = SaleTransactionList.getSaleTransactionsBetween(startDate, endDate).stream()
                 .filter(transaction -> transaction.getSalespersonId().equals(salespersonId))
                 .mapToInt(transaction -> transaction.getPurchasedCars().size())
                 .sum();

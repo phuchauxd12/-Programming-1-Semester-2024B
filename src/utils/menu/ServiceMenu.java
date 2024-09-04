@@ -5,6 +5,7 @@ import services.ServiceList;
 import user.Manager;
 import user.Mechanic;
 import user.User;
+import utils.CommonFunc;
 import utils.DatePrompt;
 import utils.UserSession;
 
@@ -30,33 +31,34 @@ public class ServiceMenu extends Menu {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Display All Services");
+                menuItems.put(2, "Display All Services In Specific Period");
+                menuItems.put(3, "Display All Services By Specific Mechanic");
 
                 menuActions.put(1, this::displayAllServices);
-                menuActions.put(2, this::createServiceWrapper);
-                menuActions.put(3, this::updateServiceWrapper);
-                menuActions.put(4, this::searchServiceById);
-                menuActions.put(5, this::searchServiceByDate);
-                menuActions.put(6, this::deleteServiceWrapper);
+                menuActions.put(2, this::getAllServicesInSpecificPeriod);
+                menuActions.put(3, this::getAllMechanicServices);
+                menuActions.put(4, this::createServiceWrapper);
+                menuActions.put(5, this::updateServiceWrapper);
+                menuActions.put(6, this::searchServiceById);
+                menuActions.put(7, this::deleteServiceWrapper);
                 menuActions.put(0, this::exit);
             }
             case MECHANIC -> {
                 menuItems.put(1, "Display All Services by me");
 
                 menuActions.put(1, this::displayAllServices);
-                menuActions.put(2, this::createServiceWrapper);
-                menuActions.put(3, this::updateServiceWrapper);
-                menuActions.put(4, this::searchServiceById);
-                menuActions.put(5, this::searchServiceByDate); // TODO: Only able to search services by mechanic
-                menuActions.put(6, this::deleteServiceWrapper);
+                menuActions.put(4, this::createServiceWrapper);
+                menuActions.put(5, this::updateServiceWrapper);
+                menuActions.put(6, this::searchServiceById);
+                menuActions.put(7, this::deleteServiceWrapper);
                 menuActions.put(0, this::exit);
             }
             case null, default -> System.out.print("");
         }
-        menuItems.put(2, "Create a Service");
-        menuItems.put(3, "Update a Service");
-        menuItems.put(4, "Search a service by ID");
-        menuItems.put(5, "Search between specific dates");
-        menuItems.put(6, "Delete a Service");
+        menuItems.put(4, "Create a Service");
+        menuItems.put(5, "Update a Service");
+        menuItems.put(6, "Search a service by ID");
+        menuItems.put(7, "Delete a Service");
         menuItems.put(0, "Exit");
 
     }
@@ -67,6 +69,7 @@ public class ServiceMenu extends Menu {
     private void createServiceWrapper() {
         try {
             createService();
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error creating service: " + e.getMessage());
         }
@@ -75,6 +78,7 @@ public class ServiceMenu extends Menu {
     private void updateServiceWrapper() {
         try {
             updateService();
+            CommonFunc.addActivityLogForCurrentUser("Update service wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -83,6 +87,7 @@ public class ServiceMenu extends Menu {
     private void deleteServiceWrapper() {
         try {
             deleteService();
+            CommonFunc.addActivityLogForCurrentUser("Delete service wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -91,6 +96,72 @@ public class ServiceMenu extends Menu {
     private void displayAllServices() {
         System.out.println("Displaying all services...");
         ServiceList.displayAllServices();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
+    }
+
+    private void getAllServicesInSpecificPeriod() {
+        LocalDate startDate = DatePrompt.getStartDate();
+        LocalDate endDate = DatePrompt.getEndDate(startDate);
+
+        List<Service> services = ServiceList.getServicesBetween(startDate, endDate);
+
+        if (services.isEmpty()) {
+            System.out.println("No services found within the specified period.");
+        } else {
+            System.out.println("Services between " + startDate + " and " + endDate + ":");
+            for (Service service : services) {
+                System.out.println(service.getFormattedServiceDetails());
+            }
+        }
+
+        try{
+            String activityName = "View all services in a specific period";
+            CommonFunc.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
+    }
+
+    private void getAllMechanicServices() {
+        String activityName;
+        List<Service> services;
+            UserMenu.displayAllMechanics();
+            String mechanicId;
+            Mechanic mechanic;
+            Scanner input = new Scanner(System.in);
+            while (true) {
+                System.out.print("Enter mechanic ID: ");
+                mechanicId = input.nextLine();
+                if (!mechanicId.isEmpty()) {
+                    mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
+                    if (mechanic != null) {
+                        break;
+                    } else {
+                        System.out.println("Mechanic not found. Please try again.");
+                    }
+                    System.out.println("Mechanic ID cannot be empty. Please try again.");
+                }
+            }
+            activityName = "View all services made by Mechanic named " + mechanic.getUserName() + " with ID " + mechanic.getUserID();
+                services = ServiceList.getServiceByMechanic(mechanicId);
+                if (services.isEmpty()) {
+                    System.out.println("No services found for this mechanic.");
+                } else {
+                    System.out.println("All available service of the mechanic : ");
+                    for (Service service : services) {
+                        System.out.println(service.getFormattedServiceDetails());
+                    }
+                }
+        try{
+            CommonFunc.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
     }
 
     private void createService() throws Exception {
@@ -114,16 +185,34 @@ public class ServiceMenu extends Menu {
         } else {
             ServiceList.addService(UserSession.getCurrentUser().getUserName());
         }
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void updateService() throws Exception {
         System.out.println("Updating a service...");
         ServiceList.updateService();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Update service");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void deleteService() throws Exception {
         System.out.println("Deleting a service...");
         ServiceList.deleteService();
+
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Delete service");
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
     private void searchServiceById() {
@@ -153,23 +242,36 @@ public class ServiceMenu extends Menu {
                 }
             }
         }
-    }
+        System.out.println("No service found with ID: " + serviceID);
 
-    private void searchServiceByDate() {
-        System.out.println("Searching service between ...");
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
-        if (!servicesBetween.isEmpty()) {
-            System.out.println("Service found!");
-            for (Service service : servicesBetween) {
-                if (!service.isDeleted()) {
-                    System.out.println(service.getFormattedServiceDetails());
-                }
-            }
+        try{
+            CommonFunc.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
         }
-        System.out.println("Non service done between : " + startDate + " to " + endDate);
-
     }
 
+//    private void searchServiceByDate() {
+//        System.out.println("Searching service between ...");
+//        LocalDate startDate = DatePrompt.getStartDate();
+//        LocalDate endDate = DatePrompt.getEndDate(startDate);
+//        List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
+//        if (!servicesBetween.isEmpty()) {
+//            System.out.println("Service found!");
+//            for (Service service : servicesBetween) {
+//                if (!service.isDeleted()) {
+//                    System.out.println(service.getFormattedServiceDetails());
+//                }
+//            }
+//        }
+//
+//        System.out.println("Non service done between : " + startDate + " to " + endDate);
+//
+//        try{
+//            CommonFunc.addActivityLogForCurrentUser("Search service by date: " + startDate + " to " + endDate);
+//        } catch (Exception e) {
+//            System.out.println("Error logging service action history: " + e.getMessage());
+//        }
+//    }
+//
 }

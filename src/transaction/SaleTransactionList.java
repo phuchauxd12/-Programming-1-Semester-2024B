@@ -4,8 +4,11 @@ import autoPart.autoPart;
 import car.Car;
 import data.Database;
 import data.transaction.SaleTransactionDatabase;
+import user.Client;
+import user.Manager;
 import user.Salesperson;
 import user.User;
+import utils.DatePrompt;
 import utils.UserSession;
 import utils.menu.UserMenu;
 
@@ -32,9 +35,9 @@ public class SaleTransactionList {
     public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter transaction date (YYYY-MM-DD): ");
-        LocalDate transactionDate = LocalDate.parse(scanner.nextLine());
-
+        System.out.print("Enter transaction date (dd/MM/yyyy): ");
+        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
+        LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
         User client = null;
         while (client == null) {
             System.out.print("Enter client ID: ");
@@ -80,33 +83,46 @@ public class SaleTransactionList {
         return null;
     }
 
+    public static List<SaleTransaction> getTransactionsByClient(String clientId) {
+        var transactionByClient = transactions.stream()
+                .filter(transaction -> transaction.getClientId().equals(clientId)).toList();
+        return transactionByClient;
+    }
+    public static List<SaleTransaction> getTransactionsBySalePerson(String salespersonId) {
+        var transactionBySaleperson = transactions.stream()
+                .filter(transaction -> transaction.getSalespersonId().equals(salespersonId)).toList();
+        return transactionBySaleperson;
+    }
     public List<SaleTransaction> getAllSaleTransactions() {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
     public static void displayAllSaleTransactions() {
         User current = UserSession.getCurrentUser();
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if(current instanceof Manager) {
             for (SaleTransaction transaction : transactions) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
                     System.out.println("___________________________________");
                 }
             }
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if(current instanceof Salesperson){
-                for (SaleTransaction transaction : transactions) {
-                    if (!transaction.isDeleted() && transaction.getSalespersonId() == current.getUserID()) {
-                        System.out.println(transaction.getFormattedSaleTransactionDetails());
-                        System.out.println("___________________________________");
-                    }
+        } else if(current instanceof Salesperson) {
+            for (SaleTransaction transaction : getTransactionsBySalePerson(current.getUserID())) {
+                if (!transaction.isDeleted()) {
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    System.out.println("___________________________________");
                 }
             }
-            else {
-                System.out.println("Your role is not able to access this field");
+        } else if(current instanceof Client) {
+            for (SaleTransaction transaction : getTransactionsByClient(current.getUserID())) {
+                if (!transaction.isDeleted()) {
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    System.out.println("___________________________________");
+                }
             }
         }
     }
+
 
     public static void updateSaleTransaction() throws Exception {
         displayAllSaleTransactions();
@@ -161,15 +177,12 @@ public class SaleTransactionList {
         return partCount;
     }
 
-    public List<Car> listCarsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+    public static List<Car> listCarsSoldBySalePerson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<Car> carsSold = new ArrayList<>();
 
-        for (SaleTransaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getTransactionDate();
-            if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate)) &&
-                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) &&
-                    !transaction.isDeleted()) {
-
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        for (SaleTransaction transaction : transactionsInRange) {
+            if (transaction.getSalespersonId().equals(salespersonId)) {
                 carsSold.addAll(transaction.getPurchasedCars());
             }
         }
@@ -177,18 +190,15 @@ public class SaleTransactionList {
         return carsSold;
     }
 
-    public List<autoPart> listAutoPartsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+    public static List<autoPart> listAutoPartsSoldBySalesPerson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<autoPart> autoPartsSold = new ArrayList<>();
 
-        for (SaleTransaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getTransactionDate();
-            if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
-                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())) {
-
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        for (SaleTransaction transaction : transactionsInRange) {
+            if (transaction.getSalespersonId().equals(salespersonId)) {
                 autoPartsSold.addAll(transaction.getPurchasedAutoParts());
             }
         }
-
         return autoPartsSold;
     }
 
@@ -206,6 +216,7 @@ public class SaleTransactionList {
 
     public static double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
+        int transactionCount = 0;
 
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
         List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
@@ -276,9 +287,19 @@ public class SaleTransactionList {
         if (topSalespersonByCount != null) {
             System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", topSalespersonByCount, maxSalesCount);
         }
+
+        System.out.println("Revenue by Salesperson:");
+        for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
+            System.out.printf("Salesperson ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+        }
+
+        System.out.println("Sale by Salesperson:");
+        for (Map.Entry<String, Integer> entry : salespersonSales.entrySet()) {
+            System.out.printf("Salesperson ID: %s, Sale: $%.2f\n", entry.getKey(), entry.getValue());
+        }
     }
 
-    public void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
+    public static void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
 
         List<SaleTransaction> filteredTransactions = transactionsInRange.stream()

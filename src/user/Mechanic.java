@@ -1,16 +1,17 @@
 package user;
 
 
-import services.ServiceList;
+import services.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Mechanic extends Employee {
-    private ServiceList serviceList;
-    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, ServiceList serviceList) throws Exception {
-        super(userName, password, name, dob, address, phoneNum, email, userType, null, serviceList);
-        this.serviceList = serviceList;
+    private List<Service> myServices;
+    public Mechanic(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType) throws Exception {
+        super(userName, password, name, dob, address, phoneNum, email, userType);
     }
+}
 
 
     // View overall service statistics within a date range
@@ -83,13 +84,4 @@ public class Mechanic extends Employee {
 //    }
 
 
-    public void addService() throws Exception {
-        serviceList.addService(this.getUserName());
-    }
 
-
-    public void servicesMadeByMe(LocalDate startDate, LocalDate endDate) {
-        String mechanicId = this.getUserName();
-        serviceList.viewServiceByMechanic(mechanicId, startDate, endDate);
-    }
-}

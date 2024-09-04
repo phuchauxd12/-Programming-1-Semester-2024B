@@ -4,7 +4,7 @@ package autoPart;
 import utils.Status;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class autoPart implements Serializable {
@@ -16,7 +16,7 @@ public class autoPart implements Serializable {
     private double price;
     private String addNotes;
     private Status status = Status.AVAILABLE;
-    private LocalDateTime soldDate = null;
+    private LocalDate soldDate = null;
     private boolean isDeleted = false;
 
 
@@ -101,11 +101,11 @@ public class autoPart implements Serializable {
         this.status = status;
     }
 
-    public LocalDateTime getSoldDate() {
+    public LocalDate getSoldDate() {
         return soldDate;
     }
 
-    public void setSoldDate(LocalDateTime soldDate) {
+    public void setSoldDate(LocalDate soldDate) {
         this.soldDate = soldDate;
     }
 

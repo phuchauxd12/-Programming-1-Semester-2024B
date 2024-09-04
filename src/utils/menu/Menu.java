@@ -57,6 +57,14 @@ abstract class Menu {
         return option;
     }
 
+    public static int getFilteredOption(){
+        int option = 100;
+        System.out.print("1. View all available: ");
+        System.out.print("2. Filtered by period: ");
+        option = getOption(option, input);
+        return option;
+    }
+
     protected void exit() {
         System.out.println("Exiting Menu!");
     }

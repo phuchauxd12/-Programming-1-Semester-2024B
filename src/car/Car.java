@@ -126,6 +126,10 @@ public class Car implements Serializable {
         return serviceHistory;
     }
 
+    public void removeService(String serviceId) {
+        serviceHistory.removeIf(service -> service.getServiceId().equals(serviceId));
+    }
+
 
     public void addServiceToHistory(Service service) {
         serviceHistory.add(service);

@@ -21,9 +21,9 @@ public class Main {
         Client client = new Client("john_doe", "password1234", "Timmy Toe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.CLIENT, membership);
         Mechanic mechanic = new Mechanic("mechanic", "password123", "John Doe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.EMPLOYEE, null);
         Salesperson sale1 = new Salesperson("salesperson1", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE, null);
-//        Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
-        Client client1 = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, membership);
-//        Client client2 = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, "Active", membership);
+//      Client client = new Client("john_doe", "password123", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, "Active", membership);
+        Client client1 = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT,  membership);
+//      Client client2 = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, "Active", membership);
         autoPart part1 = new autoPart("Brake Pad", "ACDelco", autoPart.Condition.NEW, 12, 24.99, "Fits most Honda vehicles");
         autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 9.99, "Compatible with various car models");
         autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 14.99, "High-performance spark plugs");
@@ -45,8 +45,8 @@ public class Main {
 
         Car car1 = new Car("Honda", "Civic", 2001, "Silver", 100000, 800000000, "", Status.AVAILABLE);
 
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Oil_Change, List.of("p-01bdb224-c3b7-486b-a883-8f235287ae29", "p-c428b805-081f-49d0-a8c3-b55cc6cb8d6d") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Oil_Change.getPrice());
-        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Brake_Service, List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Brake_Service.getPrice());
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Oil_Change, List.of("p-01bdb224-c3b7-486b-a883-8f235287ae29", "p-c428b805-081f-49d0-a8c3-b55cc6cb8d6d") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Oil_Change.getPrice(), null);
+        Service service2 = new Service(LocalDate.of(2024, 1, 15), "john_doe", "mechanic1", Service.serviceType.Brake_Service, List.of("Brake Pad", "Oil Filter") , ServiceBy.AUTO136, "c-01642fbe-1e71-46f2-a3e7-6e94ee863c7c", Service.serviceType.Brake_Service.getPrice(), null);
 //        ServiceList serviceList = new ServiceList();
 //        serviceList.addService(new Service(LocalDate.of(2024, 1, 15), "client1", "mechanic1", "Oil Change", ServiceBy.AUTO136, "car1", 29.99));
 //        serviceList.addService(new Service(LocalDate.of(2024, 2, 20), "client2", "mechanic2", "Brake Replacement", ServiceBy.AUTO136, "car2", 199.99));
