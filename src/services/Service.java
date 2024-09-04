@@ -179,8 +179,8 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         part.setStatus(Status.SOLD);
                     }
                 }
@@ -202,12 +202,12 @@ public class Service implements Serializable {
         String serviceId = scanner.nextLine();
 
         Service service;
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             service = ServiceList.getServiceById(serviceId);
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Salesperson) {
                 Service detectedService = ServiceList.getServiceById(serviceId);
-                if (detectedService.getMechanicId().equals(current.getUserID())){
+                if (detectedService.getMechanicId().equals(current.getUserID())) {
                     service = detectedService;
                 } else {
                     service = null;
@@ -263,7 +263,7 @@ public class Service implements Serializable {
                                 .findFirst()
                                 .orElse(null);
                         if (user != null) {
-                            user.updateTotalSpending(totalCost-previousTotalCost);
+                            user.updateTotalSpending(totalCost - previousTotalCost);
                             UserDatabase.saveUsersData(UserMenu.getUserList());
                         } else {
                             System.out.println("Client not found");
@@ -285,14 +285,14 @@ public class Service implements Serializable {
                     case "5":
                         // Mark old parts as available
                         for (autoPart oldPart : service.getReplacedParts()) {
-                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                                if(parts.getPartID().equals(oldPart.getPartID())) {
+                            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (parts.getPartID().equals(oldPart.getPartID())) {
                                     parts.setStatus(Status.AVAILABLE);
                                 }
                             }
                         }
                         System.out.println("Part:");
-                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
+                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
                         // Get new parts
                         System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
                         String partIdsInput = scanner.nextLine();
@@ -312,8 +312,8 @@ public class Service implements Serializable {
 
                         // Mark new parts as sold
                         for (autoPart part : newReplacedParts) {
-                            for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                                if(parts.getPartID().equals(part.getPartID())) {
+                            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (parts.getPartID().equals(part.getPartID())) {
                                     parts.setStatus(Status.SOLD);
                                 }
                             }
@@ -326,7 +326,7 @@ public class Service implements Serializable {
                                 .findFirst()
                                 .orElse(null);
                         if (client != null) {
-                            client.updateTotalSpending(newTotalCost-oldTotalCost);
+                            client.updateTotalSpending(newTotalCost - oldTotalCost);
                             UserDatabase.saveUsersData(UserMenu.getUserList());
                         } else {
                             System.out.println("Client not found");
@@ -374,9 +374,9 @@ public class Service implements Serializable {
             } else {
                 System.out.println("Client not found");
             }
-            for(autoPart part : service.getReplacedParts()){
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+            for (autoPart part : service.getReplacedParts()) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         parts.setStatus(Status.AVAILABLE);
                     }
                 }

@@ -8,6 +8,7 @@ import user.Client;
 import user.Salesperson;
 import user.User;
 import utils.DatePrompt;
+import utils.Status;
 import utils.UserSession;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
@@ -61,9 +62,9 @@ public class SaleTransactionList {
             }
         }
         System.out.println("Car:");
-        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted()).forEach(System.out::println);
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
         System.out.println("Part:");
-        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
+        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
         List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
@@ -93,13 +94,14 @@ public class SaleTransactionList {
                 .filter(transaction -> transaction.getClientId().equals(clientId)).toList();
         return transactionByClient;
     }
+
     public List<SaleTransaction> getAllSaleTransactions() {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
     public static void displayAllSaleTransactions() {
         User current = UserSession.getCurrentUser();
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             for (SaleTransaction transaction : transactions) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
@@ -107,18 +109,17 @@ public class SaleTransactionList {
                 }
             }
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if(current instanceof Salesperson){
+            if (current instanceof Salesperson) {
                 for (SaleTransaction transaction : transactions) {
                     if (!transaction.isDeleted() && transaction.getSalespersonId() == current.getUserID()) {
                         System.out.println(transaction.getFormattedSaleTransactionDetails());
                         System.out.println("___________________________________");
                     }
                 }
-            }
-            else {
+            } else {
                 System.out.println("Your role is not able to access this field");
             }
-        } else if(current.getRole().equals(User.ROLE.CLIENT)){
+        } else if (current.getRole().equals(User.ROLE.CLIENT)) {
             for (SaleTransaction transaction : getTransactionsByClient(current.getUserID())) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());

@@ -103,7 +103,7 @@ public class CarAndAutoPartMenu extends Menu {
 
 
     private void searchForCar() {
-        autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println);
+        displayCars();
         input.nextLine();
         System.out.println("Enter the car ID:");
         String carID = input.nextLine();
@@ -116,15 +116,15 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("Car not found.");
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Search for car with ID: " + carID);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }
 
     private void searchForPart() {
-        autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed()));
+        displayParts();
         input.nextLine();
         System.out.println("Enter the part ID:");
         String partID = input.nextLine();
@@ -138,9 +138,9 @@ public class CarAndAutoPartMenu extends Menu {
         }
 
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Search for auto part with ID: " + partID);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
 
@@ -171,7 +171,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void deleteCarWrapper() {
         try {
-            carsList.stream().filter(car -> !car.isDeleted()).forEach(car -> System.out.println(car.toStringDetailed())); // Get all cars that are not deleted
+            carsList.stream().filter(car -> !car.isDeleted()).forEach(System.out::println); // Get all cars that are not deleted
             Scanner input = new Scanner(System.in);
             System.out.println("Enter the car ID of the car you want to delete:");
             String carID = input.next();
@@ -185,7 +185,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void deletePartWrapper() {
         try {
-            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed())); // Get all parts that are not deleted
+            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(System.out::println); // Get all parts that are not deleted
             Scanner input = new Scanner(System.in);
             System.out.println("Enter the part ID of the part you want to delete: ");
             String partID = input.next();
@@ -199,7 +199,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updateCarWrapper() {
         try {
-            carsList.stream().filter(car -> !car.isDeleted()).forEach(car -> System.out.println(car.toStringDetailed()));
+            displayCars();
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the car's ID to update:");
             String carID = input.next();
@@ -218,7 +218,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updatePartWrapper() {
         try {
-            autoPartsList.stream().filter(part -> !part.isDeleted()).forEach(part->System.out.println(part.toStringDetailed()));
+            displayParts();
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the part's ID to update:");
             String partID = input.next();
@@ -333,9 +333,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("To see detailed information of a specific car, please use the search function!");
 
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View all cars");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }
@@ -380,9 +380,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific part, please use the search function!");
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View all auto parts");
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
     }
@@ -592,7 +592,6 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
 
-
     // AutoPart CRUD functions
     public static autoPart createPart() {
         Scanner input = new Scanner(System.in);
@@ -743,7 +742,6 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
 
-
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
         for (Car car : carsList) {
@@ -753,9 +751,9 @@ public class CarAndAutoPartMenu extends Menu {
         }
         System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View number of cars sold from" + startDate + " to " + endDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }
