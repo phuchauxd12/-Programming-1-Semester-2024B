@@ -139,12 +139,46 @@ public class ServiceList {
     public static void displayAllServices() {
 
         User current = UserSession.getCurrentUser();
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
-            for (Service service : services) {
-                if (!service.isDeleted()) {
-                    System.out.println(service.getFormattedServiceDetails());
-                    System.out.println("___________________________________");
-                }
+        if(current.getRole().equals(User.ROLE.MANAGER)){
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("1. View all available: ");
+            System.out.print("1. View all service done by AUTO136: ");
+            System.out.print("2. View all service done by OTHER: ");
+            int input = scanner.nextInt();
+            switch(input){
+                case 1:
+                    for (Service service : services) {
+                        if (!service.isDeleted()) {
+                            System.out.println(service.getFormattedServiceDetails());
+                            System.out.println("___________________________________");
+                        }
+                    }
+                    break;
+                case 2:
+                    System.out.println("All service done by AUTO136");
+                    for (Service service : services) {
+                        if (!service.isDeleted()) {
+                            if(service.getServiceBy()==ServiceBy.AUTO136){
+                                System.out.println(service.getFormattedServiceDetails());
+                                System.out.println("___________________________________");
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("All service done by others");
+                    for (Service service : services) {
+                        if (!service.isDeleted()) {
+                            if(service.getServiceBy()==ServiceBy.OTHER){
+                                System.out.println(service.getFormattedServiceDetails());
+                                System.out.println("___________________________________");
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    System.out.println("Please enter a valid option!");
+                    break;
             }
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Mechanic) {

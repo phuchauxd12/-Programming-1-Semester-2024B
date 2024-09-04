@@ -1,6 +1,5 @@
 package utils.menu;
 
-import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 import user.Manager;
@@ -240,7 +239,7 @@ public class SaleTransactionMenu extends Menu {
             }
             SaleTransactionList.addSaleTransaction(salesperson.getUserID());
         } else {
-            ServiceList.addService(UserSession.getCurrentUser().getUserName());
+            System.out.println("Your role is not allow to perform this action");
         }
 
         try{

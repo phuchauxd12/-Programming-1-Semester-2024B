@@ -11,8 +11,6 @@ import java.util.List;
 public class Client extends User {
     private Membership membership;
     private double totalSpending;
-    private SaleTransactionList saleTransactionList;
-    private ServiceList serviceList;
 
     public Client(String userName, String password, String name, LocalDate dob, String address, int phoneNum, String email, ROLE userType, Membership membership) throws Exception {
         super(userName, password, name, dob, address, phoneNum, email, userType);
@@ -23,14 +21,6 @@ public class Client extends User {
     static final double PlatinumValue = 250000000;
     static final double GoldValue = 100000000;
     static final double SilverValue = 30000000;
-
-    public SaleTransactionList getSaleTransactionList() {
-        return saleTransactionList;
-    }
-
-    public ServiceList getServiceList() {
-        return serviceList;
-    }
 
     public Membership getMembership() {
         return membership;
@@ -63,7 +53,7 @@ public class Client extends User {
     }
 
     public void viewTransactionsHistory(LocalDate startDate, LocalDate endDate) {
-        List<SaleTransaction> transactions = saleTransactionList.getSaleTransactionsBetween(startDate, endDate);
+        List<SaleTransaction> transactions = SaleTransactionList.getSaleTransactionsBetween(startDate, endDate);
         System.out.println("Transaction history for client ID " + getUserName() + ":");
         boolean hasTransactions = false;
         for (SaleTransaction transaction : transactions) {
@@ -79,7 +69,7 @@ public class Client extends User {
 
 
     public void viewServiceHistoryInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
-        List<Service> servicesInRange = serviceList.getServicesBetween(startDate, endDate);
+        List<Service> servicesInRange = ServiceList.getServicesBetween(startDate, endDate);
         System.out.println("Service history for client ID " + getUserName() + ":");
         boolean hasServices = false;
         for (Service service : servicesInRange) {
