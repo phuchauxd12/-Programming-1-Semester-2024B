@@ -30,19 +30,31 @@ public class SaleTransactionMenu extends Menu {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Display all transactions");
+                menuItems.put(2, "Search a transaction by ID");
+                menuItems.put(3,"Get sale person sale");
+                menuItems.put(4,"Search transaction by id");
+                menuItems.put(5, "Delete a transaction");
+                menuItems.put(6, "Create a new transaction");
+                menuItems.put(7, "Update a transaction");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::displayAllTransactions);
                 menuActions.put(2, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(3, this::getAllSalespersonSales);
-                menuActions.put(3, this::searchTransactionById);
-                menuActions.put(4, this::deleteTransactionWrapper);
-                menuActions.put(5, this::createTransactionWrapper);
-                menuActions.put(6, this::updateTransactionWrapper);
+                menuActions.put(4, this::searchTransactionById);
+                menuActions.put(5, this::deleteTransactionWrapper);
+                menuActions.put(6, this::createTransactionWrapper);
+                menuActions.put(7, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
+                break;
             }
             case SALESPERSON -> {
                 menuItems.put(1, "Display all transactions by me");
-
+                menuItems.put(2, "Search a transaction by ID");
+                menuItems.put(3, "Delete a transaction");
+                menuItems.put(4, "Create a new transaction");
+                menuItems.put(5, "Update a transaction");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::displayAllTransactions);
                 menuActions.put(2, this::searchTransactionById);
@@ -50,14 +62,11 @@ public class SaleTransactionMenu extends Menu {
                 menuActions.put(4, this::createTransactionWrapper);
                 menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
+                break;
             }
             case null, default -> System.out.print("");
         }
-        menuItems.put(2, "Search a transaction by ID");
-        menuItems.put(3, "Delete a transaction");
-        menuItems.put(4, "Create a new transaction");
-        menuItems.put(5, "Update a transaction");
-        menuItems.put(0, "Exit");
+
     }
 
     private void createTransactionWrapper() {
@@ -129,6 +138,7 @@ public class SaleTransactionMenu extends Menu {
             Salesperson salesperson;
             while (true) {
                 System.out.print("Enter salesperson ID: ");
+                input.nextLine();
                 salespersonId = input.nextLine();
                 if (!salespersonId.isEmpty()) {
                     salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
@@ -137,6 +147,9 @@ public class SaleTransactionMenu extends Menu {
                     } else {
                         System.out.println("Salesperson not found. Please try again.");
                     }
+
+                }
+                else {
                     System.out.println("Salesperson ID cannot be empty. Please try again.");
                 }
             }
@@ -171,7 +184,9 @@ public class SaleTransactionMenu extends Menu {
                 System.out.println("Transaction found!");
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
             }
-            System.out.println("No transaction found with ID: " + transactionID);
+            else {
+                System.out.println("No transaction found with ID: " + transactionID);
+            }
         } else if (currentUser instanceof Salesperson){
                 if(transaction != null && !transaction.isDeleted()){
                     if(transaction.getSalespersonId().equals(currentUser.getUserID())){
@@ -184,7 +199,6 @@ public class SaleTransactionMenu extends Menu {
                     System.out.println("No transaction found with ID: " + transactionID);
                 }
         }
-        System.out.println("No transaction found with ID: " + transactionID);
 
         try{
             CommonFunc.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);

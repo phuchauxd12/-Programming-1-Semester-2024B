@@ -129,13 +129,9 @@ public class UserMenu extends Menu {
         return salespersons;
     }
 
-    public static String displayAllSalespersons() {
+    public static void displayAllSalespersons() {
         List<Salesperson> salespersons = getAllSalespersons();
-        StringBuilder salepersonsList = new StringBuilder();
-        for (Salesperson saleperson : salespersons) {
-            salepersonsList.append(saleperson.toString()).append("\n");
-        }
-        return salepersonsList.toString();
+        salespersons.forEach(salesperson -> System.out.println(salesperson.getUserInfo()));
     }
 
     private void updateUser() {

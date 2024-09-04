@@ -83,16 +83,12 @@ public class StatisticsMenu extends Menu {
 
             case CLIENT:
                 menuItems.put(1, "List All Services done for me");
-                menuItems.put(2, "List All Services done for me (day/week/month)");
-                menuItems.put(3, "List all Sales Transactions for me");
-                menuItems.put(4, "List All Transactions done for me (day/week/month)");
+                menuItems.put(2, "List all Sales Transactions for me");
                 menuItems.put(0, "Exit");
 
                 // Add client-specific actions here
-                menuActions.put(1, () -> getAllClientServices(currentUser));
-                menuActions.put(2, () -> getAllClientServicesInSpecificPeriod(currentUser));
-                menuActions.put(3, () -> getAllClientSalesTransactions(currentUser));
-                menuActions.put(4, () -> getAllClientTransactionsInSpecificPeriod(currentUser));
+                menuActions.put(1, this::getAllClientServices);
+                menuActions.put(2, this::getAllClientSalesTransactions);
                 menuActions.put(0, this::exit);
                 break;
 
@@ -707,58 +703,75 @@ public class StatisticsMenu extends Menu {
     }
 
     // Client functions
-    private void getAllClientTransactionsInSpecificPeriod(User loggedInUser) {
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        Client client = (Client) loggedInUser;
-        client.viewTransactionsHistory(startDate, endDate);
 
 
-        try {
-            String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+    private void getAllClientSalesTransactions() {
+        Client client = (Client) currentUser;
+        int option = Menu.getFilteredOption();
+        switch (option){
+            case 1:
+                SaleTransactionList.transactions.stream().filter(transaction -> (transaction.getClientId().equals(client.getUserID())&& !transaction.isDeleted()))
+                        .forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
+                try {
+                    String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
+                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            case 2:
+                LocalDate startDate = DatePrompt.getStartDate();
+                LocalDate endDate = DatePrompt.getEndDate(startDate);
+                client.viewTransactionsHistory(startDate, endDate);
+
+                try {
+                    String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
+                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+
+            default:
+                System.out.println("Invalid option!");
+                break;
         }
     }
 
-    private void getAllClientSalesTransactions(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        SaleTransactionList.displayAllSaleTransactions();
 
-        try {
-            String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+
+    private void getAllClientServices() {
+        Client client = (Client) currentUser;
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                ServiceList.services.stream().filter(service -> (service.getClientId().equals(client.getUserID())&& !service.isDeleted()))
+                        .forEach(service -> System.out.println(service.getFormattedServiceDetails()));
+                try {
+                    String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
+                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            case 2:
+                LocalDate startDate = DatePrompt.getStartDate();
+                LocalDate endDate = DatePrompt.getEndDate(startDate);
+                client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
+
+                try {
+                    String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
+                    ;
+                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            default:
+                System.out.println("Invalid option!");
+                break;
         }
-    }
 
-    private void getAllClientServicesInSpecificPeriod(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
-
-        try {
-            String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
-            ;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllClientServices(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        ServiceList.displayAllServices();
-
-        try {
-            String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
     }
 
     private void exit(Scanner s) {
