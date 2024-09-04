@@ -176,9 +176,10 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         part.setStatus(Status.SOLD);
+                        part.setSoldDate(service.getServiceDate());
                     }
                 }
             }
@@ -199,11 +200,11 @@ public class Service implements Serializable {
         String serviceId = scanner.nextLine();
 
         Service service;
-        if(current instanceof Manager) {
+        if (current instanceof Manager) {
             service = ServiceList.getServiceById(serviceId);
         } else if (current instanceof Mechanic) {
             Service detectedService = ServiceList.getServiceById(serviceId);
-            if (detectedService.getMechanicId().equals(current.getUserID())){
+            if (detectedService.getMechanicId().equals(current.getUserID())) {
                 service = detectedService;
             } else {
                 service = null;
@@ -221,7 +222,7 @@ public class Service implements Serializable {
                 System.out.println("Car not found. Unable to update service.");
                 return;
             }
-            if(service.getServiceBy() == ServiceBy.AUTO136){
+            if (service.getServiceBy() == ServiceBy.AUTO136) {
                 System.out.println("Which field would you like to update?");
                 System.out.println("1. Service Date");
                 System.out.println("2. Service Type");
@@ -349,7 +350,7 @@ public class Service implements Serializable {
                             System.out.println("Invalid choice: " + choice);
                     }
                 }
-            } else if (service.getServiceBy() == ServiceBy.OTHER){
+            } else if (service.getServiceBy() == ServiceBy.OTHER) {
                 System.out.println("Which field would you like to update?");
                 System.out.println("1. Service Date");
                 System.out.println("2. Service Type");
@@ -433,12 +434,12 @@ public class Service implements Serializable {
         String serviceId = scanner.nextLine();
 
         Service service;
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             service = ServiceList.getServiceById(serviceId);
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Mechanic) {
                 Service detectedService = ServiceList.getServiceById(serviceId);
-                if (detectedService.getMechanicId().equals(current.getUserID())){
+                if (detectedService.getMechanicId().equals(current.getUserID())) {
                     service = detectedService;
                 } else {
                     service = null;
@@ -480,9 +481,9 @@ public class Service implements Serializable {
             } else {
                 System.out.println("Client not found");
             }
-            for(autoPart part : service.getReplacedParts()){
-                for(autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
-                    if(parts.getPartID().equals(part.getPartID())) {
+            for (autoPart part : service.getReplacedParts()) {
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
                         parts.setStatus(Status.AVAILABLE);
                     }
                 }
@@ -609,7 +610,7 @@ public class Service implements Serializable {
         this.serviceType = type;
     }
 
-    public void setServiceTypeByOther(String type){
+    public void setServiceTypeByOther(String type) {
         this.serviceTypeByOther = type;
     }
 
@@ -672,7 +673,7 @@ public class Service implements Serializable {
         sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
         sb.append("Car ID: ").append(carId).append("\n");
         sb.append("Client ID: ").append(clientId).append("\n");
-        if(serviceBy == ServiceBy.AUTO136){
+        if (serviceBy == ServiceBy.AUTO136) {
             sb.append("Mechanic ID: ").append(mechanicId).append("\n");
             sb.append("Service Type: ").append(serviceType).append("\n");
             sb.append("Service Cost: $").append(String.format("%.2f", serviceCost)).append("\n");
