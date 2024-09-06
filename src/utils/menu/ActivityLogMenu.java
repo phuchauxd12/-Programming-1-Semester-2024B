@@ -54,7 +54,7 @@ public class ActivityLogMenu extends Menu {
     private void viewAllActivityLogs() {
         ActivityLog.viewAllActivityLog();
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View all activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
@@ -62,26 +62,8 @@ public class ActivityLogMenu extends Menu {
 
     }
 
-    private void getActivityLogById() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the Activity ID: ");
-        String activityId = scanner.next();
-        ActivityLog log = ActivityLog.getActivityLog(activityId);
-        if (log != null) {
-            ActivityLog.displayLogs(List.of(log));
-        } else {
-            System.out.println("No activity log found with the given ID.");
-        }
-
-        try{
-            CommonFunc.addActivityLogForCurrentUser("View all activity log with ID: " + activityId);
-        } catch (Exception e) {
-            System.out.println("Error logging activity log action history: " + e.getMessage());
-        }
-    }
 
     private void viewMyActivityLogs() {
-
         String userId = currentUser.getUserID();
         List<ActivityLog> userLogs = ActivityLog.viewMyActivityLog(userId);
         if (!userLogs.isEmpty()) {
@@ -90,7 +72,7 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found for the given User ID.");
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View all my activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
@@ -116,7 +98,7 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found for the given User ID.");
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("View all activity logs of user with ID: " + userId);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
@@ -143,7 +125,7 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found in the given date range.");
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Filter activity logs from" + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());

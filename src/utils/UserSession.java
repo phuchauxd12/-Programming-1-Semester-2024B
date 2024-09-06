@@ -12,12 +12,5 @@ public class UserSession {
     public static User getCurrentUser() {
         return currentUser;
     }
-
-    public static void logout() {
-        currentUser = null;
-    }
-
-    public static boolean isLoggedIn() {
-        return currentUser != null;
-    }
+    
 }
