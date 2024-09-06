@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ActivityLogDatabase {
     public static final String path = "src/data/activityLog/ActivityLog.txt";
-    private static List<activityLog.ActivityLog> activityLogList;
+    private static List<ActivityLog> activityLogList;
 
 
     public static void createDatabase() throws Exception {
