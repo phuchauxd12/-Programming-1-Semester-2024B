@@ -99,7 +99,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Displaying all services...");
         ServiceList.displayAllServices();
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -121,7 +121,7 @@ public class ServiceMenu extends Menu {
             }
         }
 
-        try{
+        try {
             String activityName = "View all services in a specific period";
             CommonFunc.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -132,34 +132,34 @@ public class ServiceMenu extends Menu {
     private void getAllMechanicServices() {
         String activityName;
         List<Service> services;
-            UserMenu.displayAllMechanics();
-            String mechanicId;
-            Mechanic mechanic;
-            Scanner input = new Scanner(System.in);
-            while (true) {
-                System.out.print("Enter mechanic ID: ");
-                mechanicId = input.nextLine();
-                if (!mechanicId.isEmpty()) {
-                    mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
-                    if (mechanic != null) {
-                        break;
-                    } else {
-                        System.out.println("Mechanic not found. Please try again.");
-                    }
-                    System.out.println("Mechanic ID cannot be empty. Please try again.");
-                }
-            }
-            activityName = "View all services made by Mechanic named " + mechanic.getUserName() + " with ID " + mechanic.getUserID();
-                services = ServiceList.getServiceByMechanic(mechanicId);
-                if (services.isEmpty()) {
-                    System.out.println("No services found for this mechanic.");
+        UserMenu.displayAllMechanics();
+        String mechanicId;
+        Mechanic mechanic;
+        Scanner input = new Scanner(System.in);
+        while (true) {
+            System.out.print("Enter mechanic ID: ");
+            mechanicId = input.nextLine();
+            if (!mechanicId.isEmpty()) {
+                mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
+                if (mechanic != null) {
+                    break;
                 } else {
-                    System.out.println("All available service of the mechanic : ");
-                    for (Service service : services) {
-                        System.out.println(service.getFormattedServiceDetails());
-                    }
+                    System.out.println("Mechanic not found. Please try again.");
                 }
-        try{
+                System.out.println("Mechanic ID cannot be empty. Please try again.");
+            }
+        }
+        activityName = "View all services made by Mechanic named " + mechanic.getUserName() + " with ID " + mechanic.getUserID();
+        services = ServiceList.getServiceByMechanic(mechanicId);
+        if (services.isEmpty()) {
+            System.out.println("No services found for this mechanic.");
+        } else {
+            System.out.println("All available service of the mechanic : ");
+            for (Service service : services) {
+                System.out.println(service.getFormattedServiceDetails());
+            }
+        }
+        try {
             CommonFunc.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
@@ -168,8 +168,8 @@ public class ServiceMenu extends Menu {
 
     private void createService() throws Exception {
         System.out.println("Creating a new service...");
-        if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
-            System.out.println("Mechanic:");
+        if (UserSession.getCurrentUser() instanceof Manager) {
+            System.out.println("Mechanics available:");
             UserMenu.getUserList().stream().filter(user -> user instanceof Mechanic).forEach(System.out::println);
             Scanner input = new Scanner(System.in);
             System.out.println("Enter mechanic ID: ");
@@ -187,10 +187,10 @@ public class ServiceMenu extends Menu {
                 throw new Exception("Mechanic ID not found.");
             }
         } else {
-            ServiceList.addService(UserSession.getCurrentUser().getUserName());
+            ServiceList.addService(currentUser.getUserID());
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -201,7 +201,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Updating a service...");
         ServiceList.updateService();
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Update service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -212,7 +212,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Deleting a service...");
         ServiceList.deleteService();
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Delete service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -227,18 +227,17 @@ public class ServiceMenu extends Menu {
         String serviceID = input.nextLine();
         User currentUser = UserSession.getCurrentUser();
         Service service = ServiceList.getServiceById(serviceID);
-        if (currentUser.getRole() == User.ROLE.MANAGER){
+        if (currentUser.getRole() == User.ROLE.MANAGER) {
             if (service != null && !service.isDeleted()) {
                 System.out.println("Service found!");
                 System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
-            }
-            else {
+            } else {
                 System.out.println("No service found with ID: " + serviceID);
             }
-        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
-            if (currentUser instanceof Mechanic){
-                if(service != null && !service.isDeleted()){
-                    if(service.getMechanicId().equals(currentUser.getUserID())){
+        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE) {
+            if (currentUser instanceof Mechanic) {
+                if (service != null && !service.isDeleted()) {
+                    if (service.getMechanicId().equals(currentUser.getUserID())) {
                         System.out.println("Service found!");
                         System.out.println(ServiceList.getServiceById(serviceID).getFormattedServiceDetails());
                     } else {
@@ -250,7 +249,7 @@ public class ServiceMenu extends Menu {
             }
         }
 
-        try{
+        try {
             CommonFunc.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
