@@ -1,7 +1,6 @@
 package utils.menu;
 
 import user.User;
-import utils.CommonFunc;
 import utils.UserSession;
 
 import java.util.Scanner;
@@ -29,7 +28,7 @@ public class UserProfileMenu extends Menu {
 
     private void deleteAccount() {
         try {
-            CommonFunc.addActivityLogForCurrentUser("Delete Account");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete Account");
             User.deleteUser(currentUser.getUserID());
         } catch (Exception e) {
             System.out.println("Error deleting user: " + e.getMessage());
@@ -58,7 +57,7 @@ public class UserProfileMenu extends Menu {
                 continue;
             }
             try {
-                CommonFunc.addActivityLogForCurrentUser("Modify Account");
+                ActivityLogMenu.addActivityLogForCurrentUser("Modify Account");
                 User.modifyUser(userID, updateOption);
             } catch (Exception e) {
                 System.out.println("Error updating user: " + e.getMessage());

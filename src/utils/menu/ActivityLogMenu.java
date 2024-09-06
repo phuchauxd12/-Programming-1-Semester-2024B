@@ -3,9 +3,9 @@ package utils.menu;
 import activityLog.ActivityLog;
 import data.Database;
 import data.activityLog.ActivityLogDatabase;
-import utils.CommonFunc;
+import user.Manager;
 import utils.DatePrompt;
-import user.*;
+import utils.UserSession;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,12 +27,16 @@ public class ActivityLogMenu extends Menu {
         }
     }
 
-
-
     public static void addActivityLog(String userId, String username, String activityName) throws Exception {
         ActivityLog newLog = new ActivityLog(userId, username, LocalDate.now(), activityName);
         activityLogs.add(newLog);
         ActivityLogDatabase.saveActivityLogData(activityLogs);
+    }
+
+    public static void addActivityLogForCurrentUser(String activityName) throws Exception {
+        String userId = UserSession.getCurrentUser().getUserID();
+        String username = UserSession.getCurrentUser().getUserName();
+        addActivityLog(userId, username, activityName);
     }
 
     public static ActivityLog getActivityLog(String activityId) {
@@ -125,7 +129,7 @@ public class ActivityLogMenu extends Menu {
         viewAllActivityLog();
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("View all activity logs");
+            addActivityLogForCurrentUser("View all activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -144,7 +148,7 @@ public class ActivityLogMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("View all activity log with ID: " + activityId);
+            addActivityLogForCurrentUser("View all activity log with ID: " + activityId);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -161,7 +165,7 @@ public class ActivityLogMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("View all my activity logs");
+            addActivityLogForCurrentUser("View all my activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -187,7 +191,7 @@ public class ActivityLogMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("View all activity logs of user with ID: " + userId);
+            addActivityLogForCurrentUser("View all activity logs of user with ID: " + userId);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -214,7 +218,7 @@ public class ActivityLogMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Filter activity logs from" + startDate + " to " + endDate);
+            addActivityLogForCurrentUser("Filter activity logs from" + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
