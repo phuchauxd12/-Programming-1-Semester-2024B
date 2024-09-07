@@ -708,9 +708,9 @@ public class StatisticsMenu extends Menu {
     private void getAllClientSalesTransactions() {
         Client client = (Client) currentUser;
         int option = Menu.getFilteredOption();
-        switch (option){
+        switch (option) {
             case 1:
-                SaleTransactionList.transactions.stream().filter(transaction -> (transaction.getClientId().equals(client.getUserID())&& !transaction.isDeleted()))
+                SaleTransactionList.transactions.stream().filter(transaction -> (transaction.getClientId().equals(client.getUserID()) && !transaction.isDeleted()))
                         .forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
                 try {
                     String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
@@ -739,13 +739,12 @@ public class StatisticsMenu extends Menu {
     }
 
 
-
     private void getAllClientServices() {
         Client client = (Client) currentUser;
         int option = Menu.getFilteredOption();
         switch (option) {
             case 1:
-                ServiceList.services.stream().filter(service -> (service.getClientId().equals(client.getUserID())&& !service.isDeleted()))
+                ServiceList.services.stream().filter(service -> (service.getClientId().equals(client.getUserID()) && !service.isDeleted()))
                         .forEach(service -> System.out.println(service.getFormattedServiceDetails()));
                 try {
                     String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
@@ -773,10 +772,5 @@ public class StatisticsMenu extends Menu {
         }
 
     }
-
-    private void exit(Scanner s) {
-        System.out.println("Exiting...");
-    }
-
 
 }
