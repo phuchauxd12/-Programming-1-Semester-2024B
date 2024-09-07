@@ -102,18 +102,12 @@ public class Service implements Serializable {
 
     public static void addService(Service service) throws Exception {
 
-        boolean clientExists = false;
         for (User user : UserMenu.getUserList()) {
             if (user.getUserID().equals(service.clientId) && user instanceof Client) {
-                clientExists = true;
                 Client client = (Client) user;
                 client.updateTotalSpending(service.totalCost);
                 break;
             }
-        }
-
-        if (!clientExists) {
-            throw new Exception("Client ID not found in the database. Please create a new client before adding the service.");
         }
 
         boolean carExists = false;
@@ -499,6 +493,10 @@ public class Service implements Serializable {
     List<autoPart> retrieveParts(List<String> partIds) throws Exception {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
 
+        if (partIds == null) {
+            return parts;
+        }
+
         for (String partId : partIds) {
             Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
                     .filter(part -> part.getPartID().equalsIgnoreCase(partId))
@@ -638,33 +636,6 @@ public class Service implements Serializable {
         this.additionalNotes = notes;
     }
 
-
-//    public String getFormattedServiceDetails() {
-//        StringBuilder sb = new StringBuilder();
-//
-//        sb.append("Service ID: ").append(serviceId).append("\n");
-//        sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ISO_LOCAL_DATE)).append("\n");
-//        sb.append("Client ID: ").append(clientId).append("\n");
-//        sb.append("Mechanic ID: ").append(mechanicId).append("\n");
-//        sb.append("Service Type: ").append(serviceType).append("\n");
-//        sb.append("Service By: ").append(serviceBy).append("\n");
-//        sb.append("Service Cost: ").append(serviceCost).append("\n");
-//
-//        // TODO: need AutoPart Class for this operation
-//        // if (!replacedParts.isEmpty()) {
-//        //     List<String> partNames = new ArrayList<>();
-//        //     for (AutoPart part : replacedParts) {
-//        //         partNames.add(part.getPartName());
-//        //     }
-//        //     sb.append("Replaced Parts: ").append(String.join(", ", partNames)).append("\n");
-//        // }
-//
-//        sb.append("Service Cost: $").append(String.format("%.2f", serviceCost)).append("\n");
-//        if (!additionalNotes.isEmpty()) {
-//            sb.append("Notes: ").append(additionalNotes).append("\n");
-//        }
-//        return sb.toString();
-//    }
 
     public String getFormattedServiceDetails() {
         StringBuilder sb = new StringBuilder();

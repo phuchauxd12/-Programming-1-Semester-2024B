@@ -69,7 +69,6 @@ public class ServiceMenu extends Menu {
     private void createServiceWrapper() {
         try {
             createService();
-            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error creating service: " + e.getMessage());
         }
@@ -79,7 +78,6 @@ public class ServiceMenu extends Menu {
 //        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             updateService();
-            CommonFunc.addActivityLogForCurrentUser("Update service wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -89,7 +87,6 @@ public class ServiceMenu extends Menu {
 //        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             deleteService();
-            CommonFunc.addActivityLogForCurrentUser("Delete service wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -168,30 +165,9 @@ public class ServiceMenu extends Menu {
 
     private void createService() throws Exception {
         System.out.println("Creating a new service...");
-        if (UserSession.getCurrentUser() instanceof Manager) {
-            System.out.println("Mechanics available:");
-            UserMenu.getUserList().stream().filter(user -> user instanceof Mechanic).forEach(System.out::println);
-            Scanner input = new Scanner(System.in);
-            System.out.println("Enter mechanic ID: ");
-            String mechanicID = input.nextLine();
-
-            boolean mechanicFound = false;
-            for (User user : UserMenu.getUserList()) {
-                if (user.getUserID().equals(mechanicID) && user instanceof Mechanic) {
-                    ServiceList.addService(mechanicID);
-                    mechanicFound = true;
-                    break;
-                }
-            }
-            if (!mechanicFound) {
-                throw new Exception("Mechanic ID not found.");
-            }
-        } else {
-            ServiceList.addService(currentUser.getUserID());
-        }
-
+        ServiceList.addService();
         try {
-            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+            CommonFunc.addActivityLogForCurrentUser("Create service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -256,27 +232,4 @@ public class ServiceMenu extends Menu {
         }
     }
 
-//    private void searchServiceByDate() {
-//        System.out.println("Searching service between ...");
-//        LocalDate startDate = DatePrompt.getStartDate();
-//        LocalDate endDate = DatePrompt.getEndDate(startDate);
-//        List<Service> servicesBetween = ServiceList.getServicesBetween(startDate, endDate);
-//        if (!servicesBetween.isEmpty()) {
-//            System.out.println("Service found!");
-//            for (Service service : servicesBetween) {
-//                if (!service.isDeleted()) {
-//                    System.out.println(service.getFormattedServiceDetails());
-//                }
-//            }
-//        }
-//
-//        System.out.println("Non service done between : " + startDate + " to " + endDate);
-//
-//        try{
-//            CommonFunc.addActivityLogForCurrentUser("Search service by date: " + startDate + " to " + endDate);
-//        } catch (Exception e) {
-//            System.out.println("Error logging service action history: " + e.getMessage());
-//        }
-//    }
-//
 }

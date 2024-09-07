@@ -339,7 +339,7 @@ public class StatisticsMenu extends Menu {
 
         System.out.println("Auto Part Statistics:");
         System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
-        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
+        System.out.printf("Total Parts Sold/Used: %d\n", totalPartsSold);
 
         System.out.println("Part Condition Statistics:");
         partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
