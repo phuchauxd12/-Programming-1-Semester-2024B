@@ -5,7 +5,6 @@ import services.ServiceList;
 import user.Manager;
 import user.Mechanic;
 import user.User;
-import utils.CommonFunc;
 import utils.DatePrompt;
 import utils.UserSession;
 
@@ -68,7 +67,7 @@ public class ServiceMenu extends Menu {
     private void createServiceWrapper() {
         try {
             createService();
-            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error creating service: " + e.getMessage());
         }
@@ -78,7 +77,7 @@ public class ServiceMenu extends Menu {
 //        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             updateService();
-            CommonFunc.addActivityLogForCurrentUser("Update service wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Update service wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -88,7 +87,7 @@ public class ServiceMenu extends Menu {
 //        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             deleteService();
-            CommonFunc.addActivityLogForCurrentUser("Delete service wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete service wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -99,7 +98,7 @@ public class ServiceMenu extends Menu {
         ServiceList.displayAllServices();
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -130,7 +129,7 @@ public class ServiceMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Create service wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -141,7 +140,7 @@ public class ServiceMenu extends Menu {
         ServiceList.updateService();
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Update service");
+            ActivityLogMenu.addActivityLogForCurrentUser("Update service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -152,7 +151,7 @@ public class ServiceMenu extends Menu {
         ServiceList.deleteService();
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Delete service");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -190,7 +189,7 @@ public class ServiceMenu extends Menu {
         }
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
+            ActivityLogMenu.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
@@ -213,7 +212,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Non service done between : " + startDate + " to " + endDate);
 
         try{
-            CommonFunc.addActivityLogForCurrentUser("Search service by date: " + startDate + " to " + endDate);
+            ActivityLogMenu.addActivityLogForCurrentUser("Search service by date: " + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }
