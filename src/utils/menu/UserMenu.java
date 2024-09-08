@@ -109,13 +109,13 @@ public class UserMenu extends Menu {
         return mechanics;
     }
 
-    public static String displayAllMechanics() {
+    public static void displayAllMechanics() {
         List<Mechanic> mechanics = getAllMechanics();
         StringBuilder mechanicList = new StringBuilder();
         for (Mechanic mechanic : mechanics) {
             mechanicList.append(mechanic.toString()).append("\n");
         }
-        return mechanicList.toString();
+        System.out.println(mechanicList);
     }
 
     public static List<Salesperson> getAllSalespersons() {

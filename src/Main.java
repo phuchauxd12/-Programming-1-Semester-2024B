@@ -31,8 +31,8 @@ public class Main {
 //        User.addUser(sarah);
 //        User.addUser(mary);
 //        User.addUser(lily);
-//
-//        /* Add Auto Part and Car */
+////
+////        /* Add Auto Part and Car */
 //        autoPart part1 = new autoPart("Brake Pad", "ACDelco", autoPart.Condition.NEW, 12, 615000, "Fits most Honda vehicles");
 //        autoPart part2 = new autoPart("Oil Filter", "Fram", autoPart.Condition.NEW, 6, 270000, "Compatible with various car models");
 //        autoPart part3 = new autoPart("Spark Plug", "NGK", autoPart.Condition.REFURBISHED, 18, 370000, "High-performance spark plugs");

@@ -5,7 +5,6 @@ import services.ServiceList;
 import user.Manager;
 import user.Mechanic;
 import user.User;
-import utils.CommonFunc;
 import utils.DatePrompt;
 import utils.UserSession;
 
@@ -123,7 +122,7 @@ public class ServiceMenu extends Menu {
 
         try {
             String activityName = "View all services in a specific period";
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -160,7 +159,7 @@ public class ServiceMenu extends Menu {
             }
         }
         try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
