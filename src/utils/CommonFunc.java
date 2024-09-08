@@ -1,11 +1,9 @@
 package utils;
 
-import activityLog.ActivityLog;
+import java.util.UUID;
 
 public class CommonFunc {
-    public static void addActivityLogForCurrentUser(String activityName) throws Exception {
-        String userId = UserSession.getCurrentUser().getUserID();
-        String username = UserSession.getCurrentUser().getUserName();
-        ActivityLog.addActivityLog(userId, username, activityName);
+    private static String generateActivityId() {
+        return "a-" + UUID.randomUUID().toString();
     }
 }

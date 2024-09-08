@@ -6,7 +6,6 @@ import data.Database;
 import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import user.*;
-import utils.CommonFunc;
 import utils.Status;
 import utils.UserSession;
 
@@ -103,6 +102,7 @@ public class CarAndAutoPartMenu extends Menu {
 
 
     private void searchForCar() {
+        displayCars();
         input.nextLine();
         System.out.println("Enter the car ID:");
         String carID = input.nextLine();
@@ -115,14 +115,15 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("Car not found.");
         }
 
-        try{
-            CommonFunc.addActivityLogForCurrentUser("Search for car with ID: " + carID);
-        }catch (Exception e){
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Search for car with ID: " + carID);
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }
 
     private void searchForPart() {
+        displayParts();
         input.nextLine();
         System.out.println("Enter the part ID:");
         String partID = input.nextLine();
@@ -136,9 +137,9 @@ public class CarAndAutoPartMenu extends Menu {
         }
 
 
-        try{
-            CommonFunc.addActivityLogForCurrentUser("Search for auto part with ID: " + partID);
-        }catch (Exception e){
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Search for auto part with ID: " + partID);
+        } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
 
@@ -150,7 +151,7 @@ public class CarAndAutoPartMenu extends Menu {
     private void addCar() {
         Car car = createCar();
         try {
-            CommonFunc.addActivityLogForCurrentUser("Add new car");
+            ActivityLogMenu.addActivityLogForCurrentUser("Add new car");
             addCarToList(car);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -161,7 +162,7 @@ public class CarAndAutoPartMenu extends Menu {
         autoPart part = createPart();
         try {
             addPartToList(part);
-            CommonFunc.addActivityLogForCurrentUser("Add new auto part");
+            ActivityLogMenu.addActivityLogForCurrentUser("Add new auto part");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -175,7 +176,7 @@ public class CarAndAutoPartMenu extends Menu {
             String carID = input.next();
             Car car = findCarByID(carID);
             deleteCar(car);
-            CommonFunc.addActivityLogForCurrentUser("Delete car");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete car");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -189,7 +190,7 @@ public class CarAndAutoPartMenu extends Menu {
             String partID = input.next();
             autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
             deletePart(part);
-            CommonFunc.addActivityLogForCurrentUser("Delete auto part");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete auto part");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -197,6 +198,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updateCarWrapper() {
         try {
+            displayCars();
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the car's ID to update:");
             String carID = input.next();
@@ -207,7 +209,7 @@ public class CarAndAutoPartMenu extends Menu {
                 updateCar(car);
             }
 
-            CommonFunc.addActivityLogForCurrentUser("Update car wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Update car wrapper");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -215,6 +217,7 @@ public class CarAndAutoPartMenu extends Menu {
 
     private void updatePartWrapper() {
         try {
+            displayParts();
             Scanner input = new Scanner(System.in);
             System.out.println("Please input the part's ID to update:");
             String partID = input.next();
@@ -225,7 +228,7 @@ public class CarAndAutoPartMenu extends Menu {
                 updatePart(part);
             }
 
-            CommonFunc.addActivityLogForCurrentUser("Update auto part wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Update auto part wrapper");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -329,9 +332,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("To see detailed information of a specific car, please use the search function!");
 
 
-        try{
-            CommonFunc.addActivityLogForCurrentUser("View all cars");
-        }catch (Exception e){
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("View all cars");
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }
@@ -376,9 +379,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific part, please use the search function!");
 
-        try{
-            CommonFunc.addActivityLogForCurrentUser("View all auto parts");
-        }catch (Exception e){
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("View all auto parts");
+        } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
     }
@@ -588,7 +591,6 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
 
-
     // AutoPart CRUD functions
     public static autoPart createPart() {
         Scanner input = new Scanner(System.in);
@@ -739,7 +741,6 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
 
-
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
         for (Car car : carsList) {
@@ -749,9 +750,9 @@ public class CarAndAutoPartMenu extends Menu {
         }
         System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
 
-        try{
-            CommonFunc.addActivityLogForCurrentUser("View number of cars sold from" + startDate + " to " + endDate);
-        }catch (Exception e){
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("View number of cars sold from" + startDate + " to " + endDate);
+        } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
     }

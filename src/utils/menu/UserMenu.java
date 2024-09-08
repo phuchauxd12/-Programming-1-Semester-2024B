@@ -6,7 +6,6 @@ import user.Manager;
 import user.Mechanic;
 import user.Salesperson;
 import user.User;
-import utils.CommonFunc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class UserMenu extends Menu {
         }
         try{
             String activityName = "Get User by Id" + userId;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e){
             System.out.println("Error while add log in for get user by id: " + e.getMessage());
         }
@@ -93,7 +92,7 @@ public class UserMenu extends Menu {
             System.out.println("UserID: " + user.getUserID() + ", UserName: " + user.getUserName());
         }
         try{
-            CommonFunc.addActivityLogForCurrentUser("View all users");
+            ActivityLogMenu.addActivityLogForCurrentUser("View all users");
         } catch (Exception e){
             System.out.println("Error while adding log for view all users: " + e.getMessage());
         }
@@ -139,6 +138,7 @@ public class UserMenu extends Menu {
     }
 
     private void updateUser() {
+        UserList.forEach(user -> System.out.println(user.getUserInfo()));
         Scanner input = new Scanner(System.in);
         System.out.println("Update User");
         System.out.println("Please input the user ID:");
@@ -165,7 +165,7 @@ public class UserMenu extends Menu {
                 try {
                     User.modifyUser(userIDForUpdate, updateOption);
                     String activityName = "Update user with id" + userUpdate.getUserID();
-                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error while updating user: " + e.getMessage());
                 }
@@ -177,6 +177,7 @@ public class UserMenu extends Menu {
     }
 
     private void deleteUser() {
+        UserList.forEach(user -> System.out.println(user.getUserInfo()));
         Scanner input = new Scanner(System.in);
         System.out.println("Delete User:");
         UserMenu.displayAllUsers();
@@ -184,7 +185,7 @@ public class UserMenu extends Menu {
         String userID = input.next();
         try {
             String activityName = "Delete user with id" + userID;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
             User.deleteUser(userID);
         } catch (Exception e) {
             System.out.println("Error while deleting user: " + e.getMessage());
@@ -192,14 +193,21 @@ public class UserMenu extends Menu {
     }
 
     private void viewUserById() {
+        UserList.forEach(System.out::println);
         Scanner input = new Scanner(System.in);
         System.out.println("View User by ID");
         System.out.println("Please input the user ID:");
         String userIDforview = input.nextLine();
         String activityName = "View user with id" + userIDforview;
         try{
-            CommonFunc.addActivityLogForCurrentUser(activityName);
-            System.out.println(getUserById(userIDforview));
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+            var user = getUserById(userIDforview);
+            if (user != null) {
+                System.out.println(user.getUserInfo());
+            }
+            else {
+                System.out.println("User not found!");
+            }
         }catch (Exception e){
             System.out.println("Error while viewing users by role: " + e.getMessage());
         }
@@ -238,8 +246,8 @@ public class UserMenu extends Menu {
                 userByRoleList.forEach(System.out::println);
             }
 
-            String activityName = "View user with role" + role;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            String activityName = "View user with role: " + role;
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error while viewing users by role: " + e.getMessage());
         }

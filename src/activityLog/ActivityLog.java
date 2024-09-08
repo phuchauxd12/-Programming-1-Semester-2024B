@@ -1,14 +1,10 @@
 package activityLog;
 
-import data.Database;
-import data.activityLog.ActivityLogDatabase;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ActivityLog implements Serializable {
     private String activityId;
@@ -43,59 +39,6 @@ public class ActivityLog implements Serializable {
 
     public String getActivityName() {
         return activityName;
-    }
-
-    private static List<ActivityLog> activityLogs;
-
-    static {
-        try {
-            if (!Database.isDatabaseExist(ActivityLogDatabase.path)) {
-                ActivityLogDatabase.createDatabase();
-            };
-            activityLogs = ActivityLogDatabase.loadActivityLogs();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public static void addActivityLog(String userId, String username, String activityName) throws Exception {
-        ActivityLog newLog = new ActivityLog(userId, username, LocalDate.now(), activityName);
-        activityLogs.add(newLog);
-        ActivityLogDatabase.saveActivityLogData(activityLogs);
-    }
-
-    public static ActivityLog getActivityLog(String activityId) {
-        for (ActivityLog log : activityLogs) {
-            if (log.getActivityId().equals(activityId)) {
-                return log;
-            }
-        }
-        return null;
-    }
-
-    public List<ActivityLog> getActivityLogByDate(LocalDate startDate, LocalDate endDate) {
-        return activityLogs.stream()
-                .filter(log -> (log.getDate().isEqual(startDate) || log.getDate().isAfter(startDate)) &&
-                        (log.getDate().isEqual(endDate) || log.getDate().isBefore(endDate)))
-                .collect(Collectors.toList());
-    }
-
-    public static List<ActivityLog> viewMyActivityLog(String userId) {
-        return activityLogs.stream()
-                .filter(log -> log.getUserId().equals(userId))
-                .collect(Collectors.toList());
-    }
-
-    public static List<ActivityLog> getAllActivityLog() {
-        System.out.println(activityLogs);
-        return activityLogs;
-    }
-
-    public static void viewAllActivityLog() {
-        List<ActivityLog> allLogs = getAllActivityLog();
-        System.out.println("All Activity Logs:");
-        displayLogs(allLogs);
     }
 
     public static void displayLogs(List<ActivityLog> allLogs) {
