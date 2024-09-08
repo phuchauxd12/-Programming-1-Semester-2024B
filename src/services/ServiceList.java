@@ -5,6 +5,7 @@ import car.Car;
 import data.Database;
 import data.service.ServiceDatabase;
 import user.Client;
+import user.Manager;
 import user.Mechanic;
 import user.User;
 import utils.DatePrompt;
@@ -34,7 +35,7 @@ public class ServiceList {
     }
 
 
-    public static void addService(String mechanicId) throws Exception {
+    public static void addService() throws Exception {
         Scanner scanner = new Scanner(System.in);
 
         String type = null;
@@ -64,9 +65,30 @@ public class ServiceList {
         Service.serviceType selectedServiceType = null;
         double serviceCost = 0;
         List<String> partNames = List.of();
+        String mechanicID = null;
+
         
         if (serviceBy == ServiceBy.AUTO136) {
-            
+            if (UserSession.getCurrentUser() instanceof Manager) {
+                System.out.println("Mechanics available:");
+                UserMenu.getUserList().stream().filter(user -> user instanceof Mechanic).forEach(System.out::println);
+                System.out.println("Enter mechanic ID: ");
+                mechanicID = scanner.nextLine();
+
+                boolean mechanicFound = false;
+                for (User user : UserMenu.getUserList()) {
+                    if (user.getUserID().equals(mechanicID) && user instanceof Mechanic) {
+                        mechanicFound = true;
+                        break;
+                    }
+                }
+                if (!mechanicFound) {
+                    throw new Exception("Mechanic ID not found.");
+                }
+            } else {
+                mechanicID = UserSession.getCurrentUser().getUserID();
+            }
+
             System.out.println("Select a service category:");
             Service.Category[] categories = Service.Category.values();
             for (int i = 0; i < categories.length; i++) {
@@ -112,7 +134,7 @@ public class ServiceList {
 
 
 
-        Service service = new Service(serviceDate, clientId, mechanicId, selectedServiceType, partNames, serviceBy, carId, serviceCost, notes);
+        Service service = new Service(serviceDate, clientId, mechanicID, selectedServiceType, partNames, serviceBy, carId, serviceCost, notes);
         Service.addService(service);
         service.setServiceTypeByOther(type);
     }

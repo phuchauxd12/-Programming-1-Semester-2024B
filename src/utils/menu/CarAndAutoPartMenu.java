@@ -109,6 +109,10 @@ public class CarAndAutoPartMenu extends Menu {
         String carID = input.nextLine();
         Car car = findCarByID(carID);
         if (car != null) {
+            if (!(currentUser instanceof Manager) && car.isDeleted()) {
+                System.out.println("Car not found.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(car.toStringDetailed());
             System.out.println("----------------");
@@ -130,6 +134,10 @@ public class CarAndAutoPartMenu extends Menu {
         String partID = input.nextLine();
         autoPart part = findAutoPartByID(partID);
         if (part != null) {
+            if (!(currentUser instanceof Manager) && part.isDeleted()) {
+                System.out.println("Part not found.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(part.toStringDetailed());
             System.out.println("----------------");

@@ -10,8 +10,8 @@ import java.util.Scanner;
 
 abstract class Menu {
     protected static Scanner input = new Scanner(System.in);
-    protected  Map<Integer, String> menuItems ;
-    protected  Map<Integer, Runnable> menuActions;
+    protected Map<Integer, String> menuItems;
+    protected Map<Integer, Runnable> menuActions;
     protected final User currentUser = UserSession.getCurrentUser();
 
     public Menu() {
@@ -57,11 +57,19 @@ abstract class Menu {
         return option;
     }
 
-    public static int getFilteredOption(){
+    public static int getFilteredOption() {
         int option = 100;
         System.out.print("1. View all available: ");
         System.out.print("2. Filtered by period: ");
-        option = getOption(option, input);
+        boolean validInput = false;
+        while (!validInput) {
+            option = getOption(option, input);
+            if (option == 1 || option == 2) {
+                validInput = true;
+            } else {
+                System.out.println("Invalid input. Please enter 1 or 2");
+            }
+        }
         return option;
     }
 
