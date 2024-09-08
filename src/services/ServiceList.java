@@ -316,7 +316,7 @@ public class ServiceList {
 
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
         List<Service> filteredServices = servicesInRange.stream()
-                .filter(service -> service.getMechanicId().equals(mechanicId))
+                .filter(service -> service.getMechanicId() != null && service.getMechanicId().equals(mechanicId))
                 .toList();
 
         totalServiceRevenue = filteredServices.stream()
@@ -422,10 +422,10 @@ public class ServiceList {
     }
 
     public static void viewServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
-        List<Service> servicesInRange = getServicesBetween(startDate, endDate);
+        List<Service> servicesInRange = getServicesBetween(startDate, endDate).stream().filter(service -> service.getMechanicId() != null).toList();
 
         List<Service> filteredService = servicesInRange.stream()
-                .filter(service -> service.getMechanicId().equals(mechanicId))
+                .filter(service -> mechanicId.equals(service.getMechanicId()))
                 .toList();
 
         double totalServiceRevenue = calculateMechanicRevenue(mechanicId, startDate, endDate);
@@ -435,13 +435,6 @@ public class ServiceList {
         System.out.println("Services done by mechanic: " + UserMenu.getUserById(mechanicId).getName());
         System.out.println("Total Service Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.println("Total Number of Service: " + serviceCount);
-
-        if (!filteredService.isEmpty()) {
-            System.out.println("\nService Details:");
-            for (Service service : filteredService) {
-                System.out.println(service.getFormattedServiceDetails());
-                System.out.println("--------------------------------------------------");
-            }
-        }
+        
     }
 }
