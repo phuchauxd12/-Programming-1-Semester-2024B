@@ -5,7 +5,6 @@ import transaction.SaleTransactionList;
 import user.Manager;
 import user.Salesperson;
 import user.User;
-import utils.CommonFunc;
 import utils.DatePrompt;
 import utils.UserSession;
 
@@ -39,12 +38,10 @@ public class SaleTransactionMenu extends Menu {
                 menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::displayAllTransactions);
-                menuActions.put(2, this::getAllTransactionsInSpecificPeriod);
-                menuActions.put(3, this::getAllSalespersonSales);
-                menuActions.put(4, this::searchTransactionById);
-                menuActions.put(5, this::deleteTransactionWrapper);
-                menuActions.put(6, this::createTransactionWrapper);
-                menuActions.put(7, this::updateTransactionWrapper);
+                menuActions.put(2, this::searchTransactionById);
+                menuActions.put(3, this::deleteTransactionWrapper);
+                menuActions.put(4, this::createTransactionWrapper);
+                menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
                 break;
             }
@@ -72,7 +69,7 @@ public class SaleTransactionMenu extends Menu {
     private void createTransactionWrapper() {
         try {
             createNewTransaction();
-            CommonFunc.addActivityLogForCurrentUser("Create new transaction");
+            ActivityLogMenu.addActivityLogForCurrentUser("Create new transaction");
         } catch (Exception e) {
             System.out.println("Error creating transaction: " + e.getMessage());
         }
@@ -82,7 +79,7 @@ public class SaleTransactionMenu extends Menu {
 //        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             updateTransaction();
-            CommonFunc.addActivityLogForCurrentUser("Update transaction wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Update transaction wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -92,7 +89,7 @@ public class SaleTransactionMenu extends Menu {
 //        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             deleteTransaction();
-            CommonFunc.addActivityLogForCurrentUser("Delete transaction wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete transaction wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -101,8 +98,8 @@ public class SaleTransactionMenu extends Menu {
     private void displayAllTransactions() {
         System.out.println("Displaying all transactions...");
         SaleTransactionList.displayAllSaleTransactions();
-        try {
-            CommonFunc.addActivityLogForCurrentUser("View all transactions");
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser("View all transactions");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
@@ -124,7 +121,7 @@ public class SaleTransactionMenu extends Menu {
         }
         try {
             String activityName = "View all transactions in a specific period";
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -164,7 +161,7 @@ public class SaleTransactionMenu extends Menu {
         }
 
         try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -198,8 +195,8 @@ public class SaleTransactionMenu extends Menu {
             }
         }
 
-        try {
-            CommonFunc.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
@@ -216,8 +213,8 @@ public class SaleTransactionMenu extends Menu {
             }
         }
 
-        try {
-            CommonFunc.addActivityLogForCurrentUser("Delete sale transaction");
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser("Delete sale transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
@@ -254,8 +251,8 @@ public class SaleTransactionMenu extends Menu {
             SaleTransactionList.addSaleTransaction(currentUser.getUserID());
         }
 
-        try {
-            CommonFunc.addActivityLogForCurrentUser("Create a new transaction");
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser("Create a new transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
@@ -265,8 +262,8 @@ public class SaleTransactionMenu extends Menu {
         System.out.println("Updating a transaction...");
         SaleTransactionList.updateSaleTransaction();
 
-        try {
-            CommonFunc.addActivityLogForCurrentUser("Update a new transaction");
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser("Update a new transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }

@@ -27,7 +27,6 @@ public class SaleTransactionList {
             if (!Database.isDatabaseExist(SaleTransactionDatabase.path)) {
                 SaleTransactionDatabase.createDatabase();
             }
-            ;
             transactions = SaleTransactionDatabase.loadSaleTransaction();
         } catch (Exception e) {
             throw new RuntimeException(e);

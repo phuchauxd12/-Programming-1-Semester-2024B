@@ -110,7 +110,7 @@ public class StatisticsMenu extends Menu {
                 endDate = LocalDate.now();
                 CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
                 try {
-                    CommonFunc.addActivityLogForCurrentUser("Get number of all cars sold ");
+                    ActivityLogMenu.addActivityLogForCurrentUser("Get number of all cars sold ");
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
@@ -121,7 +121,7 @@ public class StatisticsMenu extends Menu {
                 endDate = DatePrompt.getEndDate(startDate);
                 CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
                 try {
-                    CommonFunc.addActivityLogForCurrentUser("Get number of cars sold from " + startDate + " to " + endDate);
+                    ActivityLogMenu.addActivityLogForCurrentUser("Get number of cars sold from " + startDate + " to " + endDate);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
@@ -146,7 +146,7 @@ public class StatisticsMenu extends Menu {
         activityName = "View service statistics ";
 
         try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -172,12 +172,11 @@ public class StatisticsMenu extends Menu {
             ServiceList.viewServiceByMechanic(mechanicId, startDate, endDate);
             activityName = "View revenue made by mechanic named " + mechanic.getName() + " with ID " + mechanic.getUserID();
         } else {
-            activityName = "View total revenue of service by a mechanic which is not found! ";
             System.out.println("Mechanic not found. Please try again.");
         }
 
         try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -200,7 +199,7 @@ public class StatisticsMenu extends Menu {
         activityName = "View sales statistics";
 
         try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -232,8 +231,8 @@ public class StatisticsMenu extends Menu {
 
         }
 
-        try {
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+        try{
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -272,9 +271,9 @@ public class StatisticsMenu extends Menu {
         System.out.println("Revenue by Client:");
         clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client ID: %s, Revenue: $%.2f\n", clientId, revenue));
 
-        try {
+        try{
             String activityName = "View total revenue by client and employee from " + startDate + " to " + endDate;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -344,9 +343,9 @@ public class StatisticsMenu extends Menu {
         System.out.println("Part Condition Statistics:");
         partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
 
-        try {
+        try{
             String activityName = "View Auto Part Statistics";
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -434,9 +433,9 @@ public class StatisticsMenu extends Menu {
             System.out.printf("Car ID: %s, Services Count: %d\n", entry.getKey(), entry.getValue());
         }
 
-        try {
+        try{
             String activityName = "View car statistic";
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -471,9 +470,9 @@ public class StatisticsMenu extends Menu {
         }
         CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
 
-        try {
+        try{
             String activityName = "View all cars sold from " + startDate + " to " + endDate;
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -498,7 +497,7 @@ public class StatisticsMenu extends Menu {
 
         try {
             String activityName = "View total revenue made by a salesperson named " + salesperson.getName() + " with ID: " + salesperson.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -561,9 +560,9 @@ public class StatisticsMenu extends Menu {
             System.out.println(entry.getKey() + ": " + entry.getValue() + " times");
         }
 
-        try {
-            String activityName = "View all items sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+        try{
+            String activityName = "View all cars sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID() + " from " + startDate + " to " + endDate;
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -613,9 +612,9 @@ public class StatisticsMenu extends Menu {
             System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
         }
 
-        try {
-            String activityName = "View statistic of auto part used by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+        try{
+            String activityName = "View all services made by a mechanic named " + mechanic.getUserName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -653,9 +652,9 @@ public class StatisticsMenu extends Menu {
 
         System.out.println("\nThe car with the most services by this mechanic is: " + mostServicedCar + " with " + carServiceCount.get(mostServicedCar) + " services.");
 
-        try {
-            String activityName = "View statistic of car serviced by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+        try{
+            String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -679,7 +678,7 @@ public class StatisticsMenu extends Menu {
 
         try {
             String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID();
-            CommonFunc.addActivityLogForCurrentUser(activityName);
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
@@ -714,7 +713,7 @@ public class StatisticsMenu extends Menu {
                         .forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
                 try {
                     String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
-                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
@@ -726,7 +725,7 @@ public class StatisticsMenu extends Menu {
 
                 try {
                     String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
-                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
@@ -748,7 +747,7 @@ public class StatisticsMenu extends Menu {
                         .forEach(service -> System.out.println(service.getFormattedServiceDetails()));
                 try {
                     String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
-                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
@@ -761,7 +760,7 @@ public class StatisticsMenu extends Menu {
                 try {
                     String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
                     ;
-                    CommonFunc.addActivityLogForCurrentUser(activityName);
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());
                 }
