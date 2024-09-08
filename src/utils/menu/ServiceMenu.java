@@ -98,7 +98,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Displaying all services...");
         ServiceList.displayAllServices();
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -169,7 +169,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Creating a new service...");
         ServiceList.addService();
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -180,7 +180,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Updating a service...");
         ServiceList.updateService();
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Update service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -191,7 +191,7 @@ public class ServiceMenu extends Menu {
         System.out.println("Deleting a service...");
         ServiceList.deleteService();
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Delete service");
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
@@ -228,7 +228,7 @@ public class ServiceMenu extends Menu {
             }
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());

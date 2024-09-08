@@ -113,6 +113,7 @@ public class SampleData {
         Car car5 = new Car("Hyundai", "Elantra", 2012, "Blue", 90000, 700000000.0, "", Status.SOLD);
         Car car6 = new Car("Hyundai", "Elantra", 2014, "Gray", 85000, 730000000.0, "", Status.AVAILABLE);
         Car car7 = new Car("Mazda", "3", 2019, "Gray", 50000, 850000000.0, "", Status.WALK_IN);
+        car7.setClientID(sarah.getUserID());
         Car car8 = new Car("Kia", "Optima", 2014, "Gray", 100000, 680000000.0, "", Status.AVAILABLE);
         Car car9 = new Car("Subaru", "Impreza", 2011, "Red", 95000, 550000000.0, "", Status.SOLD);
         Car car10 = new Car("Nissan", "Altima", 2009, "Green", 130000, 500000000.0, "", Status.AVAILABLE);
@@ -123,8 +124,10 @@ public class SampleData {
         Car car15 = new Car("Chevrolet", "Tahoe", 2015, "Black", 120000, 1900000000, "", Status.SOLD);
         Car car16 = new Car("Jeep", "Wrangler", 2021, "Red", 20000, 3200000000.0, "", Status.AVAILABLE);
         Car car17 = new Car("Lexus", "RX", 2019, "Blue", 30000, 2800000000.0, "", Status.WALK_IN);
+        car17.setClientID(mary.getUserID());
         Car car18 = new Car("Honda", "Accord", 2019, "Blue", 40000, 1100000000.0, "", Status.SOLD);
         Car car19 = new Car("Audi", "A4", 2016, "Black", 70000, 1500000000.0, "", Status.WALK_IN);
+        car19.setClientID(lily.getUserID());
         Car car20 = new Car("Audi", "A4", 2019, "Gray", 50000, 1600000000.0, "", Status.AVAILABLE);
         Car car21 = new Car("Tesla", "Model 3", 2022, "White", 15000, 3500000000.0, "", Status.AVAILABLE);
         Car car22 = new Car("Porsche", "Cayenne", 2021, "Black", 40000, 5000000000.0, "", Status.AVAILABLE);

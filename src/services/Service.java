@@ -95,7 +95,7 @@ public class Service implements Serializable {
         this.serviceBy = serviceBy;
         this.carId = carId;
         this.serviceCost = serviceCost;
-        this.totalCost = calculateTotalAmount(replacedParts, calculateDiscount(clientId), serviceCost);
+        this.totalCost = calculateTotalAmount(calculateDiscount(clientId));
         this.additionalNotes = notes;
         this.isDeleted = false;
 
@@ -128,7 +128,6 @@ public class Service implements Serializable {
         }
 
         if (!carExists) {
-            System.out.println("No car exist in the database. Please create new car:");
             Scanner input = new Scanner(System.in);
             Status status = Status.WALK_IN;
             System.out.println("Please input the car's make:");
@@ -154,6 +153,7 @@ public class Service implements Serializable {
             System.out.println("Please input any additional notes:");
             String addNotes = input.nextLine();
             Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
+            newCar.setClientID(service.getClientId());
             try {
                 service.setCarId(newCar.getCarID());
                 CarAndAutoPartMenu.addCarToList(newCar);
@@ -253,7 +253,7 @@ public class Service implements Serializable {
                             //Update total cost
                             double previousTotalCost = service.getTotalCost();
                             double discount = service.calculateDiscount(service.getClientId());
-                            double totalCost = service.calculateTotalAmount(service.replacedParts, discount, service.getServiceCost());
+                            double totalCost = service.calculateTotalAmount(discount);
                             service.setTotalCost(totalCost);
                             // Update client spending
                             Client user = (Client) UserMenu.getUserList().stream()
@@ -268,6 +268,7 @@ public class Service implements Serializable {
                             }
                             break;
                         case "3":
+                            CarAndAutoPartMenu.getCarsList().stream().filter(cars -> !cars.isDeleted() && cars.getClientID().equals(service.getClientId())).forEach(System.out::println);
                             System.out.print("Enter new car ID: ");
                             String newCarId = scanner.nextLine();
                             service.setCarId(newCarId);
@@ -311,7 +312,7 @@ public class Service implements Serializable {
                             // Update total cost
                             double oldTotalCost = service.getTotalCost();
                             double newDiscount = service.calculateDiscount(service.getClientId());
-                            double newTotalCost = service.calculateTotalAmount(newReplacedParts, newDiscount, service.getServiceCost());
+                            double newTotalCost = service.calculateTotalAmount(newDiscount);
                             service.setTotalCost(newTotalCost);
 
                             // Mark new parts as sold
@@ -523,13 +524,22 @@ public class Service implements Serializable {
         return 0;
     }
 
-    double calculateTotalAmount(List<autoPart> replacedParts, double discount, double serviceCost) {
+    private double calculateSubTotal(List<autoPart> replacedParts, double serviceCost) {
         double total = 0;
         for (autoPart part : replacedParts) {
             total += part.getPrice();
         }
-        return (total + serviceCost) * (1 - discount);
+        return (total + serviceCost);
     }
+
+    private double calculateTotalAmount(double discount) {
+        return calculateSubTotal(replacedParts, serviceCost) * (1 - discount);
+    }
+
+    private double getDiscountAmount(double discount) {
+        return calculateSubTotal(replacedParts, serviceCost) * discount;
+    }
+
 
     public void markAsDeleted() {
         this.isDeleted = true;
@@ -574,6 +584,10 @@ public class Service implements Serializable {
 
     public boolean isDeleted() {
         return isDeleted;
+    }
+
+    public String getServiceTypeByOther() {
+        return serviceTypeByOther;
     }
 
     public double getServiceCost() {
@@ -644,10 +658,10 @@ public class Service implements Serializable {
         sb.append("Service ID: ").append(serviceId).append("\n");
         sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
         sb.append("Car ID: ").append(carId).append("\n");
-        sb.append("Client ID: ").append(clientId).append("\n");
+        sb.append("Client: ").append(UserMenu.getUserById(clientId).getName()).append("\n");
         if (serviceBy == ServiceBy.AUTO136) {
-            sb.append("Service By: AUTO136");
-            sb.append("Mechanic ID: ").append(mechanicId).append("\n");
+            sb.append("Service By: AUTO136 \n");
+            sb.append("Mechanic: ").append(UserMenu.getUserById(mechanicId).getName()).append("\n");
             sb.append("Service Type: ").append(ServiceType).append("\n");
             sb.append("Service Cost: ").append(CurrencyFormat.format(serviceCost)).append("\n");
             if (!replacedParts.isEmpty()) {
@@ -658,9 +672,11 @@ public class Service implements Serializable {
             } else {
                 sb.append("Replaced Parts: None\n");
             }
-            sb.append("Total Cost: $").append(CurrencyFormat.format(totalCost)).append("\n");
+            sb.append("Subtotal: ").append(CurrencyFormat.format(calculateSubTotal(replacedParts, serviceCost))).append("\n");
+            sb.append("Discount: ").append(CurrencyFormat.format(getDiscountAmount(calculateDiscount(clientId)))).append("\n");
+            sb.append("Total Cost: ").append(CurrencyFormat.format(totalCost)).append("\n");
         } else {
-            sb.append("Service By: OTHER");
+            sb.append("Service By: OTHER \n");
             sb.append("Service Type: ").append(serviceTypeByOther).append("\n");
         }
 
@@ -670,4 +686,13 @@ public class Service implements Serializable {
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return "Service{" +
+                "serviceId='" + serviceId + '\'' +
+                ", serviceDate=" + serviceDate +
+                ", clientId='" + clientId + '\'' +
+                ", mechanicId='" + mechanicId + '\'' +
+                '}';
+    }
 }

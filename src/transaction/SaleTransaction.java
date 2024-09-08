@@ -47,7 +47,7 @@ public class SaleTransaction implements Serializable {
         this.purchasedCars = retrieveCars(itemIds);
         this.purchasedAutoParts = retrieveAutoParts(itemIds);
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedCars, purchasedAutoParts, discount);
+        this.totalAmount = calculateTotalAmount(discount);
         this.additionalNotes = "";
         this.isDeleted = false;
     }
@@ -66,6 +66,7 @@ public class SaleTransaction implements Serializable {
                 if (car.getCarID().equals(purchasedCar.getCarID())) {
                     car.setStatus(Status.SOLD);
                     car.setSoldDate(saleTransaction.transactionDate);
+                    car.setClientID(saleTransaction.clientId);
                     break;
                 }
             }
@@ -136,6 +137,7 @@ public class SaleTransaction implements Serializable {
                                 if (car.getCarID().equals(oldCar.getCarID())) {
                                     car.setStatus(Status.AVAILABLE);
                                     car.setSoldDate(null);
+                                    car.setClientID(null);
                                     break;
                                 }
                             }
@@ -182,6 +184,7 @@ public class SaleTransaction implements Serializable {
                                 if (car.getCarID().equals(newCar.getCarID())) {
                                     car.setStatus(Status.SOLD);
                                     car.setSoldDate(transaction.transactionDate);
+                                    car.setClientID(transaction.clientId);
                                     break;
                                 }
                             }
@@ -200,7 +203,7 @@ public class SaleTransaction implements Serializable {
                         // Update total amount and discount based on new cars
                         double newDiscount = transaction.calculateDiscount(transaction.getClientId());
                         transaction.setDiscount(newDiscount);
-                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedCars, newPurchasedAutoParts, newDiscount);
+                        double newTotalAmount = transaction.calculateTotalAmount(newDiscount);
                         transaction.setTotalAmount(newTotalAmount);
 
                         // Update User new spending
@@ -263,6 +266,7 @@ public class SaleTransaction implements Serializable {
                     if (car.getCarID().equals(oldCar.getCarID())) {
                         car.setStatus(Status.AVAILABLE);
                         car.setSoldDate(null);
+                        car.setClientID(null);
                         break;
                     }
                 }
@@ -339,7 +343,7 @@ public class SaleTransaction implements Serializable {
         return 0;
     }
 
-    double calculateTotalAmount(List<Car> cars, List<autoPart> parts, double discount) {
+    private double calculateSubTotal(List<Car> cars, List<autoPart> parts) {
         double total = 0;
         if (!cars.isEmpty()) {
             for (Car car : cars) {
@@ -351,7 +355,15 @@ public class SaleTransaction implements Serializable {
                 total += autoPart.getPrice();
             }
         }
-        return total * (1 - discount);
+        return total;
+    }
+
+    private double calculateTotalAmount(double discount) {
+        return calculateSubTotal(purchasedCars, purchasedAutoParts) * (1 - discount);
+    }
+
+    private double getDiscountAmount(double discount) {
+        return calculateSubTotal(purchasedCars, purchasedAutoParts) * discount;
     }
 
     public void markAsDeleted() {
@@ -459,10 +471,11 @@ public class SaleTransaction implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("Transaction ID: ").append(transactionId).append("\n");
         sb.append("Date: ").append(transactionDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
-        sb.append("Client ID: ").append(clientId).append("\n");
-        sb.append("Salesperson ID: ").append(salespersonId).append("\n");
-        sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");
-        sb.append("Amount:").append(CurrencyFormat.format(totalAmount)).append("\n");
+        sb.append("Client: ").append(UserMenu.getUserById(clientId).getName()).append("\n");
+        sb.append("Salesperson: ").append(UserMenu.getUserById(salespersonId).getName()).append("\n");
+        sb.append("Subtotal: ").append(CurrencyFormat.format(calculateSubTotal(purchasedCars, purchasedAutoParts))).append("\n");
+        sb.append("Discount: ").append(CurrencyFormat.format(getDiscountAmount(discount))).append("\n");
+        sb.append("Total: ").append(CurrencyFormat.format(totalAmount)).append("\n");
         if (!purchasedCars.isEmpty()) {
             List<String> cars = new ArrayList<>();
             for (Car car : purchasedCars) {

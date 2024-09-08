@@ -1,6 +1,7 @@
 package car;
 
 import services.Service;
+import services.ServiceBy;
 import utils.CurrencyFormat;
 import utils.Status;
 
@@ -21,6 +22,7 @@ public class Car implements Serializable {
     private LocalDate soldDate = null;
     private boolean isDeleted = false;
     private List<Service> serviceHistory = new ArrayList<>();
+    private String clientID;
 
 
     public Car(String carMake, String carModel, int carYear, String color, double mileage, double price, String addNotes, Status status) {
@@ -123,6 +125,14 @@ public class Car implements Serializable {
         this.isDeleted = deleted;
     }
 
+    public String getClientID() {
+        return clientID;
+    }
+
+    public void setClientID(String clientID) {
+        this.clientID = clientID;
+    }
+
     public List<Service> getServiceHistory() {
         return serviceHistory;
     }
@@ -139,9 +149,15 @@ public class Car implements Serializable {
     public String displayServiceHistory() {
         StringBuilder history = new StringBuilder();
         for (Service service : serviceHistory) {
+            history.append("-------------------------\n");
             history.append("Service By: ").append(service.getServiceBy()).append("\n");
             history.append("Service Date: ").append(service.getServiceDate()).append("\n");
-            history.append("Service Type: ").append(service.getServiceType()).append("\n");
+            if (service.getServiceBy() == ServiceBy.AUTO136) {
+                history.append("Service Type: ").append(service.getServiceType()).append("\n");
+            } else {
+                history.append("Service Type: ").append(service.getServiceTypeByOther()).append("\n");
+            }
+            history.append("-------------------------\n");
         }
         return history.toString();
     }
@@ -156,10 +172,11 @@ public class Car implements Serializable {
                 "Mileage: " + mileage + "\n" +
                 "Price: " + CurrencyFormat.format(price) + "\n" +
                 "Status: " + status + "\n" +
+                (status != Status.AVAILABLE ? "Client ID: " + clientID + "\n" : "") +
                 "Additional Notes: " + addNotes + "\n" +
                 "Sold Date: " + soldDate + "\n" +
                 "Deleted: " + isDeleted + "\n" +
-                "Service History: " + displayServiceHistory() + "\n";
+                "Service History: \n" + displayServiceHistory() + "\n";
     }
 
     @Override

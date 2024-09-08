@@ -40,11 +40,10 @@ public class ServiceList {
         Scanner scanner = new Scanner(System.in);
 
         String type = null;
-
         System.out.print("Enter transaction date (dd/MM/yyyy): ");
         String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
         LocalDate serviceDate = DatePrompt.validateAndParseDate(input);
-        System.out.println("Client:");
+        System.out.println("Clients Available:");
         UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
         System.out.print("Enter client Id: ");
         String clientId = scanner.nextLine();
@@ -129,11 +128,9 @@ public class ServiceList {
         String notes = scanner.nextLine();
 
         System.out.println("Service Car:");
-        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.WALK_IN).forEach(System.out::println);
+        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getClientID() != null && car.getClientID().equals(clientId)).forEach(System.out::println);
         System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
-
-
         Service service = new Service(serviceDate, clientId, mechanicID, selectedServiceType, partNames, serviceBy, carId, serviceCost, notes);
         Service.addService(service);
         service.setServiceTypeByOther(type);
@@ -205,7 +202,7 @@ public class ServiceList {
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Mechanic) {
                 for (Service service : services) {
-                    if (!service.isDeleted() && service.getMechanicId() == current.getUserID()) {
+                    if (!service.isDeleted() && service.getMechanicId().equals(current.getUserID())) {
                         System.out.println(service.getFormattedServiceDetails());
                         System.out.println("___________________________________");
                     }
@@ -304,7 +301,7 @@ public class ServiceList {
         int serviceByAUTO136 = 0;
 
         for (Service service : getServicesBetween(startDate, endDate)) {
-            if(service.getServiceBy() == ServiceBy.OTHER) {
+            if (service.getServiceBy() == ServiceBy.OTHER) {
                 serviceByAUTO136++;
             }
             totalServiceRevenue += service.getTotalCost();
@@ -445,6 +442,6 @@ public class ServiceList {
         System.out.println("Services done by mechanic: " + UserMenu.getUserById(mechanicId).getName());
         System.out.println("Total Service Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.println("Total Number of Service: " + serviceCount);
-        
+
     }
 }

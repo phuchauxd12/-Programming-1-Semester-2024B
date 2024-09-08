@@ -428,6 +428,20 @@ public class CarAndAutoPartMenu extends Menu {
         } else {
             status = Status.AVAILABLE;
         }
+        String clientID = null;
+        if (status == Status.WALK_IN) {
+            UserMenu.getUserList().stream().filter(users -> users instanceof Client).forEach(System.out::println);
+            System.out.println("Please input the client's ID of this car:");
+            while (true) {
+                clientID = input.next();
+                User client = UserMenu.getUserById(clientID);
+                if (client instanceof Client) {
+                    break;
+                } else {
+                    System.out.println("Invalid client ID. Please try again.");
+                }
+            }
+        }
         System.out.println("Please input the car's make:");
         String carMake = input.next();
         System.out.println("Please input the car's model:");
@@ -461,6 +475,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("Please input any additional notes:");
         String addNotes = input.nextLine();
         Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
+        if (status == Status.WALK_IN) {
+            newCar.setClientID(clientID);
+        }
         System.out.println("Car created successfully!");
         System.out.println(newCar);
         return newCar;
@@ -574,6 +591,7 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
     public static int getNewCarYear(Scanner input) {
+        input.nextLine();
         int newCarYear;
         while (true) {
             try {
