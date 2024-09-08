@@ -25,7 +25,7 @@ public class Service implements Serializable {
     private LocalDate serviceDate;
     private String clientId;
     private String mechanicId;
-    private static serviceType serviceType;
+    private serviceType ServiceType;
     private String serviceTypeByOther;
     private List<autoPart> replacedParts;
     private ServiceBy serviceBy;
@@ -41,7 +41,7 @@ public class Service implements Serializable {
         BODY_AND_INTERIOR
     }
 
-    public enum serviceType {
+    public static enum serviceType {
         Oil_Change(Category.ROUTINE_MAINTENANCE, 1500000),
         Tire_Rotation(Category.ROUTINE_MAINTENANCE, 300000),
         Air_Filter(Category.ROUTINE_MAINTENANCE, 300000),
@@ -90,7 +90,7 @@ public class Service implements Serializable {
         this.serviceDate = serviceDate;
         this.clientId = clientId;
         this.mechanicId = mechanicId;
-        this.serviceType = type;
+        this.ServiceType = type;
         this.replacedParts = retrieveParts(partIds);
         this.serviceBy = serviceBy;
         this.carId = carId;
@@ -557,7 +557,7 @@ public class Service implements Serializable {
     }
 
     public serviceType getServiceType() {
-        return serviceType;
+        return ServiceType;
     }
 
     public List<autoPart> getReplacedParts() {
@@ -606,7 +606,7 @@ public class Service implements Serializable {
     }
 
     public void setServiceType(serviceType type) {
-        this.serviceType = type;
+        this.ServiceType = type;
     }
 
     public void setServiceTypeByOther(String type) {
@@ -646,8 +646,9 @@ public class Service implements Serializable {
         sb.append("Car ID: ").append(carId).append("\n");
         sb.append("Client ID: ").append(clientId).append("\n");
         if (serviceBy == ServiceBy.AUTO136) {
+            sb.append("Service By: AUTO136");
             sb.append("Mechanic ID: ").append(mechanicId).append("\n");
-            sb.append("Service Type: ").append(serviceType).append("\n");
+            sb.append("Service Type: ").append(ServiceType).append("\n");
             sb.append("Service Cost: ").append(CurrencyFormat.format(serviceCost)).append("\n");
             if (!replacedParts.isEmpty()) {
                 List<String> partNames = replacedParts.stream()
@@ -659,14 +660,13 @@ public class Service implements Serializable {
             }
             sb.append("Total Cost: $").append(CurrencyFormat.format(totalCost)).append("\n");
         } else {
+            sb.append("Service By: OTHER");
             sb.append("Service Type: ").append(serviceTypeByOther).append("\n");
         }
 
-        if (!additionalNotes.isEmpty()) {
+        if (additionalNotes != null && !additionalNotes.isEmpty()) {
             sb.append("Notes: ").append(additionalNotes).append("\n");
         }
-
-
         return sb.toString();
     }
 

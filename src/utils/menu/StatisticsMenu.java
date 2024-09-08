@@ -3,6 +3,7 @@ package utils.menu;
 import autoPart.autoPart;
 import car.Car;
 import services.Service;
+import services.ServiceBy;
 import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
@@ -255,7 +256,7 @@ public class StatisticsMenu extends Menu {
         double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[0];
         double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[0];
         int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[1];
-        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[1];
+        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[2];
 
         double totalRevenue = totalSalesRevenue + totalServiceRevenue;
         int totalTransactions = totalSalesTransactions + totalServiceTransactions;
@@ -265,13 +266,13 @@ public class StatisticsMenu extends Menu {
 
         System.out.printf("Combined Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Combined Revenue: " + CurrencyFormat.format(totalRevenue));
-        System.out.printf("Total Combined Transactions: %d\n", totalTransactions);
+        System.out.printf("\nTotal Combined Transactions (Service and Sale): %d\n", totalTransactions);
 
-        System.out.println("Revenue by Employee:");
-        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee : %s, Revenue: $%.2f\n", UserMenu.getUserById(employeeId).getName(), revenue));
+        System.out.println("\nRevenue by Employee:");
+        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee : %s, Revenue: %s\n", UserMenu.getUserById(employeeId).getName(), CurrencyFormat.format(revenue)));
 
-        System.out.println("Revenue by Client:");
-        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client: %s, Revenue: $%.2f\n", UserMenu.getUserById(clientId).getName(), revenue));
+        System.out.println("\nRevenue by Client:");
+        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client: %s, Revenue: %s\n", UserMenu.getUserById(clientId).getName(), CurrencyFormat.format(revenue)));
 
         try {
             String activityName = "View total revenue by client and employee from " + startDate + " to " + endDate;
@@ -291,6 +292,9 @@ public class StatisticsMenu extends Menu {
         }
 
         for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
+            if(ServiceBy.OTHER == service.getServiceBy()){
+                continue;
+            }
             String mechanicId = service.getMechanicId();
             employeeRevenue.put(mechanicId,
                     employeeRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());

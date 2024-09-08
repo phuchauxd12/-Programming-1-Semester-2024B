@@ -163,9 +163,9 @@ public class ServiceList {
         User current = UserSession.getCurrentUser();
         if (current.getRole().equals(User.ROLE.MANAGER)) {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("1. View all available: ");
-            System.out.print("1. View all service done by AUTO136: ");
-            System.out.print("2. View all service done by OTHER: ");
+            System.out.println("1. View all available");
+            System.out.println("2. View all service done by AUTO136");
+            System.out.println("3. View all service done by OTHER");
             int input = scanner.nextInt();
             switch (input) {
                 case 1:
@@ -301,13 +301,17 @@ public class ServiceList {
     public static double[] calculateServiceRevenueAndCount(LocalDate startDate, LocalDate endDate) {
         double totalServiceRevenue = 0.0;
         int serviceCount = 0;
+        int serviceByAUTO136 = 0;
 
         for (Service service : getServicesBetween(startDate, endDate)) {
+            if(service.getServiceBy() == ServiceBy.OTHER) {
+                serviceByAUTO136++;
+            }
             totalServiceRevenue += service.getTotalCost();
             serviceCount++;
         }
 
-        return new double[]{totalServiceRevenue, serviceCount};
+        return new double[]{totalServiceRevenue, serviceCount, serviceByAUTO136};
     }
 
     public static double calculateMechanicRevenue(String mechanicId, LocalDate startDate, LocalDate endDate) {
@@ -330,6 +334,7 @@ public class ServiceList {
         double[] serviceRevenueAndCount = calculateServiceRevenueAndCount(startDate, endDate);
         double totalServiceRevenue = serviceRevenueAndCount[0];
         int serviceCount = (int) serviceRevenueAndCount[1];
+        int serviceByOther = 0;
         int autoPartUsed = calculateAutoPartUsed(startDate, endDate);
 
         Map<String, Double> clientRevenue = new HashMap<>();
@@ -338,6 +343,11 @@ public class ServiceList {
         Map<String, Double> mechanicRevenue = new HashMap<>();
 
         for (Service service : getServicesBetween(startDate, endDate)) {
+
+            if (!ServiceBy.AUTO136.equals(service.getServiceBy())) {
+                serviceByOther++;
+                continue;
+            }
 
             clientRevenue.put(service.getClientId(), clientRevenue.getOrDefault(service.getClientId(), 0.0) + service.getTotalCost());
 
@@ -379,6 +389,7 @@ public class ServiceList {
         System.out.printf("Service Statistics from %s to %s:\n", startDate, endDate);
         System.out.println("Total Services Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.printf("Total Number of Services: %d\n", serviceCount);
+        System.out.printf("Number of Services by AUTO136: %d\n", serviceCount - serviceByOther);
         System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
 
         // Revenue by client
@@ -402,7 +413,6 @@ public class ServiceList {
             System.out.printf("Highest Revenue Service: %s, Revenue: %s\n", highestRevenueService, CurrencyFormat.format(highestRevenue));
         }
 
-        // Service Usage TODO: Does not work
         System.out.println("Usages of Service:");
         for (Map.Entry<String, Integer> entry : serviceUsageCount.entrySet()) {
             System.out.printf("Service Type: %s, Usage: %s\n", entry.getKey(), entry.getValue());

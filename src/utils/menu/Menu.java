@@ -59,8 +59,8 @@ abstract class Menu {
 
     public static int getFilteredOption() {
         int option = 100;
-        System.out.print("1. View all available: ");
-        System.out.print("2. Filtered by period: ");
+        System.out.println("1. View all available");
+        System.out.println("2. Filtered by period");
         boolean validInput = false;
         while (!validInput) {
             option = getOption(option, input);
