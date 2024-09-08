@@ -19,16 +19,15 @@ import java.util.List;
 public class SampleData {
     public static void importData() throws Exception {
         /* Add Users to Database*/
-        Membership membership = new Membership();
         Manager manager = new Manager("manager", "pass123", "Johnny Stack", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER);
         Mechanic mechanic1 = new Mechanic("m_timmy", "password123", "Timmy Toe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.EMPLOYEE);
         Mechanic mechanic2 = new Mechanic("m_willy", "password123", "Willy Wonka", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "willy.wonka@example.com", User.ROLE.EMPLOYEE);
         Salesperson sale1 = new Salesperson("s_jackson", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE);
         Salesperson sale2 = new Salesperson("s_aimee", "password123", "Aim Lee", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE);
-        Client john = new Client("john_doe", "password1234", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, membership);
-        Client sarah = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, membership);
-        Client mary = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, membership);
-        Client lily = new Client("lily_james", "password678", "Lily James", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "lily.james@example.com", User.ROLE.CLIENT, membership);
+        Client john = new Client("john_doe", "password1234", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, new Membership());
+        Client sarah = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, new Membership());
+        Client mary = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, new Membership());
+        Client lily = new Client("lily_james", "password678", "Lily James", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "lily.james@example.com", User.ROLE.CLIENT, new Membership());
 
         UserDatabase.createDatabase();
         User.addUser(manager);

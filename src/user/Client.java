@@ -4,6 +4,7 @@ import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
+import utils.CurrencyFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,16 +99,16 @@ public class Client extends User {
                 ", userType=" + userType +
                 ", status='" + status + '\'' +
                 ", membership=" + membership +
-                ", totalSpending=" + totalSpending +
+                ", totalSpending=" + CurrencyFormat.format(totalSpending) +
                 '}';
     }
 
     @Override
     public String getUserInfo() {
         String info = super.getUserInfo();
-        info += "Membership: "+ membership.getMembershipType()+"\n";
-        info += "Discount: "+ membership.getDiscount() + "\n";
-        info += "Total Spending: "+ totalSpending + "\n";
-        return  info;
+        info += "Membership: " + membership.getMembershipType() + "\n";
+        info += "Discount: " + membership.getDiscount() + "\n";
+        info += "Total Spending: " + CurrencyFormat.format(totalSpending) + "\n";
+        return info;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-//        utils.SampleData.importData(); // Import sample data (ONLY RUN ONCE)
+        utils.SampleData.importData(); // Import sample data (ONLY RUN ONCE)
         System.out.println();
         System.out.println("COSC2081 GROUP ASSIGNMENT");
         System.out.println("AUTO136 CAR DEALERSHIP MANAGEMENT SYSTEM");
