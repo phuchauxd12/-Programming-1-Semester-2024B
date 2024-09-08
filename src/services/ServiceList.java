@@ -8,6 +8,7 @@ import user.Client;
 import user.Manager;
 import user.Mechanic;
 import user.User;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
@@ -67,7 +68,7 @@ public class ServiceList {
         List<String> partNames = List.of();
         String mechanicID = null;
 
-        
+
         if (serviceBy == ServiceBy.AUTO136) {
             if (UserSession.getCurrentUser() instanceof Manager) {
                 System.out.println("Mechanics available:");
@@ -121,7 +122,7 @@ public class ServiceList {
         } else {
             System.out.print("Enter service type done by others: ");
             type = scanner.nextLine();
-            
+
         }
 
         System.out.print("Enter additional notes: ");
@@ -131,7 +132,6 @@ public class ServiceList {
         CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.WALK_IN).forEach(System.out::println);
         System.out.print("Enter car ID if your car is already registered in the database. If not press ENTER to register the car in the database: ");
         String carId = scanner.nextLine();
-
 
 
         Service service = new Service(serviceDate, clientId, mechanicID, selectedServiceType, partNames, serviceBy, carId, serviceCost, notes);
@@ -161,13 +161,13 @@ public class ServiceList {
     public static void displayAllServices() {
 
         User current = UserSession.getCurrentUser();
-        if(current.getRole().equals(User.ROLE.MANAGER)){
+        if (current.getRole().equals(User.ROLE.MANAGER)) {
             Scanner scanner = new Scanner(System.in);
             System.out.print("1. View all available: ");
             System.out.print("1. View all service done by AUTO136: ");
             System.out.print("2. View all service done by OTHER: ");
             int input = scanner.nextInt();
-            switch(input){
+            switch (input) {
                 case 1:
                     for (Service service : services) {
                         if (!service.isDeleted()) {
@@ -180,7 +180,7 @@ public class ServiceList {
                     System.out.println("All service done by AUTO136");
                     for (Service service : services) {
                         if (!service.isDeleted()) {
-                            if(service.getServiceBy()==ServiceBy.AUTO136){
+                            if (service.getServiceBy() == ServiceBy.AUTO136) {
                                 System.out.println(service.getFormattedServiceDetails());
                                 System.out.println("___________________________________");
                             }
@@ -191,7 +191,7 @@ public class ServiceList {
                     System.out.println("All service done by others");
                     for (Service service : services) {
                         if (!service.isDeleted()) {
-                            if(service.getServiceBy()==ServiceBy.OTHER){
+                            if (service.getServiceBy() == ServiceBy.OTHER) {
                                 System.out.println(service.getFormattedServiceDetails());
                                 System.out.println("___________________________________");
                             }
@@ -271,6 +271,7 @@ public class ServiceList {
 
         return autoPartCount;
     }
+
     public static List<Car> listCarDoneServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
         List<Car> walkInCars = new ArrayList<>();
         for (Service service : getServicesBetween(startDate, endDate)) {
@@ -284,6 +285,7 @@ public class ServiceList {
         }
         return walkInCars;
     }
+
     public static List<autoPart> listAutoPartUsedInMechanicService(String mechanicId, LocalDate startDate, LocalDate endDate) {
         List<autoPart> usedParts = new ArrayList<>();
 
@@ -375,19 +377,19 @@ public class ServiceList {
 
         // Statistics info
         System.out.printf("Service Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Services Revenue: $%.2f\n", totalServiceRevenue);
+        System.out.println("Total Services Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.printf("Total Number of Services: %d\n", serviceCount);
         System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
 
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
-            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Client ID: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
 
         // Top mechanic
         if (topMechanicId != null) {
-            System.out.printf("Top Mechanic ID: %s, Revenue: $%.2f\n", topMechanicId, maxRevenue);
+            System.out.printf("Top Mechanic: %s, Revenue: %s\n", UserMenu.getUserById(topMechanicId).getName(), CurrencyFormat.format(maxRevenue));
         } else {
             System.out.println("No service transactions in the given period.");
         }
@@ -397,25 +399,25 @@ public class ServiceList {
         }
 
         if (highestRevenueService != null) {
-            System.out.printf("Highest Revenue Service: %s, Revenue: $%.2f\n", highestRevenueService, highestRevenue);
+            System.out.printf("Highest Revenue Service: %s, Revenue: %s\n", highestRevenueService, CurrencyFormat.format(highestRevenue));
         }
 
-        // Service Usage
+        // Service Usage TODO: Does not work
         System.out.println("Usages of Service:");
         for (Map.Entry<String, Integer> entry : serviceUsageCount.entrySet()) {
-            System.out.printf("Service Type: %s, Usage: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Service Type: %s, Usage: %s\n", entry.getKey(), entry.getValue());
         }
 
         // Revenue by Service Type
         System.out.println("Revenue of Service:");
         for (Map.Entry<String, Double> entry : serviceRevenue.entrySet()) {
-            System.out.printf("Service Type: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Service Type: %s, Revenue: %s\n", entry.getKey(), CurrencyFormat.format(entry.getValue()));
         }
 
         // Revenue by Mechanic
         System.out.println("Revenue of Mechanic:");
         for (Map.Entry<String, Double> entry : mechanicRevenue.entrySet()) {
-            System.out.printf("Mechanic ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Mechanic: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
     }
 
@@ -430,8 +432,8 @@ public class ServiceList {
 
         int serviceCount = filteredService.size();
 
-        System.out.println("Services done by mechanic with ID: " + mechanicId);
-        System.out.println("Total Service Revenue: $" + String.format("%.2f", totalServiceRevenue));
+        System.out.println("Services done by mechanic: " + UserMenu.getUserById(mechanicId).getName());
+        System.out.println("Total Service Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.println("Total Number of Service: " + serviceCount);
 
         if (!filteredService.isEmpty()) {

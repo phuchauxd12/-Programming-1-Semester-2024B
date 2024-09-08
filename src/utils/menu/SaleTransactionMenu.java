@@ -30,20 +30,20 @@ public class SaleTransactionMenu extends Menu {
             case MANAGER -> {
                 menuItems.put(1, "Display all transactions");
                 menuItems.put(2, "Search a transaction by ID");
-                menuItems.put(3, "Get sale person sale");
-                menuItems.put(4, "Search transaction by id");
-                menuItems.put(5, "Delete a transaction");
-                menuItems.put(6, "Create a new transaction");
-                menuItems.put(7, "Update a transaction");
+                menuItems.put(3, "Get Sales from a specific salesperson");
+                menuItems.put(4, "Delete a transaction");
+                menuItems.put(5, "Create a new transaction");
+                menuItems.put(6, "Update a transaction");
                 menuItems.put(0, "Exit");
 
-                menuActions.put(1, this::displayAllTransactions);
+                menuActions.put(1, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(2, this::searchTransactionById);
-                menuActions.put(3, this::deleteTransactionWrapper);
-                menuActions.put(4, this::createTransactionWrapper);
-                menuActions.put(5, this::updateTransactionWrapper);
+                menuActions.put(3, this::getAllSalespersonSales);
+                menuActions.put(4, this::deleteTransactionWrapper);
+                menuActions.put(5, this::createTransactionWrapper);
+                menuActions.put(6, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
-                break;
+
             }
             case SALESPERSON -> {
                 menuItems.put(1, "Display all transactions by me");
@@ -59,7 +59,7 @@ public class SaleTransactionMenu extends Menu {
                 menuActions.put(4, this::createTransactionWrapper);
                 menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
-                break;
+
             }
             case null, default -> System.out.print("");
         }
@@ -98,7 +98,7 @@ public class SaleTransactionMenu extends Menu {
     private void displayAllTransactions() {
         System.out.println("Displaying all transactions...");
         SaleTransactionList.displayAllSaleTransactions();
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("View all transactions");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
@@ -106,11 +106,18 @@ public class SaleTransactionMenu extends Menu {
     }
 
     private void getAllTransactionsInSpecificPeriod() {
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getStartDate();
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
         List<SaleTransaction> transactions = SaleTransactionList.getSaleTransactionsBetween(startDate, endDate);
-
         if (transactions.isEmpty()) {
             System.out.println("No transactions found within the specified period.");
         } else {
@@ -195,7 +202,7 @@ public class SaleTransactionMenu extends Menu {
             }
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
@@ -213,7 +220,7 @@ public class SaleTransactionMenu extends Menu {
             }
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Delete sale transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
@@ -251,7 +258,7 @@ public class SaleTransactionMenu extends Menu {
             SaleTransactionList.addSaleTransaction(currentUser.getUserID());
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Create a new transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
@@ -262,7 +269,7 @@ public class SaleTransactionMenu extends Menu {
         System.out.println("Updating a transaction...");
         SaleTransactionList.updateSaleTransaction();
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser("Update a new transaction");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());

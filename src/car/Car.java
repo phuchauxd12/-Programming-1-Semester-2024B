@@ -1,6 +1,7 @@
 package car;
 
 import services.Service;
+import utils.CurrencyFormat;
 import utils.Status;
 
 import java.io.Serializable;
@@ -153,7 +154,7 @@ public class Car implements Serializable {
                 "Car Year: " + carYear + "\n" +
                 "Color: " + color + "\n" +
                 "Mileage: " + mileage + "\n" +
-                "Price: " + price + "\n" +
+                "Price: " + CurrencyFormat.format(price) + "\n" +
                 "Status: " + status + "\n" +
                 "Additional Notes: " + addNotes + "\n" +
                 "Sold Date: " + soldDate + "\n" +
@@ -168,7 +169,7 @@ public class Car implements Serializable {
                 ", carMake ='" + carMake + "'" +
                 ", carModel ='" + carModel + "'" +
                 ", carYear = " + carYear +
-                ", color ='" + color + "'" + ", price = " + price +
+                ", color ='" + color + "'" + ", price = " + CurrencyFormat.format(price) +
                 "}";
     }
 }

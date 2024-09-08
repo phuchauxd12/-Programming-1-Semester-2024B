@@ -1,6 +1,7 @@
 package autoPart;
 
 
+import utils.CurrencyFormat;
 import utils.Status;
 
 import java.io.Serializable;
@@ -125,7 +126,7 @@ public class autoPart implements Serializable {
                 ", partManufacturer ='" + partManufacturer + '\'' +
                 ", condition = " + condition +
                 ", warrantyMonths = " + warrantyMonths +
-                ", price = " + price +
+                ", price = " + CurrencyFormat.format(price) +
                 ", addNotes ='" + addNotes + '\'' +
                 ", status = " + status +
                 ", soldDate = " + soldDate +
@@ -140,6 +141,7 @@ public class autoPart implements Serializable {
                 ", partName ='" + partName + '\'' +
                 ", partManufacturer ='" + partManufacturer + '\'' +
                 ", condition = " + condition +
+                ", price = " + CurrencyFormat.format(price) +
                 '}';
     }
 }

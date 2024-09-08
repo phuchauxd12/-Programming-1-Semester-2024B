@@ -10,6 +10,7 @@ import user.Client;
 import user.Membership;
 import user.Salesperson;
 import user.User;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
@@ -448,7 +449,7 @@ public class SaleTransaction implements Serializable {
                 ", purchasedCars=" + purchasedCars +
                 ", purchasedAutoParts=" + purchasedAutoParts +
                 ", discount=" + discount +
-                ", totalAmount=" + totalAmount +
+                ", totalAmount=" + CurrencyFormat.format(totalAmount) +
                 ", isDeleted=" + isDeleted +
                 ", additionalNotes='" + additionalNotes + '\'' +
                 '}';
@@ -461,7 +462,7 @@ public class SaleTransaction implements Serializable {
         sb.append("Client ID: ").append(clientId).append("\n");
         sb.append("Salesperson ID: ").append(salespersonId).append("\n");
         sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");
-        sb.append("Amount: $").append(String.format("%.2f", totalAmount)).append("\n");
+        sb.append("Amount:").append(CurrencyFormat.format(totalAmount)).append("\n");
         if (!purchasedCars.isEmpty()) {
             List<String> cars = new ArrayList<>();
             for (Car car : purchasedCars) {

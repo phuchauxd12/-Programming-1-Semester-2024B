@@ -7,6 +7,7 @@ import data.car.CarDatabase;
 import data.service.ServiceDatabase;
 import data.user.UserDatabase;
 import user.*;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
@@ -647,7 +648,7 @@ public class Service implements Serializable {
         if (serviceBy == ServiceBy.AUTO136) {
             sb.append("Mechanic ID: ").append(mechanicId).append("\n");
             sb.append("Service Type: ").append(serviceType).append("\n");
-            sb.append("Service Cost: $").append(String.format("%.2f", serviceCost)).append("\n");
+            sb.append("Service Cost: ").append(CurrencyFormat.format(serviceCost)).append("\n");
             if (!replacedParts.isEmpty()) {
                 List<String> partNames = replacedParts.stream()
                         .map(autoPart::getPartName)  // Assuming getPartName() returns the name of the part
@@ -656,7 +657,7 @@ public class Service implements Serializable {
             } else {
                 sb.append("Replaced Parts: None\n");
             }
-            sb.append("Total Cost: $").append(String.format("%.2f", totalCost)).append("\n");
+            sb.append("Total Cost: $").append(CurrencyFormat.format(totalCost)).append("\n");
         } else {
             sb.append("Service Type: ").append(serviceTypeByOther).append("\n");
         }

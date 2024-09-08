@@ -752,7 +752,7 @@ public class CarAndAutoPartMenu extends Menu {
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
         for (Car car : carsList) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
                 carSold += 1;
             }
         }

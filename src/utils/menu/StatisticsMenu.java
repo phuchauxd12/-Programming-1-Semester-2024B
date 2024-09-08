@@ -6,8 +6,11 @@ import services.Service;
 import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
-import user.*;
-import utils.CommonFunc;
+import user.Client;
+import user.Manager;
+import user.Mechanic;
+import user.Salesperson;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
@@ -33,7 +36,7 @@ public class StatisticsMenu extends Menu {
 
     protected void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
-            case MANAGER:
+            case MANAGER -> {
                 menuItems.put(1, "Number of Cars sold");
                 menuItems.put(2, "View Service Statistics");
                 menuItems.put(3, "View Sales Statistics");
@@ -55,9 +58,9 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(8, this::viewAutoPartStatistics);
                 menuActions.put(9, this::viewCarStatistics);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case SALESPERSON:
+            case SALESPERSON -> {
                 menuItems.put(1, "List all items sold by me");
                 menuItems.put(2, "Revenue of Sales by me");
                 menuItems.put(0, "Exit");
@@ -66,9 +69,9 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(1, this::getAllItemsSoldBySalesperson);
                 menuActions.put(2, this::salespersonRevenue);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case MECHANIC:
+            case MECHANIC -> {
                 menuItems.put(1, "My Auto Part Statistic");
                 menuItems.put(2, "My Car Statistic");
                 menuItems.put(3, "Revenue of Services by me");
@@ -79,9 +82,9 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(2, this::allCarServicedByMechanic);
                 menuActions.put(3, this::getRevenueOfServices);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case CLIENT:
+            case CLIENT -> {
                 menuItems.put(1, "List All Services done for me");
                 menuItems.put(2, "List all Sales Transactions for me");
                 menuItems.put(0, "Exit");
@@ -90,8 +93,7 @@ public class StatisticsMenu extends Menu {
                 menuActions.put(1, this::getAllClientServices);
                 menuActions.put(2, this::getAllClientSalesTransactions);
                 menuActions.put(0, this::exit);
-                break;
-
+            }
         }
     }
 
@@ -231,7 +233,7 @@ public class StatisticsMenu extends Menu {
 
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
@@ -262,16 +264,16 @@ public class StatisticsMenu extends Menu {
         Map<String, Double> clientRevenue = calculateClientRevenue(startDate, endDate);
 
         System.out.printf("Combined Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Combined Revenue: $%.2f\n", totalRevenue);
+        System.out.printf("Total Combined Revenue: " + CurrencyFormat.format(totalRevenue));
         System.out.printf("Total Combined Transactions: %d\n", totalTransactions);
 
         System.out.println("Revenue by Employee:");
-        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee ID: %s, Revenue: $%.2f\n", employeeId, revenue));
+        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee : %s, Revenue: $%.2f\n", UserMenu.getUserById(employeeId).getName(), revenue));
 
         System.out.println("Revenue by Client:");
-        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client ID: %s, Revenue: $%.2f\n", clientId, revenue));
+        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client: %s, Revenue: $%.2f\n", UserMenu.getUserById(clientId).getName(), revenue));
 
-        try{
+        try {
             String activityName = "View total revenue by client and employee from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -343,7 +345,7 @@ public class StatisticsMenu extends Menu {
         System.out.println("Part Condition Statistics:");
         partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
 
-        try{
+        try {
             String activityName = "View Auto Part Statistics";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -405,9 +407,9 @@ public class StatisticsMenu extends Menu {
         }
 
         System.out.printf("Car Sales Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Car Revenue: $%.2f\n", totalCarRevenue);
+        System.out.printf("Total Car Revenue: %s\n", CurrencyFormat.format(totalCarRevenue));
         System.out.printf("Total Cars Sold: %d\n", totalCarsSold);
-        System.out.printf("Average Car Price: $%.2f\n", averageCarPrice);
+        System.out.printf("Average Car Price: %s\n", CurrencyFormat.format(averageCarPrice));
 
         System.out.println("\nTop Selling Car Model: " + topSellingCarModel);
         System.out.println("Sales: " + totalCarsSold);
@@ -419,12 +421,12 @@ public class StatisticsMenu extends Menu {
 
 
         System.out.println("\nCar Model with highest Revenue: " + highestRevenueCarModel);
-        System.out.println("Max Revenue: " + maxRevenue);
+        System.out.println("Max Revenue: " + CurrencyFormat.format(maxRevenue));
 
 
         System.out.println("Revenue by Car Model:");
         for (Map.Entry<String, Double> entry : revenueByCarModel.entrySet()) {
-            System.out.printf("Car Model: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Car Model: %s, Revenue: %s\n", entry.getKey(), CurrencyFormat.format(entry.getValue()));
         }
         System.out.println("Total Cars in Repair:" + carsInRepair.size());
 
@@ -433,7 +435,7 @@ public class StatisticsMenu extends Menu {
             System.out.printf("Car ID: %s, Services Count: %d\n", entry.getKey(), entry.getValue());
         }
 
-        try{
+        try {
             String activityName = "View car statistic";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -470,7 +472,7 @@ public class StatisticsMenu extends Menu {
         }
         CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
 
-        try{
+        try {
             String activityName = "View all cars sold from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -491,7 +493,7 @@ public class StatisticsMenu extends Menu {
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
-        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserID(), startDate, endDate);
         System.out.println("Total Sale Transaction Made:");
         System.out.println("\nTotal Revenue of Sales by " + salesperson.getName() + ": " + result);
 
@@ -560,7 +562,7 @@ public class StatisticsMenu extends Menu {
             System.out.println(entry.getKey() + ": " + entry.getValue() + " times");
         }
 
-        try{
+        try {
             String activityName = "View all cars sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -612,7 +614,7 @@ public class StatisticsMenu extends Menu {
             System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
         }
 
-        try{
+        try {
             String activityName = "View all services made by a mechanic named " + mechanic.getUserName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -652,7 +654,7 @@ public class StatisticsMenu extends Menu {
 
         System.out.println("\nThe car with the most services by this mechanic is: " + mostServicedCar + " with " + carServiceCount.get(mostServicedCar) + " services.");
 
-        try{
+        try {
             String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -673,7 +675,7 @@ public class StatisticsMenu extends Menu {
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getUserID(), startDate, endDate);
         System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
 
         try {

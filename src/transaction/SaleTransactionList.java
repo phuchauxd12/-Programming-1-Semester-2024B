@@ -8,6 +8,7 @@ import user.Client;
 import user.Manager;
 import user.Salesperson;
 import user.User;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
@@ -94,32 +95,34 @@ public class SaleTransactionList {
                 .filter(transaction -> transaction.getClientId().equals(clientId)).toList();
         return transactionByClient;
     }
+
     public static List<SaleTransaction> getTransactionsBySalePerson(String salespersonId) {
         var transactionBySaleperson = transactions.stream()
                 .filter(transaction -> transaction.getSalespersonId().equals(salespersonId)).toList();
         return transactionBySaleperson;
     }
+
     public List<SaleTransaction> getAllSaleTransactions() {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
     public static void displayAllSaleTransactions() {
         User current = UserSession.getCurrentUser();
-        if(current instanceof Manager) {
+        if (current instanceof Manager) {
             for (SaleTransaction transaction : transactions) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
                     System.out.println("___________________________________");
                 }
             }
-        } else if(current instanceof Salesperson) {
+        } else if (current instanceof Salesperson) {
             for (SaleTransaction transaction : getTransactionsBySalePerson(current.getUserID())) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
                     System.out.println("___________________________________");
                 }
             }
-        } else if(current instanceof Client) {
+        } else if (current instanceof Client) {
             for (SaleTransaction transaction : getTransactionsByClient(current.getUserID())) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
@@ -273,7 +276,7 @@ public class SaleTransactionList {
 
         // Statistics info
         System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Sales Revenue: $%.2f\n", totalSalesRevenue);
+        System.out.printf("Total Sales Revenue: %s\n", CurrencyFormat.format(totalSalesRevenue));
         System.out.printf("Total Number of Transactions: %d\n", transactionCount);
         System.out.printf("Total Number of Cars Sold: %d\n", carsSold);
         System.out.printf("Total Number of AutoParts Sold: %d\n", autoPartsSold);
@@ -281,27 +284,27 @@ public class SaleTransactionList {
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
-            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Client ID: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
 
         // Top salesperson by revenue count
         if (topSalespersonByRevenue != null) {
-            System.out.printf("Top Salesperson by Revenue: ID: %s, Revenue: $%.2f\n", topSalespersonByRevenue, maxRevenue);
+            System.out.printf("Top Salesperson by Revenue: Name: %s, Revenue: %s\n", UserMenu.getUserById(topSalespersonByRevenue).getName(), CurrencyFormat.format(maxRevenue));
         }
 
         // top salesperson by sale count
         if (topSalespersonByCount != null) {
-            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", topSalespersonByCount, maxSalesCount);
+            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", UserMenu.getUserById(topSalespersonByCount).getName(), maxSalesCount);
         }
 
         System.out.println("Revenue by Salesperson:");
         for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
-            System.out.printf("Salesperson ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Salesperson : %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
 
         System.out.println("Sale by Salesperson:");
         for (Map.Entry<String, Integer> entry : salespersonSales.entrySet()) {
-            System.out.printf("Salesperson ID: %s, Sale: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Salesperson : %s, Sale: %d\n", UserMenu.getUserById(entry.getKey()).getName(), entry.getValue());
         }
     }
 
@@ -315,8 +318,8 @@ public class SaleTransactionList {
         double totalSalesRevenue = calculateSalespersonRevenue(salespersonId, startDate, endDate);
         int transactionCount = filteredTransactions.size();
 
-        System.out.println("Sales Transactions for Salesperson ID: " + salespersonId);
-        System.out.println("Total Sales Revenue: $" + String.format("%.2f", totalSalesRevenue));
+        System.out.println("Sales Transactions for Salesperson: " + UserMenu.getUserById(salespersonId).getName());
+        System.out.println("Total Sales Revenue: " + String.format("%.2f", totalSalesRevenue));
         System.out.println("Total Number of Transactions: " + transactionCount);
 
         if (!filteredTransactions.isEmpty()) {
