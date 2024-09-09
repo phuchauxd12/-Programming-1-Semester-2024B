@@ -372,7 +372,6 @@ public class StatisticsMenu extends Menu {
         double totalCarRevenue = calculateTotalCarSellRevenueAndCount(startDate, endDate)[0];
         int totalCarsSold = (int) calculateTotalCarSellRevenueAndCount(startDate, endDate)[1];
         double averageCarPrice = totalCarsSold > 0 ? totalCarRevenue / totalCarsSold : 0;
-        // Thống kê doanh thu từ các dòng xe khác nhau, giúp xác định dòng xe nào bán chạy nhất.
         Map<String, Double> revenueByCarModel = new HashMap<>();
         Map<String, Integer> carsSoldByModel = new HashMap<>();
         // Calculate total number of cars in repair (work-in) and number of services performed
@@ -614,8 +613,15 @@ public class StatisticsMenu extends Menu {
         System.out.println("\nTotal number of parts used: " + totalPartUsage);
 
         System.out.println(mechanic.getName() + " (" + mechanic.getUserID() + ") used these auto parts in service:");
+
+        Set<String> displayedParts = new HashSet<>();
+
         for (autoPart part : autoPartUsage) {
             System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
+            if (!displayedParts.contains(part.getPartID())) {
+                System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
+                displayedParts.add(part.getPartID());
+            }
         }
 
         try {
@@ -652,8 +658,14 @@ public class StatisticsMenu extends Menu {
         String mostServicedCar = Collections.max(carServiceCount.entrySet(), Map.Entry.comparingByValue()).getKey();
 
         System.out.println(mechanic.getName() + " (" + mechanic.getUserID() + ") serviced these cars:");
+
+        Set<String> displayedCars = new HashSet<>();
+
         for (Car car : walkInCars) {
-            System.out.println(car + " - Serviced " + carServiceCount.get(car.getCarID()) + " times");
+            if (!displayedCars.contains(car.getCarID())) {
+                System.out.println(car + " - Serviced " + carServiceCount.get(car.getCarID()) + " times");
+                displayedCars.add(car.getCarID());
+            }
         }
 
         System.out.println("\nThe car with the most services by this mechanic is: " + mostServicedCar + " with " + carServiceCount.get(mostServicedCar) + " services.");
