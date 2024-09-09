@@ -107,7 +107,7 @@ public class Client extends User {
     public String getUserInfo() {
         String info = super.getUserInfo();
         info += "Membership: " + membership.getMembershipType() + "\n";
-        info += "Discount: " + membership.getDiscount() + "\n";
+        info += "Discount: " + membership.getDiscount() * 100 + "%\n";
         info += "Total Spending: " + CurrencyFormat.format(totalSpending) + "\n";
         return info;
     }

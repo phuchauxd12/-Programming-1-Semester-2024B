@@ -134,6 +134,7 @@ public class ServiceList {
         Service service = new Service(serviceDate, clientId, mechanicID, selectedServiceType, partNames, serviceBy, carId, serviceCost, notes);
         Service.addService(service);
         service.setServiceTypeByOther(type);
+        System.out.println(service.getFormattedServiceDetails());
     }
 
 
@@ -202,7 +203,7 @@ public class ServiceList {
         } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
             if (current instanceof Mechanic) {
                 for (Service service : services) {
-                    if (!service.isDeleted() && service.getMechanicId().equals(current.getUserID())) {
+                    if (!service.isDeleted() && service.getMechanicId() != null && service.getMechanicId().equals(current.getUserID())) {
                         System.out.println(service.getFormattedServiceDetails());
                         System.out.println("___________________________________");
                     }
@@ -234,7 +235,7 @@ public class ServiceList {
 
     public static List<Service> getServiceByMechanic(String mechanicId) {
         var serviceByMechanic = services.stream()
-                .filter(service -> service.getMechanicId().equals(mechanicId)).toList();
+                .filter(service -> service.getMechanicId() != null && service.getMechanicId().equals(mechanicId)).toList();
         return serviceByMechanic;
     }
 
@@ -247,14 +248,6 @@ public class ServiceList {
     public static void deleteService() throws Exception {
         displayAllServices();
         Service.deleteService();
-    }
-
-    public static double calculateTotalServiceRevenue() {
-        double total = 0.0;
-        for (Service service : services) {
-            total += service.getTotalCost();
-        }
-        return total;
     }
 
 
@@ -272,12 +265,8 @@ public class ServiceList {
     public static List<Car> listCarDoneServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
         List<Car> walkInCars = new ArrayList<>();
         for (Service service : getServicesBetween(startDate, endDate)) {
-            if (service.getMechanicId().equals(mechanicId)) {
-                for (Car car : CarAndAutoPartMenu.getCarsList()) {
-                    if (car.getCarID().equals(service.getCarId())) {
-                        walkInCars.add(car);
-                    }
-                }
+            if (service.getMechanicId() != null && service.getMechanicId().equals(mechanicId)) {
+                walkInCars.add(CarAndAutoPartMenu.findCarByID(service.getCarId()));
             }
         }
         return walkInCars;
@@ -287,7 +276,7 @@ public class ServiceList {
         List<autoPart> usedParts = new ArrayList<>();
 
         for (Service service : getServicesBetween(startDate, endDate)) {
-            if (service.getMechanicId().equals(mechanicId)) {
+            if (service.getMechanicId() != null && service.getMechanicId().equals(mechanicId)) {
                 usedParts.addAll(service.getReplacedParts());
             }
         }

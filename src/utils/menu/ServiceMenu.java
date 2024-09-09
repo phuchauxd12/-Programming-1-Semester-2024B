@@ -199,7 +199,11 @@ public class ServiceMenu extends Menu {
     }
 
     private void searchServiceById() {
-        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(System.out::println);
+        if (currentUser instanceof Manager) {
+            ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(System.out::println);
+        } else if (currentUser instanceof Mechanic) {
+            ServiceList.getServiceByMechanic(currentUser.getUserID()).stream().filter(service -> !service.isDeleted()).forEach(System.out::println);
+        }
         System.out.println("Searching service by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter service ID: ");

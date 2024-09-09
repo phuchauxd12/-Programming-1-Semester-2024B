@@ -654,7 +654,7 @@ public class Service implements Serializable {
 
     public String getFormattedServiceDetails() {
         StringBuilder sb = new StringBuilder();
-
+        
         sb.append("Service ID: ").append(serviceId).append("\n");
         sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
         sb.append("Car ID: ").append(carId).append("\n");

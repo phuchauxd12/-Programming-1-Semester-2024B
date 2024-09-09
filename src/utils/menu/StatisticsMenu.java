@@ -292,7 +292,7 @@ public class StatisticsMenu extends Menu {
         }
 
         for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
-            if(ServiceBy.OTHER == service.getServiceBy()){
+            if (ServiceBy.OTHER == service.getServiceBy()) {
                 continue;
             }
             String mechanicId = service.getMechanicId();
@@ -499,7 +499,7 @@ public class StatisticsMenu extends Menu {
         }
         double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserID(), startDate, endDate);
         System.out.println("Total Sale Transaction Made:");
-        System.out.println("\nTotal Revenue of Sales by " + salesperson.getName() + ": " + result);
+        System.out.println("\nTotal Revenue of Sales by " + salesperson.getName() + ": " + CurrencyFormat.format(result));
 
         try {
             String activityName = "View total revenue made by a salesperson named " + salesperson.getName() + " with ID: " + salesperson.getUserID();
@@ -680,7 +680,7 @@ public class StatisticsMenu extends Menu {
                 break;
         }
         double result = ServiceList.calculateMechanicRevenue(mechanic.getUserID(), startDate, endDate);
-        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
+        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + CurrencyFormat.format(result));
 
         try {
             String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID();
