@@ -68,7 +68,6 @@ public class ServiceMenu extends Menu {
     private void createServiceWrapper() {
         try {
             createService();
-            ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
         } catch (Exception e) {
             System.out.println("Error creating service: " + e.getMessage());
         }
@@ -78,7 +77,7 @@ public class ServiceMenu extends Menu {
 //        ServiceList.services.stream().filter(service -> !service.isDeleted()).forEach(service -> System.out.println(service.getFormattedServiceDetails()));
         try {
             updateService();
-            ActivityLogMenu.addActivityLogForCurrentUser("Update service wrapper");
+
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -106,7 +105,7 @@ public class ServiceMenu extends Menu {
     }
 
     private void getAllServicesInSpecificPeriod() {
-        LocalDate startDate = DatePrompt.getStartDate();
+        LocalDate startDate = DatePrompt.getDate("start");
         LocalDate endDate = DatePrompt.getEndDate(startDate);
 
         List<Service> services = ServiceList.getServicesBetween(startDate, endDate);
@@ -169,33 +168,16 @@ public class ServiceMenu extends Menu {
         System.out.println("Creating a new service...");
         ServiceList.addService();
 
-        try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Create service wrapper");
-        } catch (Exception e) {
-            System.out.println("Error logging service action history: " + e.getMessage());
-        }
     }
 
     private void updateService() throws Exception {
         System.out.println("Updating a service...");
         ServiceList.updateService();
-
-        try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Update service");
-        } catch (Exception e) {
-            System.out.println("Error logging service action history: " + e.getMessage());
-        }
     }
 
     private void deleteService() throws Exception {
         System.out.println("Deleting a service...");
         ServiceList.deleteService();
-
-        try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Delete service");
-        } catch (Exception e) {
-            System.out.println("Error logging service action history: " + e.getMessage());
-        }
     }
 
     private void searchServiceById() {
@@ -233,7 +215,7 @@ public class ServiceMenu extends Menu {
         }
 
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Search service by ID: " + serviceID);
+            ActivityLogMenu.addActivityLogForCurrentUser("Searched for service by ID: " + serviceID);
         } catch (Exception e) {
             System.out.println("Error logging service action history: " + e.getMessage());
         }

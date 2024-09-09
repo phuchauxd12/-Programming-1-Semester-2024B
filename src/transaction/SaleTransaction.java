@@ -6,14 +6,12 @@ import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
-import user.Client;
-import user.Membership;
-import user.Salesperson;
-import user.User;
+import user.*;
 import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -85,7 +83,6 @@ public class SaleTransaction implements Serializable {
         SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
         CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
-
         System.out.println("SaleTransaction added successfully!");
     }
 
@@ -121,9 +118,7 @@ public class SaleTransaction implements Serializable {
                 switch (choice) {
                     case "1":
                         try {
-                            System.out.print("Enter new transaction date (dd/MM/yyyy): ");
-                            String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-                            LocalDate newDate = DatePrompt.validateAndParseDate(input);
+                            LocalDate newDate = DatePrompt.getDate("new transaction");
                             transaction.setTransactionDate(newDate);
                         } catch (DateTimeParseException e) {
                             System.out.println("Invalid date format. Please enter a valid date (YYYY-MM-DD).");
@@ -234,6 +229,11 @@ public class SaleTransaction implements Serializable {
 
             System.out.println("Sale transaction updated successfully:");
             System.out.println(transaction.getFormattedSaleTransactionDetails());
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Updated transaction with ID: " + transactionId);
+            } catch (Exception e) {
+                System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            }
         } else {
             System.out.println("Transaction not found or it has been deleted.");
         }
@@ -246,14 +246,12 @@ public class SaleTransaction implements Serializable {
         System.out.print("Enter transaction ID to delete: ");
         String transactionId = scanner.nextLine();
         SaleTransaction transaction = null;
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        if (current instanceof Manager) {
             transaction = SaleTransactionList.getSaleTransactionById(transactionId);
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Salesperson) {
-                SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
-                if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
-                    transaction = detectedTransaction;
-                }
+        } else if (current instanceof Salesperson) {
+            SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
+            if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
+                transaction = detectedTransaction;
             }
         }
 
@@ -296,6 +294,11 @@ public class SaleTransaction implements Serializable {
             CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
             SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
             System.out.println("Sale transaction marked as deleted.");
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Deleted sales transaction with ID: " + transactionId);
+            } catch (Exception e) {
+                System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            }
         } else {
             System.out.println("Transaction not found.");
         }
@@ -479,7 +482,7 @@ public class SaleTransaction implements Serializable {
         if (!purchasedCars.isEmpty()) {
             List<String> cars = new ArrayList<>();
             for (Car car : purchasedCars) {
-                cars.add(car.getCarModel());
+                cars.add(car.getCarMake() + " " + car.getCarModel() + " " + car.getCarYear());
             }
             sb.append("Purchased Items: ").append(String.join(", ", cars)).append("\n");
         }

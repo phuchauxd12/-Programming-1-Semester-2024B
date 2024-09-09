@@ -11,6 +11,7 @@ import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -231,9 +232,7 @@ public class Service implements Serializable {
                 for (String choice : choices) {
                     switch (choice) {
                         case "1":
-                            System.out.print("Enter new service date (dd/MM/yyyy): ");
-                            String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-                            LocalDate newDate = DatePrompt.validateAndParseDate(input);
+                            LocalDate newDate = DatePrompt.getDate("new service");
                             service.setServiceDate(newDate);
                             break;
                         case "2":
@@ -415,6 +414,7 @@ public class Service implements Serializable {
 
             // Display updated service details
             System.out.println("Service updated successfully:");
+            ActivityLogMenu.addActivityLogForCurrentUser("Updated service with ID: " + service.getServiceId());
             System.out.println(service.getFormattedServiceDetails());
         } else {
             System.out.println("Service not found or it has been deleted.");
@@ -430,23 +430,19 @@ public class Service implements Serializable {
         String serviceId = scanner.nextLine();
 
         Service service;
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        if (current instanceof Manager) {
             service = ServiceList.getServiceById(serviceId);
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Mechanic) {
-                Service detectedService = ServiceList.getServiceById(serviceId);
-                if (detectedService.getMechanicId().equals(current.getUserID())) {
-                    service = detectedService;
-                } else {
-                    service = null;
-                    System.out.println("You are not allow to access this service");
-                }
+        } else if (current instanceof Mechanic) {
+            Service detectedService = ServiceList.getServiceById(serviceId);
+            assert detectedService != null;
+            if (detectedService.getMechanicId() != null && detectedService.getMechanicId().equals(current.getUserID())) {
+                service = detectedService;
             } else {
                 service = null;
+                System.out.println("You are not allow to access this service");
             }
         } else {
             service = null;
-            System.out.println("Service not found");
         }
 
         if (service != null) {
@@ -487,6 +483,11 @@ public class Service implements Serializable {
             AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
             ServiceDatabase.saveService(ServiceList.services);
             System.out.println("Service marked as deleted.");
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Deleted service with ID: " + service.getServiceId());
+            } catch (Exception e) {
+                System.out.println("Error logging service action history: " + e.getMessage());
+            }
         } else {
             System.out.println("Service not found.");
         }
@@ -654,10 +655,10 @@ public class Service implements Serializable {
 
     public String getFormattedServiceDetails() {
         StringBuilder sb = new StringBuilder();
-        
+        Car car = CarAndAutoPartMenu.findCarByID(carId);
         sb.append("Service ID: ").append(serviceId).append("\n");
         sb.append("Service Date: ").append(serviceDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
-        sb.append("Car ID: ").append(carId).append("\n");
+        sb.append("Car: ").append(car.getCarMake()).append(" ").append(car.getCarModel()).append(" ").append(car.getCarYear()).append("\n");
         sb.append("Client: ").append(UserMenu.getUserById(clientId).getName()).append("\n");
         if (serviceBy == ServiceBy.AUTO136) {
             sb.append("Service By: AUTO136 \n");

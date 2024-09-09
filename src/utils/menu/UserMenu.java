@@ -2,16 +2,11 @@ package utils.menu;
 
 import data.Database;
 import data.user.UserDatabase;
-import user.Manager;
-import user.Mechanic;
-import user.Salesperson;
-import user.User;
+import user.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import static user.User.ROLE;
 
 
 public class UserMenu extends Menu {
@@ -69,10 +64,10 @@ public class UserMenu extends Menu {
                 return user;
             }
         }
-        try{
-            String activityName = "Get User by Id" + userId;
+        try {
+            String activityName = "Searched for user with ID: " + userId;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error while add log in for get user by id: " + e.getMessage());
         }
         return null;
@@ -91,12 +86,6 @@ public class UserMenu extends Menu {
         for (User user : UserList) {
             System.out.println("UserID: " + user.getUserID() + ", UserName: " + user.getUserName());
         }
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("View all users");
-        } catch (Exception e){
-            System.out.println("Error while adding log for view all users: " + e.getMessage());
-        }
-
     }
 
     public static List<Mechanic> getAllMechanics() {
@@ -160,7 +149,7 @@ public class UserMenu extends Menu {
                 }
                 try {
                     User.modifyUser(userIDForUpdate, updateOption);
-                    String activityName = "Update user with id" + userUpdate.getUserID();
+                    String activityName = "Updated user with id" + userUpdate.getUserID();
                     ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error while updating user: " + e.getMessage());
@@ -180,7 +169,7 @@ public class UserMenu extends Menu {
         System.out.println("Please input the user's ID to delete:");
         String userID = input.next();
         try {
-            String activityName = "Delete user with id" + userID;
+            String activityName = "Deleted user with id" + userID;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
             User.deleteUser(userID);
         } catch (Exception e) {
@@ -194,58 +183,53 @@ public class UserMenu extends Menu {
         System.out.println("View User by ID");
         System.out.println("Please input the user ID:");
         String userIDforview = input.nextLine();
-        String activityName = "View user with id" + userIDforview;
-        try{
+        String activityName = "Searched for user with ID" + userIDforview;
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
             var user = getUserById(userIDforview);
             if (user != null) {
                 System.out.println(user.getUserInfo());
-            }
-            else {
+            } else {
                 System.out.println("User not found!");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error while viewing users by role: " + e.getMessage());
         }
     }
 
     public void viewUsersByRole() {
+        int option = 100;
         System.out.println("View Users by Role");
         System.out.println("Select a role:");
         System.out.println("1. CLIENT");
         System.out.println("2. SALESPERSON");
         System.out.println("3. MECHANIC");
-        System.out.println("4. MANAGER");
-        int roleOption = input.nextInt();
-
-        ROLE role = switch (roleOption) {
-            case 1 -> ROLE.CLIENT;
-            case 2 -> ROLE.EMPLOYEE;
-            case 3 -> ROLE.MANAGER;
-            default -> {
-                System.out.println("Invalid role option.");
-                yield null;
-            }
-        };
-        try {
-            List<User> userByRoleList = new ArrayList<>();
-
-            for (User user : UserList) {
-                if (user.getRole() == role) {
-                    userByRoleList.add(user);
+        option = MainMenu.getOption(option, input);
+        Class<?> selectedRole = null;
+        switch (option) {
+            case 1 -> selectedRole = Client.class;
+            case 2 -> selectedRole = Salesperson.class;
+            case 3 -> selectedRole = Mechanic.class;
+            default -> System.out.println("Invalid option. Please try again.");
+        }
+        if (selectedRole != null) {
+            try {
+                List<User> userByRoleList = new ArrayList<>();
+                for (User user : UserList) {
+                    if (selectedRole.isInstance(user)) {
+                        userByRoleList.add(user);
+                    }
                 }
+                if (userByRoleList.isEmpty()) {
+                    System.out.println("No users found with role: " + selectedRole.getSimpleName());
+                } else {
+                    userByRoleList.forEach(System.out::println);
+                }
+                String activityName = "View user with role: " + selectedRole.getSimpleName();
+                ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+            } catch (Exception e) {
+                System.out.println("Error while viewing users by role: " + e.getMessage());
             }
-
-            if (userByRoleList.isEmpty()) {
-                System.out.println("No users found with role: " + role);
-            } else {
-                userByRoleList.forEach(System.out::println);
-            }
-
-            String activityName = "View user with role: " + role;
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error while viewing users by role: " + e.getMessage());
         }
     }
 }

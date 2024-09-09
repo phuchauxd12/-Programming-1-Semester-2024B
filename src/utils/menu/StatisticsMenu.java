@@ -18,7 +18,6 @@ import utils.UserSession;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StatisticsMenu extends Menu {
 
@@ -120,7 +119,7 @@ public class StatisticsMenu extends Menu {
                 break;
             case 2:
                 System.out.println("Fetching number of cars sold in a specific period...");
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
                 try {
@@ -133,7 +132,7 @@ public class StatisticsMenu extends Menu {
     }
 
     private void processServiceRevenue() {
-        String activityName = "";
+        String activityName;
         LocalDate startDate = LocalDate.of(1970, 1, 1);
         LocalDate endDate = LocalDate.now();
         int option = Menu.getFilteredOption();
@@ -141,7 +140,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -168,7 +167,7 @@ public class StatisticsMenu extends Menu {
                 case 1:
                     break;
                 case 2:
-                    startDate = DatePrompt.getStartDate();
+                    startDate = DatePrompt.getDate("start");
                     endDate = DatePrompt.getEndDate(startDate);
                     break;
             }
@@ -194,7 +193,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -221,7 +220,7 @@ public class StatisticsMenu extends Menu {
                 case 1:
                     break;
                 case 2:
-                    startDate = DatePrompt.getStartDate();
+                    startDate = DatePrompt.getDate("start");
                     endDate = DatePrompt.getEndDate(startDate);
                     break;
             }
@@ -249,7 +248,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -365,7 +364,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -468,7 +467,7 @@ public class StatisticsMenu extends Menu {
                 System.out.println("Fetching all cars sold...");
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 System.out.println("Fetching all cars sold in a specific period...");
                 break;
@@ -492,12 +491,11 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
         double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserID(), startDate, endDate);
-        System.out.println("Total Sale Transaction Made:");
         System.out.println("\nTotal Revenue of Sales by " + salesperson.getName() + ": " + CurrencyFormat.format(result));
 
         try {
@@ -518,7 +516,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
             default:
@@ -543,7 +541,7 @@ public class StatisticsMenu extends Menu {
         // Sort and get top 3 most sold parts
         List<Map.Entry<String, Integer>> sortedParts = new ArrayList<>(partUsageCount.entrySet());
         sortedParts.sort((a, b) -> b.getValue().compareTo(a.getValue()));
-        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).collect(Collectors.toList());
+        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).toList();
 
         // Display sold cars
         System.out.println("Cars sold by " + salesperson.getUserName() + " (" + salesperson.getUserID() + "):");
@@ -585,7 +583,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -602,7 +600,7 @@ public class StatisticsMenu extends Menu {
         // Sort and get top 3 most used parts
         List<Map.Entry<String, Integer>> sortedParts = new ArrayList<>(partUsageCount.entrySet());
         sortedParts.sort((a, b) -> b.getValue().compareTo(a.getValue()));
-        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).collect(Collectors.toList());
+        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).toList();
 
 
         System.out.println("\nTop 3 most used parts:");
@@ -642,7 +640,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -687,7 +685,7 @@ public class StatisticsMenu extends Menu {
             case 1:
                 break;
             case 2:
-                startDate = DatePrompt.getStartDate();
+                startDate = DatePrompt.getDate("start");
                 endDate = DatePrompt.getEndDate(startDate);
                 break;
         }
@@ -737,7 +735,7 @@ public class StatisticsMenu extends Menu {
                 }
                 break;
             case 2:
-                LocalDate startDate = DatePrompt.getStartDate();
+                LocalDate startDate = DatePrompt.getDate("start");
                 LocalDate endDate = DatePrompt.getEndDate(startDate);
                 client.viewTransactionsHistory(startDate, endDate);
 
@@ -771,13 +769,12 @@ public class StatisticsMenu extends Menu {
                 }
                 break;
             case 2:
-                LocalDate startDate = DatePrompt.getStartDate();
+                LocalDate startDate = DatePrompt.getDate("start");
                 LocalDate endDate = DatePrompt.getEndDate(startDate);
                 client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
 
                 try {
                     String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
-                    ;
                     ActivityLogMenu.addActivityLogForCurrentUser(activityName);
                 } catch (Exception e) {
                     System.out.println("Error logging statistic action history: " + e.getMessage());

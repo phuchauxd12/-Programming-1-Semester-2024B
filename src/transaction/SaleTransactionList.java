@@ -12,6 +12,7 @@ import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -36,10 +37,7 @@ public class SaleTransactionList {
 
     public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter transaction date (dd/MM/yyyy): ");
-        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-        LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
+        LocalDate transactionDate = DatePrompt.getDate("transaction");
         User client = null;
         while (client == null) {
             System.out.println("Client:");
@@ -75,10 +73,13 @@ public class SaleTransactionList {
 
         SaleTransaction transaction = new SaleTransaction(transactionDate, client.getUserID(), salespersonId, newItemIds);
         SaleTransaction.addSaleTransaction(transaction);
-
-        System.out.println("Sale transaction added successfully:");
         System.out.println(transaction.getFormattedSaleTransactionDetails());
 
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Created a new transaction with ID: " + transaction.getTransactionId());
+        } catch (Exception e) {
+            System.out.println("Error logging sale transaction action history: " + e.getMessage());
+        }
     }
 
     public static SaleTransaction getSaleTransactionById(String transactionId) {

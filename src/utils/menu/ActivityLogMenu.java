@@ -20,7 +20,8 @@ public class ActivityLogMenu extends Menu {
         try {
             if (!Database.isDatabaseExist(ActivityLogDatabase.path)) {
                 ActivityLogDatabase.createDatabase();
-            };
+            }
+            ;
             activityLogs = ActivityLogDatabase.loadActivityLogs();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -84,8 +85,6 @@ public class ActivityLogMenu extends Menu {
     }
 
 
-
-
     public ActivityLogMenu() {
         super();
         switch (currentUser) {
@@ -128,8 +127,8 @@ public class ActivityLogMenu extends Menu {
     private void viewAllActivityLogs() {
         viewAllActivityLog();
 
-        try{
-            addActivityLogForCurrentUser("View all activity logs");
+        try {
+            addActivityLogForCurrentUser("Viewed all activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -147,8 +146,8 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity log found with the given ID.");
         }
 
-        try{
-            addActivityLogForCurrentUser("View all activity log with ID: " + activityId);
+        try {
+            addActivityLogForCurrentUser("Searched for activity log with ID: " + activityId);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -164,8 +163,8 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found for the given User ID.");
         }
 
-        try{
-            addActivityLogForCurrentUser("View all my activity logs");
+        try {
+            addActivityLogForCurrentUser("Viewed all my activity logs");
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -190,8 +189,8 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found for the given User ID.");
         }
 
-        try{
-            addActivityLogForCurrentUser("View all activity logs of user with ID: " + userId);
+        try {
+            addActivityLogForCurrentUser("Viewed all activity logs of user with ID: " + userId);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }
@@ -205,7 +204,7 @@ public class ActivityLogMenu extends Menu {
         } else {
             eligibleLogs = viewMyActivityLog(userId);
         }
-        LocalDate startDate = DatePrompt.getStartDate();
+        LocalDate startDate = DatePrompt.getDate("start");
         LocalDate endDate = DatePrompt.getEndDate(startDate);
         List<ActivityLog> logsByDate = eligibleLogs.stream()
                 .filter(log -> (log.getDate().isEqual(startDate) || log.getDate().isAfter(startDate)) &&
@@ -217,8 +216,8 @@ public class ActivityLogMenu extends Menu {
             System.out.println("No activity logs found in the given date range.");
         }
 
-        try{
-            addActivityLogForCurrentUser("Filter activity logs from" + startDate + " to " + endDate);
+        try {
+            addActivityLogForCurrentUser("Viewed filtered activity logs from" + startDate + " to " + endDate);
         } catch (Exception e) {
             System.out.println("Error logging activity log action history: " + e.getMessage());
         }

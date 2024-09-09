@@ -1,6 +1,7 @@
 package user;
 
 import data.user.UserDatabase;
+import utils.DatePrompt;
 import utils.menu.UserMenu;
 
 import java.io.Serializable;
@@ -67,45 +68,47 @@ public class User implements Serializable {
                 System.out.println("Please enter new username: ");
                 input = scanner.nextLine();
                 this.setUserName(input);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 2:
                 System.out.println("Please enter new password: ");
                 input = scanner.nextLine();
                 this.setPassword(input);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 3:
                 System.out.println("Please enter new name: ");
                 input = scanner.nextLine();
                 this.setName(input);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 4:
                 System.out.println("Please enter new address: ");
                 input = scanner.nextLine();
                 this.setAddress(input);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 5:
                 System.out.println("Please enter new phone number: ");
                 input = scanner.nextLine();
                 this.setPhoneNum(Integer.parseInt(input));
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 6:
                 System.out.println("Please enter new email: ");
                 input = scanner.nextLine();
                 this.setEmail(input);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 7:
-                System.out.println("Please enter new day of birth (yyyy-mm-dd): ");
-                input = scanner.nextLine();
-                this.setDob(LocalDate.parse(input));
+                LocalDate newDob = DatePrompt.getDate("new date of birth");
+                this.setDob(newDob);
+                UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
 
             default:
                 System.out.println("Invalid field specified.");
-                return;
         }
-        ;
-        UserDatabase.saveUsersData(UserMenu.getUserList());
-
     }
 
     public static void modifyUser(String userID, int option) throws Exception {
@@ -237,16 +240,16 @@ public class User implements Serializable {
                 '}';
     }
 
-    public String getUserInfo(){
+    public String getUserInfo() {
         var sb = new StringBuilder();
-        sb.append("User Id:").append(userID).append("\n");
-        sb.append("User name:").append(userName).append("\n");
-        sb.append("Name:").append(name).append("\n");
-        sb.append("Date of birth:").append(dob).append("\n");
-        sb.append("Address:").append(address).append("\n");
-        sb.append("Phone number:").append(phoneNum).append("\n");
-        sb.append("email:").append(email).append("\n");
-        return  sb.toString();
+        sb.append("User ID: ").append(userID).append("\n");
+        sb.append("Username: ").append(userName).append("\n");
+        sb.append("Name: ").append(name).append("\n");
+        sb.append("Date of birth: ").append(dob).append("\n");
+        sb.append("Address: ").append(address).append("\n");
+        sb.append("Phone number: ").append(phoneNum).append("\n");
+        sb.append("email: ").append(email).append("\n");
+        return sb.toString();
     }
 }
 

@@ -8,11 +8,11 @@ import java.util.Scanner;
 public class DatePrompt {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public static LocalDate getStartDate() {
+    public static LocalDate getDate(String prompt) {
         Scanner scanner = new Scanner(System.in);
         LocalDate startDate;
         while (true) {
-            System.out.print("Enter start date (dd/MM/yyyy): ");
+            System.out.printf("Enter %s date (dd/MM/yyyy): ", prompt);
             try {
                 String input = sanitizeDateInput(scanner.nextLine());
                 startDate = validateAndParseDate(input);

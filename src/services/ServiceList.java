@@ -12,6 +12,7 @@ import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -40,9 +41,7 @@ public class ServiceList {
         Scanner scanner = new Scanner(System.in);
 
         String type = null;
-        System.out.print("Enter transaction date (dd/MM/yyyy): ");
-        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-        LocalDate serviceDate = DatePrompt.validateAndParseDate(input);
+        LocalDate serviceDate = DatePrompt.getDate("service");
         System.out.println("Clients Available:");
         UserMenu.getUserList().stream().filter(user -> user instanceof Client).forEach(System.out::println);
         System.out.print("Enter client Id: ");
@@ -135,6 +134,12 @@ public class ServiceList {
         Service.addService(service);
         service.setServiceTypeByOther(type);
         System.out.println(service.getFormattedServiceDetails());
+
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Created a new service with ID: " + service.getServiceId());
+        } catch (Exception e) {
+            System.out.println("Error logging service action history: " + e.getMessage());
+        }
     }
 
 
@@ -159,7 +164,7 @@ public class ServiceList {
     public static void displayAllServices() {
 
         User current = UserSession.getCurrentUser();
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        if (current instanceof Manager) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("1. View all available");
             System.out.println("2. View all service done by AUTO136");
@@ -200,16 +205,12 @@ public class ServiceList {
                     System.out.println("Please enter a valid option!");
                     break;
             }
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Mechanic) {
-                for (Service service : services) {
-                    if (!service.isDeleted() && service.getMechanicId() != null && service.getMechanicId().equals(current.getUserID())) {
-                        System.out.println(service.getFormattedServiceDetails());
-                        System.out.println("___________________________________");
-                    }
+        } else if (current instanceof Mechanic) {
+            for (Service service : services) {
+                if (!service.isDeleted() && service.getMechanicId() != null && service.getMechanicId().equals(current.getUserID())) {
+                    System.out.println(service.getFormattedServiceDetails());
+                    System.out.println("___________________________________");
                 }
-            } else {
-                System.out.println("Your role is not able to access this field");
             }
         } else if (current instanceof Client) {
             for (Service service : getServicesByCLient(current.getUserID())) {
