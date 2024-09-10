@@ -171,12 +171,15 @@ public class SaleTransactionMenu extends Menu {
     }
 
     private void searchTransactionById() {
-        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(System.out::println);
+        if (currentUser instanceof Manager) {
+            SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(System.out::println);
+        } else if (currentUser instanceof Salesperson) {
+            SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted() && transaction.getSalespersonId().equals(currentUser.getUserID())).forEach(System.out::println);
+        }
         System.out.println("Searching transaction by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        User currentUser = UserSession.getCurrentUser();
         SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionID);
         if (currentUser instanceof Manager) {
             if (transaction != null && !transaction.isDeleted()) {

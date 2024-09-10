@@ -112,6 +112,10 @@ public class CarAndAutoPartMenu extends Menu {
                 System.out.println("Car not found.");
                 return;
             }
+            if (currentUser instanceof Mechanic && car.getClientID() == null) {
+                System.out.println("You are not authorized to view this car.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(car.toStringDetailed());
             System.out.println("----------------");
@@ -325,9 +329,9 @@ public class CarAndAutoPartMenu extends Menu {
                         .forEach(System.out::println);
             }
         } else if (user instanceof Mechanic) {
-            System.out.println("Displaying all cars for repair:");
+            System.out.println("Displaying all cars that are available for repair:");
             carsList.stream()
-                    .filter(car -> car.getStatus() == Status.WALK_IN && !car.isDeleted())
+                    .filter(car -> car.getClientID() != null && !car.isDeleted())
                     .forEach(System.out::println);
         } else {
             System.out.println("Displaying all cars for sale:");
