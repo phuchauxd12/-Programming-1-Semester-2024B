@@ -245,13 +245,11 @@ public class ServiceList {
         Service.updateService();
     }
 
-
     public static void deleteService() throws Exception {
         displayAllServices();
         Service.deleteService();
     }
-
-
+    
     public static int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
         int autoPartCount = 0;
@@ -374,48 +372,50 @@ public class ServiceList {
 
         // Statistics info
         System.out.printf("Service Statistics from %s to %s:\n", startDate, endDate);
+        System.out.println("-------------------------------------------------");
         System.out.println("Total Services Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.printf("Total Number of Services: %d\n", serviceCount);
         System.out.printf("Number of Services by AUTO136: %d\n", serviceCount - serviceByOther);
         System.out.printf("Total Number of AutoPart used: %d\n", autoPartUsed);
-
+        System.out.println("-------------------------------------------------");
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
-
+        System.out.println("-------------------------------------------------");
         // Top mechanic
         if (topMechanicId != null) {
             System.out.printf("Top Mechanic: %s, Revenue: %s\n", UserMenu.getUserById(topMechanicId).getName(), CurrencyFormat.format(maxRevenue));
         } else {
             System.out.println("No service transactions in the given period.");
         }
-
+        System.out.println("-------------------------------------------------");
         if (mostUsedService != null) {
             System.out.printf("Most Used Service: %s\n", mostUsedService);
         }
-
+        System.out.println("-------------------------------------------------");
         if (highestRevenueService != null) {
             System.out.printf("Highest Revenue Service: %s, Revenue: %s\n", highestRevenueService, CurrencyFormat.format(highestRevenue));
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Usages of Service:");
         for (Map.Entry<String, Integer> entry : serviceUsageCount.entrySet()) {
             System.out.printf("Service Type: %s, Usage: %s\n", entry.getKey(), entry.getValue());
         }
-
+        System.out.println("-------------------------------------------------");
         // Revenue by Service Type
         System.out.println("Revenue of Service:");
         for (Map.Entry<String, Double> entry : serviceRevenue.entrySet()) {
             System.out.printf("Service Type: %s, Revenue: %s\n", entry.getKey(), CurrencyFormat.format(entry.getValue()));
         }
-
+        System.out.println("-------------------------------------------------");
         // Revenue by Mechanic
         System.out.println("Revenue of Mechanic:");
         for (Map.Entry<String, Double> entry : mechanicRevenue.entrySet()) {
             System.out.printf("Mechanic: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
+        System.out.println("-------------------------------------------------");
     }
 
     public static void viewServiceByMechanic(String mechanicId, LocalDate startDate, LocalDate endDate) {
@@ -428,10 +428,10 @@ public class ServiceList {
         double totalServiceRevenue = calculateMechanicRevenue(mechanicId, startDate, endDate);
 
         int serviceCount = filteredService.size();
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Services done by mechanic: " + UserMenu.getUserById(mechanicId).getName());
         System.out.println("Total Service Revenue: " + CurrencyFormat.format(totalServiceRevenue));
         System.out.println("Total Number of Service: " + serviceCount);
-
+        System.out.println("-------------------------------------------------");
     }
 }

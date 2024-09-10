@@ -132,18 +132,19 @@ public class ServiceMenu extends Menu {
         List<Service> services;
         UserMenu.displayAllMechanics();
         String mechanicId;
-        Mechanic mechanic;
-        Scanner input = new Scanner(System.in);
+        User mechanic;
+        input.nextLine();
         while (true) {
             System.out.print("Enter mechanic ID: ");
             mechanicId = input.nextLine();
             if (!mechanicId.isEmpty()) {
-                mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
-                if (mechanic != null) {
+                mechanic = UserMenu.getUserById(mechanicId);
+                if (mechanic instanceof Mechanic) {
                     break;
                 } else {
                     System.out.println("Mechanic not found. Please try again.");
                 }
+            } else {
                 System.out.println("Mechanic ID cannot be empty. Please try again.");
             }
         }

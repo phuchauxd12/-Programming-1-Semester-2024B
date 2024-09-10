@@ -262,17 +262,17 @@ public class StatisticsMenu extends Menu {
 
         Map<String, Double> employeeRevenue = calculateEmployeeRevenue(startDate, endDate);
         Map<String, Double> clientRevenue = calculateClientRevenue(startDate, endDate);
-
+        System.out.println("-------------------------------------------------");
         System.out.printf("Combined Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Combined Revenue: " + CurrencyFormat.format(totalRevenue));
         System.out.printf("\nTotal Combined Transactions (Service and Sale): %d\n", totalTransactions);
-
+        System.out.println("-------------------------------------------------");
         System.out.println("\nRevenue by Employee:");
         employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee : %s, Revenue: %s\n", UserMenu.getUserById(employeeId).getName(), CurrencyFormat.format(revenue)));
-
+        System.out.println("-------------------------------------------------");
         System.out.println("\nRevenue by Client:");
         clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client: %s, Revenue: %s\n", UserMenu.getUserById(clientId).getName(), CurrencyFormat.format(revenue)));
-
+        System.out.println("-------------------------------------------------");
         try {
             String activityName = "View total revenue by client and employee from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
@@ -340,14 +340,14 @@ public class StatisticsMenu extends Menu {
                 totalPartsSold++;
             }
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Auto Part Statistics:");
         System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
         System.out.printf("Total Parts Sold/Used: %d\n", totalPartsSold);
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Part Condition Statistics:");
         partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
-
+        System.out.println("-------------------------------------------------");
         try {
             String activityName = "View Auto Part Statistics";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
@@ -407,36 +407,38 @@ public class StatisticsMenu extends Menu {
                 highestRevenueCarModel = entry.getKey();
             }
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.printf("Car Sales Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Car Revenue: %s\n", CurrencyFormat.format(totalCarRevenue));
         System.out.printf("Total Cars Sold: %d\n", totalCarsSold);
         System.out.printf("Average Car Price: %s\n", CurrencyFormat.format(averageCarPrice));
-
+        System.out.println("-------------------------------------------------");
         System.out.println("\nTop Selling Car Model: " + topSellingCarModel);
         System.out.println("Sales: " + totalCarsSold);
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Number of car sales by Car Model:");
         for (Map.Entry<String, Integer> entry : carsSoldByModel.entrySet()) {
             System.out.printf("Car Model: %s, Sales: %d\n", entry.getKey(), entry.getValue());
         }
-
+        System.out.println("-------------------------------------------------");
 
         System.out.println("\nCar Model with highest Revenue: " + highestRevenueCarModel);
         System.out.println("Max Revenue: " + CurrencyFormat.format(maxRevenue));
 
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Revenue by Car Model:");
         for (Map.Entry<String, Double> entry : revenueByCarModel.entrySet()) {
             System.out.printf("Car Model: %s, Revenue: %s\n", entry.getKey(), CurrencyFormat.format(entry.getValue()));
         }
+        System.out.println("-------------------------------------------------");
         System.out.println("Total Cars in Repair:" + carsInRepair.size());
 
         System.out.println("Cars in Repair:");
         for (Map.Entry<String, Integer> entry : carsInRepair.entrySet()) {
-            System.out.printf("Car ID: %s, Services Count: %d\n", entry.getKey(), entry.getValue());
+            Car car = CarAndAutoPartMenu.findCarByID(entry.getKey());
+            System.out.printf("Car: %s, Services Count: %d\n", car.getCarMake() + " " + car.getCarModel() + " " + car.getCarYear(), entry.getValue());
         }
-
+        System.out.println("-------------------------------------------------");
         try {
             String activityName = "View car statistic";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
@@ -549,7 +551,7 @@ public class StatisticsMenu extends Menu {
             System.out.println(car);
         }
         System.out.println("Total cars sold: " + totalCarsSold);
-
+        System.out.println("-------------------------------------------------");
         // Display sold auto parts
         System.out.println("\nAuto parts sold by " + salesperson.getUserName() + " (" + salesperson.getUserID() + "):");
         for (autoPart part : autoPartsSold) {
@@ -562,7 +564,7 @@ public class StatisticsMenu extends Menu {
         for (Map.Entry<String, Integer> entry : topParts) {
             System.out.println(entry.getKey() + ": " + entry.getValue() + " times");
         }
-
+        System.out.println("-------------------------------------------------");
         try {
             String activityName = "View all cars sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);

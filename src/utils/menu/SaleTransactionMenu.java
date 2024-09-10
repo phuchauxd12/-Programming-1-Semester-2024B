@@ -136,19 +136,18 @@ public class SaleTransactionMenu extends Menu {
         List<SaleTransaction> transactions;
         UserMenu.displayAllSalespersons();
         String salespersonId;
-        Salesperson salesperson;
+        User salesperson;
+        input.nextLine();
         while (true) {
             System.out.print("Enter salesperson ID: ");
-            input.nextLine();
             salespersonId = input.nextLine();
             if (!salespersonId.isEmpty()) {
-                salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
-                if (salesperson != null) {
+                salesperson = UserMenu.getUserById(salespersonId);
+                if (salesperson instanceof Salesperson) {
                     break;
                 } else {
                     System.out.println("Salesperson not found. Please try again.");
                 }
-
             } else {
                 System.out.println("Salesperson ID cannot be empty. Please try again.");
             }

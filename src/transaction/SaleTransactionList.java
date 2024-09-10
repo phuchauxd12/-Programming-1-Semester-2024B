@@ -51,7 +51,7 @@ public class SaleTransactionList {
                     .findFirst()
                     .orElse(null);
 
-            if (client == null) {
+            if (!(client instanceof Client)) {
                 System.out.print("Invalid client ID. Please press enter to re-enter client ID or type 'quit' to exit: ");
                 clientId = scanner.nextLine();
                 if (clientId.equalsIgnoreCase("quit")) {
@@ -274,39 +274,40 @@ public class SaleTransactionList {
                 .map(Map.Entry::getKey)
                 .orElse(null);
         int maxSalesCount = salespersonSales.getOrDefault(topSalespersonByCount, 0);
-
+        System.out.println("-------------------------------------------------");
         // Statistics info
         System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
         System.out.printf("Total Sales Revenue: %s\n", CurrencyFormat.format(totalSalesRevenue));
         System.out.printf("Total Number of Transactions: %d\n", transactionCount);
         System.out.printf("Total Number of Cars Sold: %d\n", carsSold);
         System.out.printf("Total Number of AutoParts Sold: %d\n", autoPartsSold);
-
+        System.out.println("-------------------------------------------------");
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
             System.out.printf("Client ID: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
-
+        System.out.println("-------------------------------------------------");
         // Top salesperson by revenue count
         if (topSalespersonByRevenue != null) {
             System.out.printf("Top Salesperson by Revenue: Name: %s, Revenue: %s\n", UserMenu.getUserById(topSalespersonByRevenue).getName(), CurrencyFormat.format(maxRevenue));
         }
-
+        System.out.println("-------------------------------------------------");
         // top salesperson by sale count
         if (topSalespersonByCount != null) {
             System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", UserMenu.getUserById(topSalespersonByCount).getName(), maxSalesCount);
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Revenue by Salesperson:");
         for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
             System.out.printf("Salesperson : %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Sale by Salesperson:");
         for (Map.Entry<String, Integer> entry : salespersonSales.entrySet()) {
             System.out.printf("Salesperson : %s, Sale: %d\n", UserMenu.getUserById(entry.getKey()).getName(), entry.getValue());
         }
+        System.out.println("-------------------------------------------------");
     }
 
     public static void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
@@ -318,11 +319,11 @@ public class SaleTransactionList {
 
         double totalSalesRevenue = calculateSalespersonRevenue(salespersonId, startDate, endDate);
         int transactionCount = filteredTransactions.size();
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Sales Transactions for Salesperson: " + UserMenu.getUserById(salespersonId).getName());
         System.out.println("Total Sales Revenue: " + String.format("%.2f", totalSalesRevenue));
         System.out.println("Total Number of Transactions: " + transactionCount);
-
+        System.out.println("-------------------------------------------------");
         if (!filteredTransactions.isEmpty()) {
             System.out.println("\nTransaction Details:");
             for (SaleTransaction transaction : filteredTransactions) {

@@ -442,10 +442,11 @@ public class CarAndAutoPartMenu extends Menu {
                 }
             }
         }
+        input.nextLine();
         System.out.println("Please input the car's make:");
-        String carMake = input.next();
+        String carMake = input.nextLine();
         System.out.println("Please input the car's model:");
-        String carModel = input.next();
+        String carModel = input.nextLine();
         int carYear = CarAndAutoPartMenu.getNewCarYear(input);
         System.out.println("Please input the car's color:");
         String color = input.next().toUpperCase();
@@ -506,11 +507,12 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("7. Additional Notes");
             System.out.println("0. Exit");
             option = MainMenu.getOption(option, input);
+            input.nextLine();
             switch (option) {
                 case 1:
                     System.out.println("The current car's make: " + car.getCarMake());
                     System.out.println("Please input the car's make:");
-                    String newCarMake = input.next();
+                    String newCarMake = input.nextLine();
                     car.setCarMake(newCarMake);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
@@ -518,7 +520,7 @@ public class CarAndAutoPartMenu extends Menu {
                 case 2:
                     System.out.println("The current car's model: " + car.getCarModel());
                     System.out.println("Please input the car's model:");
-                    String newCarModel = input.next();
+                    String newCarModel = input.nextLine();
                     car.setCarModel(newCarModel);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
@@ -591,7 +593,6 @@ public class CarAndAutoPartMenu extends Menu {
     }
 
     public static int getNewCarYear(Scanner input) {
-        input.nextLine();
         int newCarYear;
         while (true) {
             try {
@@ -621,9 +622,9 @@ public class CarAndAutoPartMenu extends Menu {
     public static autoPart createPart() {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter part name: ");
-        String partName = input.next();
+        String partName = input.nextLine();
         System.out.println("Enter part manufacturer: ");
-        String partManufacturer = input.next();
+        String partManufacturer = input.nextLine();
         System.out.println("Enter part condition (NEW, USED, REFURBISHED): ");
         autoPart.Condition condition;
         try {
@@ -692,16 +693,17 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("6. Additional Notes");
             System.out.println("7. Exit");
             option = MainMenu.getOption(option, input);
+            input.nextLine();
             switch (option) {
                 case 1:
                     System.out.println("Enter new part name: ");
-                    part.setPartName(input.next());
+                    part.setPartName(input.nextLine());
                     System.out.println("Part name updated successfully.");
                     System.out.println(part);
                     break;
                 case 2:
                     System.out.println("Enter new part manufacturer: ");
-                    part.setPartManufacturer(input.next());
+                    part.setPartManufacturer(input.nextLine());
                     System.out.println("Part manufacturer updated successfully.");
                     System.out.println(part);
                     break;
@@ -770,7 +772,8 @@ public class CarAndAutoPartMenu extends Menu {
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
         for (Car car : carsList) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && (car.getSoldDate().isBefore(endDate) || car.getSoldDate().isEqual(endDate))
+                    && (car.getSoldDate().isAfter(startDate) || car.getSoldDate().isEqual(startDate))) {
                 carSold += 1;
             }
         }
@@ -779,7 +782,8 @@ public class CarAndAutoPartMenu extends Menu {
 
     public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         for (Car car : carsList) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && (car.getSoldDate().isBefore(endDate) || car.getSoldDate().isEqual(endDate)) && (car.getSoldDate().isAfter(startDate)
+                    || car.getSoldDate().isEqual(startDate))) {
                 System.out.println(car);
             }
         }

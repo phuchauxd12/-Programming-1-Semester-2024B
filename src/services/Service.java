@@ -132,9 +132,9 @@ public class Service implements Serializable {
             Scanner input = new Scanner(System.in);
             Status status = Status.WALK_IN;
             System.out.println("Please input the car's make:");
-            String carMake = input.next();
+            String carMake = input.nextLine();
             System.out.println("Please input the car's model:");
-            String carModel = input.next();
+            String carModel = input.nextLine();
             int carYear = CarAndAutoPartMenu.getNewCarYear(input);
             System.out.println("Please input the car's color:");
             String color = input.next().toUpperCase();

@@ -63,7 +63,6 @@ public class ActivityLogMenu extends Menu {
     }
 
     public static List<ActivityLog> getAllActivityLog() {
-        System.out.println(activityLogs);
         return activityLogs;
     }
 
