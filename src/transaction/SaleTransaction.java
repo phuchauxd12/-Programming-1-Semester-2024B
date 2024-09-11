@@ -36,7 +36,7 @@ public class SaleTransaction implements Serializable {
     private String additionalNotes;
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> itemIds) throws Exception {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, Set<String> itemIds) throws Exception {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
@@ -163,10 +163,10 @@ public class SaleTransaction implements Serializable {
                         CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
                         System.out.println("Enter new item IDs purchased (separated by comma): ");
                         String itemIdsInput = scanner.nextLine();
-                        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
                                 .map(String::trim)
                                 .map(item -> item.replaceAll(" +", " "))
-                                .collect(Collectors.toList());
+                                .collect(Collectors.toSet());
 
                         List<Car> newPurchasedCars = transaction.retrieveCars(newItemIds);
                         List<autoPart> newPurchasedAutoParts = transaction.retrieveAutoParts(newItemIds);
@@ -304,7 +304,7 @@ public class SaleTransaction implements Serializable {
         }
     }
 
-    private List<Car> retrieveCars(List<String> itemIds) throws Exception {
+    private List<Car> retrieveCars(Set<String> itemIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         List<Car> allCars = CarDatabase.loadCars();
         for (String itemId : itemIds) {
@@ -316,7 +316,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    private List<autoPart> retrieveAutoParts(List<String> itemIds) throws Exception {
+    private List<autoPart> retrieveAutoParts(Set<String> itemIds) throws Exception {
         List<autoPart> autoParts = new ArrayList<>();
         List<autoPart> allAutoParts = AutoPartDatabase.loadAutoParts();
 

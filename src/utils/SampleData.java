@@ -14,20 +14,20 @@ import user.*;
 import utils.menu.CarAndAutoPartMenu;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 public class SampleData {
     public static void importData() throws Exception {
         /* Add Users to Database*/
-        Manager manager = new Manager("manager", "pass123", "Johnny Stack", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "johnny.stack@example.com", User.ROLE.MANAGER);
-        Mechanic mechanic1 = new Mechanic("m_timmy", "password123", "Timmy Toe", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "timmy.toe@example.com", User.ROLE.EMPLOYEE);
-        Mechanic mechanic2 = new Mechanic("m_willy", "password123", "Willy Wonka", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "willy.wonka@example.com", User.ROLE.EMPLOYEE);
+        Manager manager = new Manager("manager", "pass123", "Park Jin Young", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "park.jinyoung@example.com", User.ROLE.MANAGER);
+        Mechanic mechanic1 = new Mechanic("m_chris", "password123", "Christian Horner", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "christian.horner@example.com", User.ROLE.EMPLOYEE);
+        Mechanic mechanic2 = new Mechanic("m_toto", "password123", "Toto Wolff", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "toto.wolff@example.com", User.ROLE.EMPLOYEE);
         Salesperson sale1 = new Salesperson("s_jackson", "password123", "Jackson Wang", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE);
-        Salesperson sale2 = new Salesperson("s_aimee", "password123", "Aim Lee", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "jackson.wang@example.com", User.ROLE.EMPLOYEE);
-        Client john = new Client("john_doe", "password1234", "John Doe", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "john.doe@example.com", User.ROLE.CLIENT, new Membership());
-        Client sarah = new Client("sarah_smith", "password012", "Sarah Smith", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "sarah.smith@example.com", User.ROLE.CLIENT, new Membership());
-        Client mary = new Client("mary_johnson", "password678", "Mary Johnson", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "mary.johnson@example.com", User.ROLE.CLIENT, new Membership());
-        Client lily = new Client("lily_james", "password678", "Lily James", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "lily.james@example.com", User.ROLE.CLIENT, new Membership());
+        Salesperson sale2 = new Salesperson("s_mina", "password123", "Myoui Mina", LocalDate.of(1985, 5, 15), "123 Main St", 1234567890, "myoui.mina@example.com", User.ROLE.EMPLOYEE);
+        Client john = new Client("park_jihyo", "password1234", "Park Jihyo", LocalDate.of(1990, 12, 1), "123 Main St", 1234567890, "park.jihyo@example.com", User.ROLE.CLIENT, new Membership());
+        Client sarah = new Client("im_nayeon", "password012", "Im Nayeon", LocalDate.of(2000, 5, 22), "012 Maple Ln", 987643210, "im.nayeon@example.com", User.ROLE.CLIENT, new Membership());
+        Client mary = new Client("kim_minji", "password678", "Kim Minji", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "kim.minji@example.com", User.ROLE.CLIENT, new Membership());
+        Client lily = new Client("young_k", "password678", "Young K", LocalDate.of(1960, 9, 18), "678 Willow Dr", 987643210, "young.k@example.com", User.ROLE.CLIENT, new Membership());
 
         UserDatabase.createDatabase();
         User.addUser(manager);
@@ -157,22 +157,22 @@ public class SampleData {
         CarAndAutoPartMenu.addCarToList(car22);
 
         /* Add Service*/
-        Service service1 = new Service(LocalDate.of(2024, 1, 15), john.getUserID(), mechanic1.getUserID(), Service.serviceType.Oil_Change, List.of(part2.getPartID()), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Oil_Change.getPrice(), null);
-        Service service2 = new Service(LocalDate.of(2024, 2, 10), sarah.getUserID(), mechanic1.getUserID(), Service.serviceType.Brake_Service, List.of(part18.getPartID()), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Brake_Service.getPrice(), null);
-        Service service3 = new Service(LocalDate.of(2024, 3, 5), mary.getUserID(), mechanic1.getUserID(), Service.serviceType.Tire_Rotation, List.of(), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Tire_Rotation.getPrice(), "Rotated all four tires.");
-        Service service4 = new Service(LocalDate.of(2024, 4, 20), john.getUserID(), mechanic2.getUserID(), Service.serviceType.General_Maintenance_L1, List.of(part5.getPartID()), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.General_Maintenance_L1.getPrice(), "Battery tested and replaced.");
-        Service service5 = new Service(LocalDate.of(2024, 5, 12), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Transmission_Repair, List.of(part30.getPartID()), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Transmission_Repair.getPrice(), "Transmission fluid replaced and gears adjusted.");
-        Service service6 = new Service(LocalDate.of(2024, 6, 8), mary.getUserID(), mechanic2.getUserID(), Service.serviceType.Steering_Repair, List.of(), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Steering_Repair.getPrice(), "Steering checked and repaired. Adjustments made to improve handling.");
-        Service service7 = new Service(LocalDate.of(2024, 7, 20), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Cooling_System_Repair, List.of(), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Cooling_System_Repair.getPrice(), "Coolant flushed, radiator checked.");
-        Service service8 = new Service(LocalDate.of(2024, 8, 15), mary.getUserID(), mechanic1.getUserID(), Service.serviceType.Air_Filter, List.of(part4.getPartID()), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Air_Filter.getPrice(), "Air filter replaced with a high-efficiency filter.");
-        Service service9 = new Service(LocalDate.of(2024, 9, 10), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.Accessory_Installation, List.of(part6.getPartID()), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Accessory_Installation.getPrice(), "Timing belt replaced, engine recalibrated.");
-        Service service10 = new Service(LocalDate.of(2024, 10, 5), john.getUserID(), mechanic2.getUserID(), Service.serviceType.CarWash, List.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.CarWash.getPrice(), null);
-        Service service11 = new Service(LocalDate.of(2024, 11, 2), john.getUserID(), mechanic1.getUserID(), Service.serviceType.Exhaust_System_Repair, List.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Exhaust_System_Repair.getPrice(), "Exhaust system repaired, muffler replaced.");
-        Service service12 = new Service(LocalDate.of(2024, 12, 1), lily.getUserID(), mechanic1.getUserID(), Service.serviceType.Brake_Service, List.of(part1.getPartID()), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Brake_Service.getPrice(), "Brakes inspected and pads replaced.");
-        Service service13 = new Service(LocalDate.of(2024, 12, 15), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.CarWash, List.of(), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.CarWash.getPrice(), null);
-        Service service14 = new Service(LocalDate.of(2024, 12, 20), john.getUserID(), mechanic2.getUserID(), Service.serviceType.Tire_Rotation, List.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Tire_Rotation.getPrice(), "Tires rotated and inspected.");
-        Service service15 = new Service(LocalDate.of(2024, 12, 25), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.Oil_Change, List.of(), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Oil_Change.getPrice(), "Oil changed, engine checked.");
-        Service service16 = new Service(LocalDate.of(2024, 12, 30), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Paint_Job, List.of(), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Paint_Job.getPrice(), null);
+        Service service1 = new Service(LocalDate.of(2024, 1, 15), john.getUserID(), mechanic1.getUserID(), Service.serviceType.Oil_Change, Set.of(part2.getPartID()), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Oil_Change.getPrice(), null);
+        Service service2 = new Service(LocalDate.of(2024, 2, 10), sarah.getUserID(), mechanic1.getUserID(), Service.serviceType.Brake_Service, Set.of(part18.getPartID()), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Brake_Service.getPrice(), null);
+        Service service3 = new Service(LocalDate.of(2024, 3, 5), mary.getUserID(), mechanic1.getUserID(), Service.serviceType.Tire_Rotation, Set.of(), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Tire_Rotation.getPrice(), "Rotated all four tires.");
+        Service service4 = new Service(LocalDate.of(2024, 4, 20), john.getUserID(), mechanic2.getUserID(), Service.serviceType.General_Maintenance_L1, Set.of(part5.getPartID()), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.General_Maintenance_L1.getPrice(), "Battery tested and replaced.");
+        Service service5 = new Service(LocalDate.of(2024, 5, 12), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Transmission_Repair, Set.of(part30.getPartID()), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Transmission_Repair.getPrice(), "Transmission fluid replaced and gears adjusted.");
+        Service service6 = new Service(LocalDate.of(2024, 6, 8), mary.getUserID(), mechanic2.getUserID(), Service.serviceType.Steering_Repair, Set.of(), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Steering_Repair.getPrice(), "Steering checked and repaired. Adjustments made to improve handling.");
+        Service service7 = new Service(LocalDate.of(2024, 7, 20), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Cooling_System_Repair, Set.of(), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Cooling_System_Repair.getPrice(), "Coolant flushed, radiator checked.");
+        Service service8 = new Service(LocalDate.of(2024, 8, 15), mary.getUserID(), mechanic1.getUserID(), Service.serviceType.Air_Filter, Set.of(part4.getPartID()), ServiceBy.AUTO136, car17.getCarID(), Service.serviceType.Air_Filter.getPrice(), "Air filter replaced with a high-efficiency filter.");
+        Service service9 = new Service(LocalDate.of(2024, 9, 10), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.Accessory_Installation, Set.of(part6.getPartID()), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Accessory_Installation.getPrice(), "Timing belt replaced, engine recalibrated.");
+        Service service10 = new Service(LocalDate.of(2024, 10, 5), john.getUserID(), mechanic2.getUserID(), Service.serviceType.CarWash, Set.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.CarWash.getPrice(), null);
+        Service service11 = new Service(LocalDate.of(2024, 11, 2), john.getUserID(), mechanic1.getUserID(), Service.serviceType.Exhaust_System_Repair, Set.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Exhaust_System_Repair.getPrice(), "Exhaust system repaired, muffler replaced.");
+        Service service12 = new Service(LocalDate.of(2024, 12, 1), lily.getUserID(), mechanic1.getUserID(), Service.serviceType.Brake_Service, Set.of(part1.getPartID()), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Brake_Service.getPrice(), "Brakes inspected and pads replaced.");
+        Service service13 = new Service(LocalDate.of(2024, 12, 15), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.CarWash, Set.of(), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.CarWash.getPrice(), null);
+        Service service14 = new Service(LocalDate.of(2024, 12, 20), john.getUserID(), mechanic2.getUserID(), Service.serviceType.Tire_Rotation, Set.of(), ServiceBy.AUTO136, car3.getCarID(), Service.serviceType.Tire_Rotation.getPrice(), "Tires rotated and inspected.");
+        Service service15 = new Service(LocalDate.of(2024, 12, 25), lily.getUserID(), mechanic2.getUserID(), Service.serviceType.Oil_Change, Set.of(), ServiceBy.AUTO136, car19.getCarID(), Service.serviceType.Oil_Change.getPrice(), "Oil changed, engine checked.");
+        Service service16 = new Service(LocalDate.of(2024, 12, 30), sarah.getUserID(), mechanic2.getUserID(), Service.serviceType.Paint_Job, Set.of(), ServiceBy.AUTO136, car7.getCarID(), Service.serviceType.Paint_Job.getPrice(), null);
         Service service17 = new Service(LocalDate.of(2024, 1, 10), sarah.getUserID(), null, null, null, ServiceBy.OTHER, car7.getCarID(), 0, "Oil change performed by an external service provider.");
         service17.setServiceTypeByOther("Oil Change");
         Service service18 = new Service(LocalDate.of(2024, 2, 22), lily.getUserID(), null, null, null, ServiceBy.OTHER, car19.getCarID(), 0, "Brake pads replaced by a local garage.");
@@ -206,11 +206,11 @@ public class SampleData {
 
 
         /* Add Transaction*/
-        SaleTransaction transaction1 = new SaleTransaction(LocalDate.of(2024, 1, 5), john.getUserID(), sale1.getUserID(), List.of(part16.getPartID()));
-        SaleTransaction transaction2 = new SaleTransaction(LocalDate.of(2024, 2, 10), lily.getUserID(), sale2.getUserID(), List.of(car1.getCarID()));
-        SaleTransaction transaction3 = new SaleTransaction(LocalDate.of(2024, 3, 15), mary.getUserID(), sale1.getUserID(), List.of(car10.getCarID()));
-        SaleTransaction transaction4 = new SaleTransaction(LocalDate.of(2024, 4, 20), john.getUserID(), sale2.getUserID(), List.of(part10.getPartID()));
-        SaleTransaction transaction5 = new SaleTransaction(LocalDate.of(2024, 5, 25), mary.getUserID(), sale1.getUserID(), List.of(part27.getPartID()));
+        SaleTransaction transaction1 = new SaleTransaction(LocalDate.of(2024, 1, 5), john.getUserID(), sale1.getUserID(), Set.of(part16.getPartID()));
+        SaleTransaction transaction2 = new SaleTransaction(LocalDate.of(2024, 2, 10), lily.getUserID(), sale2.getUserID(), Set.of(car1.getCarID()));
+        SaleTransaction transaction3 = new SaleTransaction(LocalDate.of(2024, 3, 15), mary.getUserID(), sale1.getUserID(), Set.of(car10.getCarID()));
+        SaleTransaction transaction4 = new SaleTransaction(LocalDate.of(2024, 4, 20), john.getUserID(), sale2.getUserID(), Set.of(part10.getPartID()));
+        SaleTransaction transaction5 = new SaleTransaction(LocalDate.of(2024, 5, 25), mary.getUserID(), sale1.getUserID(), Set.of(part27.getPartID()));
 
         SaleTransactionDatabase.createDatabase();
         SaleTransaction.addSaleTransaction(transaction1);

@@ -66,10 +66,10 @@ public class SaleTransactionList {
         CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
-        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
                 .map(String::trim)
                 .map(item -> item.replaceAll(" +", " "))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         SaleTransaction transaction = new SaleTransaction(transactionDate, client.getUserID(), salespersonId, newItemIds);
         SaleTransaction.addSaleTransaction(transaction);

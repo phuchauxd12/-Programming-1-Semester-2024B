@@ -86,7 +86,7 @@ public class Service implements Serializable {
     }
 
     // Constructor
-    public Service(LocalDate serviceDate, String clientId, String mechanicId, serviceType type, List<String> partIds, ServiceBy serviceBy, String carId, double serviceCost, String notes) throws Exception {
+    public Service(LocalDate serviceDate, String clientId, String mechanicId, serviceType type, Set<String> partIds, ServiceBy serviceBy, String carId, double serviceCost, String notes) throws Exception {
         this.serviceId = generateServiceId();
         this.serviceDate = serviceDate;
         this.clientId = clientId;
@@ -300,10 +300,10 @@ public class Service implements Serializable {
                             // Get new parts
                             System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
                             String partIdsInput = scanner.nextLine();
-                            List<String> partIds = partIdsInput.isEmpty() ? Collections.emptyList() : Arrays.stream(partIdsInput.split(","))
+                            Set<String> partIds = partIdsInput.isEmpty() ? Collections.emptySet() : Arrays.stream(partIdsInput.split(","))
                                     .map(String::trim)
                                     .map(partId -> partId.replaceAll(" +", " "))  // Replace multiple spaces with a single space
-                                    .collect(Collectors.toList());
+                                    .collect(Collectors.toSet());
 
                             List<autoPart> newReplacedParts = service.retrieveParts(partIds);
                             service.setReplacedParts(newReplacedParts);
@@ -493,7 +493,7 @@ public class Service implements Serializable {
         }
     }
 
-    List<autoPart> retrieveParts(List<String> partIds) throws Exception {
+    List<autoPart> retrieveParts(Set<String> partIds) throws Exception {
         List<autoPart> parts = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
 
         if (partIds == null) {

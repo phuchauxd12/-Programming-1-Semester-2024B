@@ -68,41 +68,48 @@ public class User implements Serializable {
                 System.out.println("Please enter new username: ");
                 input = scanner.nextLine();
                 this.setUserName(input);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 2:
                 System.out.println("Please enter new password: ");
                 input = scanner.nextLine();
                 this.setPassword(input);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 3:
                 System.out.println("Please enter new name: ");
                 input = scanner.nextLine();
                 this.setName(input);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 4:
                 System.out.println("Please enter new address: ");
                 input = scanner.nextLine();
                 this.setAddress(input);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 5:
                 System.out.println("Please enter new phone number: ");
                 input = scanner.nextLine();
                 this.setPhoneNum(Integer.parseInt(input));
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 6:
                 System.out.println("Please enter new email: ");
                 input = scanner.nextLine();
                 this.setEmail(input);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
             case 7:
                 LocalDate newDob = DatePrompt.getDate("new date of birth");
                 this.setDob(newDob);
+                System.out.println("User modified with ID: " + userID);
                 UserDatabase.saveUsersData(UserMenu.getUserList());
                 break;
 
@@ -115,7 +122,6 @@ public class User implements Serializable {
         for (User user : UserMenu.getUserList()) {
             if (user.getUserID().equals(userID)) {
                 user.modifyProfile(option);
-                System.out.println("User modified with ID: " + userID);
                 return;
             }
         }

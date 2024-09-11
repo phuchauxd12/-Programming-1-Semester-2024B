@@ -63,7 +63,7 @@ public class ServiceList {
 
         Service.serviceType selectedServiceType = null;
         double serviceCost = 0;
-        List<String> partNames = List.of();
+        Set<String> partNames = Set.of();
         String mechanicID = null;
 
 
@@ -112,11 +112,11 @@ public class ServiceList {
 
             System.out.println("Enter ID of replaced parts (separate by comma, or leave empty if none): ");
             String partNamesInput = scanner.nextLine();
-            partNames = partNamesInput.isEmpty() ? Collections.emptyList() :
+            partNames = partNamesInput.isEmpty() ? Collections.emptySet() :
                     Arrays.stream(partNamesInput.split(","))
                             .map(String::trim)
                             .map(partName -> partName.replaceAll(" +", " "))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
         } else {
             System.out.print("Enter service type done by others: ");
             type = scanner.nextLine();
@@ -249,7 +249,7 @@ public class ServiceList {
         displayAllServices();
         Service.deleteService();
     }
-    
+
     public static int calculateAutoPartUsed(LocalDate startDate, LocalDate endDate) {
         List<Service> servicesInRange = getServicesBetween(startDate, endDate);
         int autoPartCount = 0;
