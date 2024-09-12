@@ -1,10 +1,11 @@
 package autoPart;
 
 
+import utils.CurrencyFormat;
 import utils.Status;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class autoPart implements Serializable {
@@ -16,7 +17,7 @@ public class autoPart implements Serializable {
     private double price;
     private String addNotes;
     private Status status = Status.AVAILABLE;
-    private LocalDateTime soldDate = null;
+    private LocalDate soldDate = null;
     private boolean isDeleted = false;
 
 
@@ -101,11 +102,11 @@ public class autoPart implements Serializable {
         this.status = status;
     }
 
-    public LocalDateTime getSoldDate() {
+    public LocalDate getSoldDate() {
         return soldDate;
     }
 
-    public void setSoldDate(LocalDateTime soldDate) {
+    public void setSoldDate(LocalDate soldDate) {
         this.soldDate = soldDate;
     }
 
@@ -125,7 +126,7 @@ public class autoPart implements Serializable {
                 ", partManufacturer ='" + partManufacturer + '\'' +
                 ", condition = " + condition +
                 ", warrantyMonths = " + warrantyMonths +
-                ", price = " + price +
+                ", price = " + CurrencyFormat.format(price) +
                 ", addNotes ='" + addNotes + '\'' +
                 ", status = " + status +
                 ", soldDate = " + soldDate +
@@ -140,6 +141,7 @@ public class autoPart implements Serializable {
                 ", partName ='" + partName + '\'' +
                 ", partManufacturer ='" + partManufacturer + '\'' +
                 ", condition = " + condition +
+                ", price = " + CurrencyFormat.format(price) +
                 '}';
     }
 }

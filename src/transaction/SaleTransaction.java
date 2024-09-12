@@ -6,13 +6,12 @@ import data.autoPart.AutoPartDatabase;
 import data.car.CarDatabase;
 import data.transaction.SaleTransactionDatabase;
 import data.user.UserDatabase;
-import user.Client;
-import user.Membership;
-import user.Salesperson;
-import user.User;
+import user.*;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -37,7 +36,7 @@ public class SaleTransaction implements Serializable {
     private String additionalNotes;
 
     // Constructor
-    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, List<String> itemIds) throws Exception {
+    public SaleTransaction(LocalDate transactionDate, String clientId, String salespersonId, Set<String> itemIds) throws Exception {
 
         this.transactionId = generateSaleTransactionID();
         this.transactionDate = transactionDate;
@@ -46,7 +45,7 @@ public class SaleTransaction implements Serializable {
         this.purchasedCars = retrieveCars(itemIds);
         this.purchasedAutoParts = retrieveAutoParts(itemIds);
         this.discount = calculateDiscount(clientId);
-        this.totalAmount = calculateTotalAmount(purchasedCars, purchasedAutoParts, discount);
+        this.totalAmount = calculateTotalAmount(discount);
         this.additionalNotes = "";
         this.isDeleted = false;
     }
@@ -64,6 +63,8 @@ public class SaleTransaction implements Serializable {
             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                 if (car.getCarID().equals(purchasedCar.getCarID())) {
                     car.setStatus(Status.SOLD);
+                    car.setSoldDate(saleTransaction.transactionDate);
+                    car.setClientID(saleTransaction.clientId);
                     break;
                 }
             }
@@ -72,6 +73,7 @@ public class SaleTransaction implements Serializable {
             for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
                 if (parts.getPartID().equals(autoPart.getPartID())) {
                     parts.setStatus(Status.SOLD);
+                    parts.setSoldDate(saleTransaction.transactionDate);
                     break;
                 }
             }
@@ -81,7 +83,6 @@ public class SaleTransaction implements Serializable {
         SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
         CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
-
         System.out.println("SaleTransaction added successfully!");
     }
 
@@ -117,9 +118,7 @@ public class SaleTransaction implements Serializable {
                 switch (choice) {
                     case "1":
                         try {
-                            System.out.print("Enter new transaction date (dd/MM/yyyy): ");
-                            String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-                            LocalDate newDate = DatePrompt.validateAndParseDate(input);
+                            LocalDate newDate = DatePrompt.getDate("new transaction");
                             transaction.setTransactionDate(newDate);
                         } catch (DateTimeParseException e) {
                             System.out.println("Invalid date format. Please enter a valid date (YYYY-MM-DD).");
@@ -132,6 +131,8 @@ public class SaleTransaction implements Serializable {
                             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                                 if (car.getCarID().equals(oldCar.getCarID())) {
                                     car.setStatus(Status.AVAILABLE);
+                                    car.setSoldDate(null);
+                                    car.setClientID(null);
                                     break;
                                 }
                             }
@@ -141,6 +142,7 @@ public class SaleTransaction implements Serializable {
                             for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                                 if (autoPart.getPartID().equals(oldPart.getPartID())) {
                                     autoPart.setStatus(Status.AVAILABLE);
+                                    autoPart.setSoldDate(null);
                                     break;
                                 }
                             }
@@ -161,10 +163,10 @@ public class SaleTransaction implements Serializable {
                         CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
                         System.out.println("Enter new item IDs purchased (separated by comma): ");
                         String itemIdsInput = scanner.nextLine();
-                        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
                                 .map(String::trim)
                                 .map(item -> item.replaceAll(" +", " "))
-                                .collect(Collectors.toList());
+                                .collect(Collectors.toSet());
 
                         List<Car> newPurchasedCars = transaction.retrieveCars(newItemIds);
                         List<autoPart> newPurchasedAutoParts = transaction.retrieveAutoParts(newItemIds);
@@ -176,6 +178,8 @@ public class SaleTransaction implements Serializable {
                             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                                 if (car.getCarID().equals(newCar.getCarID())) {
                                     car.setStatus(Status.SOLD);
+                                    car.setSoldDate(transaction.transactionDate);
+                                    car.setClientID(transaction.clientId);
                                     break;
                                 }
                             }
@@ -185,6 +189,7 @@ public class SaleTransaction implements Serializable {
                             for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                                 if (autoPart.getPartID().equals(newPart.getPartID())) {
                                     autoPart.setStatus(Status.SOLD);
+                                    autoPart.setSoldDate(transaction.transactionDate);
                                     break;
                                 }
                             }
@@ -193,7 +198,7 @@ public class SaleTransaction implements Serializable {
                         // Update total amount and discount based on new cars
                         double newDiscount = transaction.calculateDiscount(transaction.getClientId());
                         transaction.setDiscount(newDiscount);
-                        double newTotalAmount = transaction.calculateTotalAmount(newPurchasedCars, newPurchasedAutoParts, newDiscount);
+                        double newTotalAmount = transaction.calculateTotalAmount(newDiscount);
                         transaction.setTotalAmount(newTotalAmount);
 
                         // Update User new spending
@@ -224,6 +229,11 @@ public class SaleTransaction implements Serializable {
 
             System.out.println("Sale transaction updated successfully:");
             System.out.println(transaction.getFormattedSaleTransactionDetails());
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Updated transaction with ID: " + transactionId);
+            } catch (Exception e) {
+                System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            }
         } else {
             System.out.println("Transaction not found or it has been deleted.");
         }
@@ -236,14 +246,12 @@ public class SaleTransaction implements Serializable {
         System.out.print("Enter transaction ID to delete: ");
         String transactionId = scanner.nextLine();
         SaleTransaction transaction = null;
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        if (current instanceof Manager) {
             transaction = SaleTransactionList.getSaleTransactionById(transactionId);
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Salesperson) {
-                SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
-                if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
-                    transaction = detectedTransaction;
-                }
+        } else if (current instanceof Salesperson) {
+            SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
+            if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
+                transaction = detectedTransaction;
             }
         }
 
@@ -255,6 +263,8 @@ public class SaleTransaction implements Serializable {
                 for (Car car : CarAndAutoPartMenu.getCarsList()) {
                     if (car.getCarID().equals(oldCar.getCarID())) {
                         car.setStatus(Status.AVAILABLE);
+                        car.setSoldDate(null);
+                        car.setClientID(null);
                         break;
                     }
                 }
@@ -264,6 +274,7 @@ public class SaleTransaction implements Serializable {
                 for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                     if (autoPart.getPartID().equals(oldPart.getPartID())) {
                         autoPart.setStatus(Status.AVAILABLE);
+                        autoPart.setSoldDate(null);
                         break;
                     }
                 }
@@ -283,12 +294,17 @@ public class SaleTransaction implements Serializable {
             CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
             SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
             System.out.println("Sale transaction marked as deleted.");
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Deleted sales transaction with ID: " + transactionId);
+            } catch (Exception e) {
+                System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            }
         } else {
             System.out.println("Transaction not found.");
         }
     }
 
-    private List<Car> retrieveCars(List<String> itemIds) throws Exception {
+    private List<Car> retrieveCars(Set<String> itemIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
         List<Car> allCars = CarDatabase.loadCars();
         for (String itemId : itemIds) {
@@ -300,7 +316,7 @@ public class SaleTransaction implements Serializable {
         return cars;
     }
 
-    private List<autoPart> retrieveAutoParts(List<String> itemIds) throws Exception {
+    private List<autoPart> retrieveAutoParts(Set<String> itemIds) throws Exception {
         List<autoPart> autoParts = new ArrayList<>();
         List<autoPart> allAutoParts = AutoPartDatabase.loadAutoParts();
 
@@ -330,7 +346,7 @@ public class SaleTransaction implements Serializable {
         return 0;
     }
 
-    double calculateTotalAmount(List<Car> cars, List<autoPart> parts, double discount) {
+    private double calculateSubTotal(List<Car> cars, List<autoPart> parts) {
         double total = 0;
         if (!cars.isEmpty()) {
             for (Car car : cars) {
@@ -342,7 +358,15 @@ public class SaleTransaction implements Serializable {
                 total += autoPart.getPrice();
             }
         }
-        return total * (1 - discount);
+        return total;
+    }
+
+    private double calculateTotalAmount(double discount) {
+        return calculateSubTotal(purchasedCars, purchasedAutoParts) * (1 - discount);
+    }
+
+    private double getDiscountAmount(double discount) {
+        return calculateSubTotal(purchasedCars, purchasedAutoParts) * discount;
     }
 
     public void markAsDeleted() {
@@ -440,7 +464,7 @@ public class SaleTransaction implements Serializable {
                 ", purchasedCars=" + purchasedCars +
                 ", purchasedAutoParts=" + purchasedAutoParts +
                 ", discount=" + discount +
-                ", totalAmount=" + totalAmount +
+                ", totalAmount=" + CurrencyFormat.format(totalAmount) +
                 ", isDeleted=" + isDeleted +
                 ", additionalNotes='" + additionalNotes + '\'' +
                 '}';
@@ -450,14 +474,15 @@ public class SaleTransaction implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("Transaction ID: ").append(transactionId).append("\n");
         sb.append("Date: ").append(transactionDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).append("\n");
-        sb.append("Client ID: ").append(clientId).append("\n");
-        sb.append("Salesperson ID: ").append(salespersonId).append("\n");
-        sb.append("Discount: $").append(String.format("%.2f", discount)).append("\n");
-        sb.append("Amount: $").append(String.format("%.2f", totalAmount)).append("\n");
+        sb.append("Client: ").append(UserMenu.getUserById(clientId).getName()).append("\n");
+        sb.append("Salesperson: ").append(UserMenu.getUserById(salespersonId).getName()).append("\n");
+        sb.append("Subtotal: ").append(CurrencyFormat.format(calculateSubTotal(purchasedCars, purchasedAutoParts))).append("\n");
+        sb.append("Discount: ").append(CurrencyFormat.format(getDiscountAmount(discount))).append("\n");
+        sb.append("Total: ").append(CurrencyFormat.format(totalAmount)).append("\n");
         if (!purchasedCars.isEmpty()) {
             List<String> cars = new ArrayList<>();
             for (Car car : purchasedCars) {
-                cars.add(car.getCarModel());
+                cars.add(car.getCarMake() + " " + car.getCarModel() + " " + car.getCarYear());
             }
             sb.append("Purchased Items: ").append(String.join(", ", cars)).append("\n");
         }

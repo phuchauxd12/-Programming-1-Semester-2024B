@@ -10,8 +10,8 @@ import java.util.Scanner;
 
 abstract class Menu {
     protected static Scanner input = new Scanner(System.in);
-    protected  Map<Integer, String> menuItems ;
-    protected  Map<Integer, Runnable> menuActions;
+    protected Map<Integer, String> menuItems;
+    protected Map<Integer, Runnable> menuActions;
     protected final User currentUser = UserSession.getCurrentUser();
 
     public Menu() {
@@ -52,6 +52,22 @@ abstract class Menu {
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number");
                 input.next(); // Clear the invalid input from the scanner buffer
+            }
+        }
+        return option;
+    }
+
+    public static int getFilteredOption() {
+        int option = 100;
+        System.out.println("1. View all available");
+        System.out.println("2. Filtered by period");
+        boolean validInput = false;
+        while (!validInput) {
+            option = getOption(option, input);
+            if (option == 1 || option == 2) {
+                validInput = true;
+            } else {
+                System.out.println("Invalid input. Please enter 1 or 2");
             }
         }
         return option;

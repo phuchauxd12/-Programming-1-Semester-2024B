@@ -5,11 +5,14 @@ import car.Car;
 import data.Database;
 import data.transaction.SaleTransactionDatabase;
 import user.Client;
+import user.Manager;
 import user.Salesperson;
 import user.User;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
+import utils.menu.ActivityLogMenu;
 import utils.menu.CarAndAutoPartMenu;
 import utils.menu.UserMenu;
 
@@ -34,10 +37,7 @@ public class SaleTransactionList {
 
     public static void addSaleTransaction(String salespersonId) throws Exception {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter transaction date (dd/MM/yyyy): ");
-        String input = DatePrompt.sanitizeDateInput(scanner.nextLine());
-        LocalDate transactionDate = DatePrompt.validateAndParseDate(input);
+        LocalDate transactionDate = DatePrompt.getDate("transaction");
         User client = null;
         while (client == null) {
             System.out.println("Client:");
@@ -51,7 +51,7 @@ public class SaleTransactionList {
                     .findFirst()
                     .orElse(null);
 
-            if (client == null) {
+            if (!(client instanceof Client)) {
                 System.out.print("Invalid client ID. Please press enter to re-enter client ID or type 'quit' to exit: ");
                 clientId = scanner.nextLine();
                 if (clientId.equalsIgnoreCase("quit")) {
@@ -66,17 +66,20 @@ public class SaleTransactionList {
         CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
         System.out.println("Enter new item IDs purchased (separated by comma): ");
         String itemIdsInput = scanner.nextLine();
-        List<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
                 .map(String::trim)
                 .map(item -> item.replaceAll(" +", " "))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         SaleTransaction transaction = new SaleTransaction(transactionDate, client.getUserID(), salespersonId, newItemIds);
         SaleTransaction.addSaleTransaction(transaction);
-
-        System.out.println("Sale transaction added successfully:");
         System.out.println(transaction.getFormattedSaleTransactionDetails());
 
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Created a new transaction with ID: " + transaction.getTransactionId());
+        } catch (Exception e) {
+            System.out.println("Error logging sale transaction action history: " + e.getMessage());
+        }
     }
 
     public static SaleTransaction getSaleTransactionById(String transactionId) {
@@ -94,31 +97,33 @@ public class SaleTransactionList {
         return transactionByClient;
     }
 
+    public static List<SaleTransaction> getTransactionsBySalePerson(String salespersonId) {
+        var transactionBySaleperson = transactions.stream()
+                .filter(transaction -> transaction.getSalespersonId().equals(salespersonId)).toList();
+        return transactionBySaleperson;
+    }
+
     public List<SaleTransaction> getAllSaleTransactions() {
         return new ArrayList<>(transactions); // Return a copy to avoid modification
     }
 
     public static void displayAllSaleTransactions() {
         User current = UserSession.getCurrentUser();
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        if (current instanceof Manager) {
             for (SaleTransaction transaction : transactions) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
                     System.out.println("___________________________________");
                 }
             }
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Salesperson) {
-                for (SaleTransaction transaction : transactions) {
-                    if (!transaction.isDeleted() && transaction.getSalespersonId() == current.getUserID()) {
-                        System.out.println(transaction.getFormattedSaleTransactionDetails());
-                        System.out.println("___________________________________");
-                    }
+        } else if (current instanceof Salesperson) {
+            for (SaleTransaction transaction : getTransactionsBySalePerson(current.getUserID())) {
+                if (!transaction.isDeleted()) {
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
+                    System.out.println("___________________________________");
                 }
-            } else {
-                System.out.println("Your role is not able to access this field");
             }
-        } else if (current.getRole().equals(User.ROLE.CLIENT)) {
+        } else if (current instanceof Client) {
             for (SaleTransaction transaction : getTransactionsByClient(current.getUserID())) {
                 if (!transaction.isDeleted()) {
                     System.out.println(transaction.getFormattedSaleTransactionDetails());
@@ -127,6 +132,7 @@ public class SaleTransactionList {
             }
         }
     }
+
 
     public static void updateSaleTransaction() throws Exception {
         displayAllSaleTransactions();
@@ -181,15 +187,12 @@ public class SaleTransactionList {
         return partCount;
     }
 
-    public List<Car> listCarsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+    public static List<Car> listCarsSoldBySalePerson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<Car> carsSold = new ArrayList<>();
 
-        for (SaleTransaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getTransactionDate();
-            if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate)) &&
-                    (transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate)) &&
-                    !transaction.isDeleted()) {
-
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        for (SaleTransaction transaction : transactionsInRange) {
+            if (transaction.getSalespersonId().equals(salespersonId)) {
                 carsSold.addAll(transaction.getPurchasedCars());
             }
         }
@@ -197,18 +200,15 @@ public class SaleTransactionList {
         return carsSold;
     }
 
-    public List<autoPart> listAutoPartsSoldInDateRange(LocalDate startDate, LocalDate endDate) {
+    public static List<autoPart> listAutoPartsSoldBySalesPerson(String salespersonId, LocalDate startDate, LocalDate endDate) {
         List<autoPart> autoPartsSold = new ArrayList<>();
 
-        for (SaleTransaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getTransactionDate();
-            if ((transactionDate.isEqual(startDate) || transactionDate.isAfter(startDate) &&
-                    transactionDate.isEqual(endDate) || transactionDate.isBefore(endDate) && !transaction.isDeleted())) {
-
+        List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
+        for (SaleTransaction transaction : transactionsInRange) {
+            if (transaction.getSalespersonId().equals(salespersonId)) {
                 autoPartsSold.addAll(transaction.getPurchasedAutoParts());
             }
         }
-
         return autoPartsSold;
     }
 
@@ -226,6 +226,7 @@ public class SaleTransactionList {
 
     public static double calculateSalespersonRevenue(String salespersonId, LocalDate startDate, LocalDate endDate) {
         double totalSalesRevenue = 0.0;
+        int transactionCount = 0;
 
         List<SaleTransaction> transactionsInRange = getSaleTransactionsBetween(startDate, endDate);
         List<SaleTransaction> filteredTransactions = transactionsInRange.stream()
@@ -273,29 +274,40 @@ public class SaleTransactionList {
                 .map(Map.Entry::getKey)
                 .orElse(null);
         int maxSalesCount = salespersonSales.getOrDefault(topSalespersonByCount, 0);
-
+        System.out.println("-------------------------------------------------");
         // Statistics info
         System.out.printf("Sales Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Sales Revenue: $%.2f\n", totalSalesRevenue);
+        System.out.printf("Total Sales Revenue: %s\n", CurrencyFormat.format(totalSalesRevenue));
         System.out.printf("Total Number of Transactions: %d\n", transactionCount);
         System.out.printf("Total Number of Cars Sold: %d\n", carsSold);
         System.out.printf("Total Number of AutoParts Sold: %d\n", autoPartsSold);
-
+        System.out.println("-------------------------------------------------");
         // Revenue by client
         System.out.println("Revenue by Client:");
         for (Map.Entry<String, Double> entry : clientRevenue.entrySet()) {
-            System.out.printf("Client ID: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Client ID: %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
         }
-
+        System.out.println("-------------------------------------------------");
         // Top salesperson by revenue count
         if (topSalespersonByRevenue != null) {
-            System.out.printf("Top Salesperson by Revenue: ID: %s, Revenue: $%.2f\n", topSalespersonByRevenue, maxRevenue);
+            System.out.printf("Top Salesperson by Revenue: Name: %s, Revenue: %s\n", UserMenu.getUserById(topSalespersonByRevenue).getName(), CurrencyFormat.format(maxRevenue));
         }
-
+        System.out.println("-------------------------------------------------");
         // top salesperson by sale count
         if (topSalespersonByCount != null) {
-            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", topSalespersonByCount, maxSalesCount);
+            System.out.printf("Top Salesperson by Sales Count: ID: %s, Sales Count: %d\n", UserMenu.getUserById(topSalespersonByCount).getName(), maxSalesCount);
         }
+        System.out.println("-------------------------------------------------");
+        System.out.println("Revenue by Salesperson:");
+        for (Map.Entry<String, Double> entry : salespersonRevenue.entrySet()) {
+            System.out.printf("Salesperson : %s, Revenue: %s\n", UserMenu.getUserById(entry.getKey()).getName(), CurrencyFormat.format(entry.getValue()));
+        }
+        System.out.println("-------------------------------------------------");
+        System.out.println("Sale by Salesperson:");
+        for (Map.Entry<String, Integer> entry : salespersonSales.entrySet()) {
+            System.out.printf("Salesperson : %s, Sale: %d\n", UserMenu.getUserById(entry.getKey()).getName(), entry.getValue());
+        }
+        System.out.println("-------------------------------------------------");
     }
 
     public static void viewTransactionsBySalesperson(String salespersonId, LocalDate startDate, LocalDate endDate) {
@@ -307,11 +319,11 @@ public class SaleTransactionList {
 
         double totalSalesRevenue = calculateSalespersonRevenue(salespersonId, startDate, endDate);
         int transactionCount = filteredTransactions.size();
-
-        System.out.println("Sales Transactions for Salesperson ID: " + salespersonId);
-        System.out.println("Total Sales Revenue: $" + String.format("%.2f", totalSalesRevenue));
+        System.out.println("-------------------------------------------------");
+        System.out.println("Sales Transactions for Salesperson: " + UserMenu.getUserById(salespersonId).getName());
+        System.out.println("Total Sales Revenue: " + String.format("%.2f", totalSalesRevenue));
         System.out.println("Total Number of Transactions: " + transactionCount);
-
+        System.out.println("-------------------------------------------------");
         if (!filteredTransactions.isEmpty()) {
             System.out.println("\nTransaction Details:");
             for (SaleTransaction transaction : filteredTransactions) {

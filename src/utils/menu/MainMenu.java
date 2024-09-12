@@ -6,16 +6,16 @@ import user.Mechanic;
 import user.Salesperson;
 
 public class MainMenu extends Menu {
-    private final CarAndAutoPartMenu carAndAutoPartMenu= new CarAndAutoPartMenu();
-    private final StatisticsMenu statisticsMenu= new StatisticsMenu();
-    private final SaleTransactionMenu saleTransactionMenu= new SaleTransactionMenu();
+    private final CarAndAutoPartMenu carAndAutoPartMenu = new CarAndAutoPartMenu();
+    private final StatisticsMenu statisticsMenu = new StatisticsMenu();
+    private final SaleTransactionMenu saleTransactionMenu = new SaleTransactionMenu();
     private final ServiceMenu serviceMenu = new ServiceMenu();
-    private final ActivityLogMenu activityLogMenu= new ActivityLogMenu();
+    private final ActivityLogMenu activityLogMenu = new ActivityLogMenu();
     private final UserMenu userMenu = new UserMenu();
-    private final UserProfileMenu UserProfileMenu= new UserProfileMenu();
+    private final UserProfileMenu UserProfileMenu = new UserProfileMenu();
 
     public MainMenu() {
-            super();
+        super();
 //        statisticsMenu = new StatisticsMenu(this);
 //        saleTransactionMenu = new SaleTransactionMenu(this);
 //        serviceMenu = new ServiceMenu(this);
@@ -124,7 +124,6 @@ public class MainMenu extends Menu {
 
     private void statisticsMenu() {
         try {
-
             statisticsMenu.displayMenu("Welcome to the Statistics Menu!");
         } catch (Exception e) {
             System.out.println(e.getMessage());

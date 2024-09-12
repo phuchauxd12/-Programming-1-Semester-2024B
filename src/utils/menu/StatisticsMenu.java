@@ -3,18 +3,21 @@ package utils.menu;
 import autoPart.autoPart;
 import car.Car;
 import services.Service;
+import services.ServiceBy;
 import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
-import user.*;
+import user.Client;
+import user.Manager;
+import user.Mechanic;
+import user.Salesperson;
+import utils.CurrencyFormat;
 import utils.DatePrompt;
 import utils.Status;
 import utils.UserSession;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class StatisticsMenu extends Menu {
 
@@ -33,133 +36,196 @@ public class StatisticsMenu extends Menu {
 
     protected void initializeMenu(MenuOption menuOption) {
         switch (menuOption) {
-            case MANAGER:
-                menuItems.put(1, "Number of Cars sold (in specific period)");
-                menuItems.put(2, "Revenue of Services by a mechanic (in specific period)");
-                menuItems.put(3, "Revenue of Sales by a salesperson (in specific period)");
-                menuItems.put(4, "Revenue of Shop (in specific period)");
-                menuItems.put(5, "List All Cars Sold (in specific period)");
-                menuItems.put(6, "List All Transactions (in specific period)");
-                menuItems.put(7, "List All Services (in specific period)");
-                menuItems.put(8, "List all Sales by a salesperson");
-                menuItems.put(9, "List all Services by a mechanic");
-                menuItems.put(10, "View autoPart statistic");
+            case MANAGER -> {
+                menuItems.put(1, "Number of Cars sold");
+                menuItems.put(2, "View Service Statistics");
+                menuItems.put(3, "View Sales Statistics");
+                menuItems.put(4, "View Mechanic Service Statistics");
+                menuItems.put(5, "View Salesperson Revenue Statistics");
+                menuItems.put(6, "Revenue of Shop");
+                menuItems.put(7, "List All Cars Sold");
+                menuItems.put(8, "View AutoPart Statistic");
+                menuItems.put(9, "View Car Statistic");
                 menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::getNumberOfCarsSoldInSpecificPeriod);
-                menuActions.put(2, this::ManagerProcessMechanicRevenue);
-                menuActions.put(3, this::ManagerProcessSalespersonRevenue);
-                menuActions.put(4, this::ManagerProcessTotalRevenue);
-                menuActions.put(5, this::getAllCarsSoldInSpecificPeriod);
-                menuActions.put(6, this::getAllTransactionsInSpecificPeriod);
-                menuActions.put(7, this::getAllServicesInSpecificPeriod);
-                menuActions.put(8, this::getAllSalespersonSales);
-                menuActions.put(9, this::getAllMechanicServices);
-                menuActions.put(10, this::viewAutoPartStatistics);
+                menuActions.put(2, this::processServiceRevenue);
+                menuActions.put(3, this::processSalesStatistic);
+                menuActions.put(4, this::processMechanicRevenue);
+                menuActions.put(5, this::processSalespersonRevenue);
+                menuActions.put(6, this::processTotalRevenue);
+                menuActions.put(7, this::getAllCarsSoldInSpecificPeriod);
+                menuActions.put(8, this::viewAutoPartStatistics);
+                menuActions.put(9, this::viewCarStatistics);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case SALESPERSON:
-                menuItems.put(1, "List All Transactions by me");
-                menuItems.put(2, "List Transactions by me (Day/week/month)");
-                menuItems.put(3, "List All Cars sold by me");
-                menuItems.put(4, "List Cars sold by me (Day/week/month)");
-                menuItems.put(5, "Revenue of Sales by me");
-                menuItems.put(6, "Revenue of Sales by me (specific period)");
+            case SALESPERSON -> {
+                menuItems.put(1, "List all items sold by me");
+                menuItems.put(2, "Revenue of Sales by me");
                 menuItems.put(0, "Exit");
 
                 // Add salesperson-specific actions here
-                menuActions.put(1, this::getAllSalespersonSales);
-                menuActions.put(2, () -> getAllTransactionsByMeInSpecificPeriod(currentUser));
-                menuActions.put(3, () -> getAllCarsSoldBySalesperson(currentUser));
-                menuActions.put(4, () -> getAllCarsSoldBySalespersonInSpecificPeriod(currentUser));
-                menuActions.put(5, () -> SalespersonRevenue(currentUser));
-                menuActions.put(6, () -> SalespersonRevenueInSpecificPeriod(currentUser));
+                menuActions.put(1, this::getAllItemsSoldBySalesperson);
+                menuActions.put(2, this::salespersonRevenue);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case MECHANIC:
-                menuItems.put(1, "List All Services done by me");
-                menuItems.put(2, "List Services done by me (Day/week/month)");
+            case MECHANIC -> {
+                menuItems.put(1, "My Auto Part Statistic");
+                menuItems.put(2, "My Car Statistic");
                 menuItems.put(3, "Revenue of Services by me");
-                menuItems.put(4, "Revenue of Services by me (Day/week/month)");
                 menuItems.put(0, "Exit");
 
                 // Add mechanic-specific actions here
-                menuActions.put(1, this::getAllMechanicServices);
-                menuActions.put(2, () -> getAllMechanicServicesInSpecificPeriod(currentUser));
-                menuActions.put(3, () -> getRevenueOfServices(currentUser));
-                menuActions.put(4, () -> getRevenueOfServicesInSpecificPeriod(currentUser));
+                menuActions.put(1, this::allPartUsedByMechanic);
+                menuActions.put(2, this::allCarServicedByMechanic);
+                menuActions.put(3, this::getRevenueOfServices);
                 menuActions.put(0, this::exit);
-                break;
+            }
 
-            case CLIENT:
+            case CLIENT -> {
                 menuItems.put(1, "List All Services done for me");
-                menuItems.put(2, "List All Services done for me (day/week/month)");
-                menuItems.put(3, "List all Sales Transactions for me");
-                menuItems.put(4, "List All Transactions done for me (day/week/month)");
+                menuItems.put(2, "List all Sales Transactions for me");
                 menuItems.put(0, "Exit");
 
                 // Add client-specific actions here
-                menuActions.put(1, () -> getAllClientServices(currentUser));
-                menuActions.put(2, () -> getAllClientServicesInSpecificPeriod(currentUser));
-                menuActions.put(3, () -> getAllClientSalesTransactions(currentUser));
-                menuActions.put(4, () -> getAllClientTransactionsInSpecificPeriod(currentUser));
+                menuActions.put(1, this::getAllClientServices);
+                menuActions.put(2, this::getAllClientSalesTransactions);
                 menuActions.put(0, this::exit);
-                break;
-
+            }
         }
     }
 
 
     // Manager functions
-    private void getNumberOfCarsSoldInSpecificPeriod() {
-        System.out.println("Fetching number of cars sold in a specific period...");
-        // Add logic to fetch the number of cars sold
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
 
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("Get number of cars sold from " + startDate + " to " + endDate);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+
+    private void getNumberOfCarsSoldInSpecificPeriod() {
+        int option = Menu.getFilteredOption();
+        LocalDate startDate;
+        LocalDate endDate;
+        switch (option) {
+            case 1:
+                System.out.println("Fetching number of cars sold...");
+                startDate = LocalDate.of(1970, 1, 1);
+                endDate = LocalDate.now();
+                CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
+                try {
+                    ActivityLogMenu.addActivityLogForCurrentUser("Get number of all cars sold ");
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            case 2:
+                System.out.println("Fetching number of cars sold in a specific period...");
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                CarAndAutoPartMenu.getNumberOfCarsSoldInSpecificPeriod(startDate, endDate);
+                try {
+                    ActivityLogMenu.addActivityLogForCurrentUser("Get number of cars sold from " + startDate + " to " + endDate);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
         }
     }
 
-    private void ManagerProcessMechanicRevenue() {
-        UserMenu.displayAllMechanics();
-        String mechanicId = promptForUserId("mechanic");
-        Mechanic mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
-        if (mechanic != null) {
-            LocalDate startDate = DatePrompt.getStartDate();
-            LocalDate endDate = DatePrompt.getEndDate(startDate);
-            double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
-            System.out.println("Total Revenue of Services by " + mechanicId + ": " + result);
-        } else {
-            System.out.println("Mechanic not found. Please try again.");
+    private void processServiceRevenue() {
+        String activityName;
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
         }
+        ServiceList.viewServiceStatistics(startDate, endDate);
+        activityName = "View service statistics ";
 
-        try{
-            String activityName = "View revenue made by mechanic named " + mechanic.getName() + " with ID " + mechanic.getUserID();
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
     }
 
-    private void ManagerProcessSalespersonRevenue() {
+    private void processMechanicRevenue() {
         String activityName = "";
-        // TODO: chỉnh lại function để lưu ID ng dùng thay vì tên (test hiện tại dùng tên cho dễ test)
+        UserMenu.displayAllMechanics();
+        String mechanicId = promptForUserId("mechanic");
+        Mechanic mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
+        if (mechanic != null) {
+            LocalDate startDate = LocalDate.of(1970, 1, 1);
+            LocalDate endDate = LocalDate.now();
+            int option = Menu.getFilteredOption();
+            switch (option) {
+                case 1:
+                    break;
+                case 2:
+                    startDate = DatePrompt.getDate("start");
+                    endDate = DatePrompt.getEndDate(startDate);
+                    break;
+            }
+            ServiceList.viewServiceByMechanic(mechanicId, startDate, endDate);
+            activityName = "View revenue made by mechanic named " + mechanic.getName() + " with ID " + mechanic.getUserID();
+        } else {
+            System.out.println("Mechanic not found. Please try again.");
+        }
+
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
+    }
+
+    private void processSalesStatistic() {
+        String activityName = "";
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
+        SaleTransactionList.viewSalesStatistics(startDate, endDate);
+        activityName = "View sales statistics";
+
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
+    }
+
+    private void processSalespersonRevenue() {
+        String activityName = "";
         UserMenu.displayAllSalespersons();
         String salespersonId = promptForUserId("salesperson");
         Salesperson salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
         if (salesperson != null) {
-            LocalDate startDate = DatePrompt.getStartDate();
-            LocalDate endDate = DatePrompt.getEndDate(startDate);
-            double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
-            System.out.println("Total Revenue of Sales by " + salespersonId + ": " + result);
-            activityName = "View total revenue of sales made by " + salesperson.getName() + " with ID " + salesperson.getUserID();
+            LocalDate startDate = LocalDate.of(1970, 1, 1);
+            LocalDate endDate = LocalDate.now();
+            int option = Menu.getFilteredOption();
+            switch (option) {
+                case 1:
+                    break;
+                case 2:
+                    startDate = DatePrompt.getDate("start");
+                    endDate = DatePrompt.getEndDate(startDate);
+                    break;
+            }
+            SaleTransactionList.viewTransactionsBySalesperson(salespersonId, startDate, endDate);
+            activityName = "View total revenue of sales by salesperson named " + salesperson.getName() + " with ID " + salesperson.getUserID();
 
         } else {
             activityName = "View total revenue of sales by a salesperson which is not found! ";
@@ -167,38 +233,47 @@ public class StatisticsMenu extends Menu {
 
         }
 
-        try{
+        try {
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
     }
 
-    private void ManagerProcessTotalRevenue() {
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
+    private void processTotalRevenue() {
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
         double totalSalesRevenue = SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[0];
         double totalServiceRevenue = ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[0];
         int totalSalesTransactions = (int) SaleTransactionList.calculateRevenueAndCount(startDate, endDate)[1];
-        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[1];
+        int totalServiceTransactions = (int) ServiceList.calculateServiceRevenueAndCount(startDate, endDate)[2];
 
         double totalRevenue = totalSalesRevenue + totalServiceRevenue;
         int totalTransactions = totalSalesTransactions + totalServiceTransactions;
 
         Map<String, Double> employeeRevenue = calculateEmployeeRevenue(startDate, endDate);
         Map<String, Double> clientRevenue = calculateClientRevenue(startDate, endDate);
-
+        System.out.println("-------------------------------------------------");
         System.out.printf("Combined Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Combined Revenue: $%.2f\n", totalRevenue);
-        System.out.printf("Total Combined Transactions: %d\n", totalTransactions);
-
-        System.out.println("Revenue by Employee:");
-        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee ID: %s, Revenue: $%.2f\n", employeeId, revenue));
-
-        System.out.println("Revenue by Client:");
-        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client ID: %s, Revenue: $%.2f\n", clientId, revenue));
-
-        try{
+        System.out.printf("Total Combined Revenue: " + CurrencyFormat.format(totalRevenue));
+        System.out.printf("\nTotal Combined Transactions (Service and Sale): %d\n", totalTransactions);
+        System.out.println("-------------------------------------------------");
+        System.out.println("\nRevenue by Employee:");
+        employeeRevenue.forEach((employeeId, revenue) -> System.out.printf("Employee : %s, Revenue: %s\n", UserMenu.getUserById(employeeId).getName(), CurrencyFormat.format(revenue)));
+        System.out.println("-------------------------------------------------");
+        System.out.println("\nRevenue by Client:");
+        clientRevenue.forEach((clientId, revenue) -> System.out.printf("Client: %s, Revenue: %s\n", UserMenu.getUserById(clientId).getName(), CurrencyFormat.format(revenue)));
+        System.out.println("-------------------------------------------------");
+        try {
             String activityName = "View total revenue by client and employee from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -216,6 +291,9 @@ public class StatisticsMenu extends Menu {
         }
 
         for (Service service : ServiceList.getServicesBetween(startDate, endDate)) {
+            if (ServiceBy.OTHER == service.getServiceBy()) {
+                continue;
+            }
             String mechanicId = service.getMechanicId();
             employeeRevenue.put(mechanicId,
                     employeeRevenue.getOrDefault(mechanicId, 0.0) + service.getTotalCost());
@@ -262,15 +340,15 @@ public class StatisticsMenu extends Menu {
                 totalPartsSold++;
             }
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.println("Auto Part Statistics:");
         System.out.printf("Total Parts In Stock: %d\n", totalPartsInStock);
-        System.out.printf("Total Parts Sold: %d\n", totalPartsSold);
-
+        System.out.printf("Total Parts Sold/Used: %d\n", totalPartsSold);
+        System.out.println("-------------------------------------------------");
         System.out.println("Part Condition Statistics:");
         partConditionStats.forEach((condition, count) -> System.out.printf("%s: %d\n", condition, count));
-
-        try{
+        System.out.println("-------------------------------------------------");
+        try {
             String activityName = "View Auto Part Statistics";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -278,11 +356,21 @@ public class StatisticsMenu extends Menu {
         }
     }
 
-    public static void viewCarStatistics(LocalDate startDate, LocalDate endDate) {
+    private void viewCarStatistics() {
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
         double totalCarRevenue = calculateTotalCarSellRevenueAndCount(startDate, endDate)[0];
         int totalCarsSold = (int) calculateTotalCarSellRevenueAndCount(startDate, endDate)[1];
         double averageCarPrice = totalCarsSold > 0 ? totalCarRevenue / totalCarsSold : 0;
-        // Thống kê doanh thu từ các dòng xe khác nhau, giúp xác định dòng xe nào bán chạy nhất.
         Map<String, Double> revenueByCarModel = new HashMap<>();
         Map<String, Integer> carsSoldByModel = new HashMap<>();
         // Calculate total number of cars in repair (work-in) and number of services performed
@@ -319,29 +407,39 @@ public class StatisticsMenu extends Menu {
                 highestRevenueCarModel = entry.getKey();
             }
         }
-
+        System.out.println("-------------------------------------------------");
         System.out.printf("Car Sales Statistics from %s to %s:\n", startDate, endDate);
-        System.out.printf("Total Car Revenue: $%.2f\n", totalCarRevenue);
+        System.out.printf("Total Car Revenue: %s\n", CurrencyFormat.format(totalCarRevenue));
         System.out.printf("Total Cars Sold: %d\n", totalCarsSold);
-        System.out.printf("Average Car Price: $%.2f\n", averageCarPrice);
-
+        System.out.printf("Average Car Price: %s\n", CurrencyFormat.format(averageCarPrice));
+        System.out.println("-------------------------------------------------");
+        System.out.println("\nTop Selling Car Model: " + topSellingCarModel);
+        System.out.println("Sales: " + totalCarsSold);
+        System.out.println("-------------------------------------------------");
         System.out.println("Number of car sales by Car Model:");
         for (Map.Entry<String, Integer> entry : carsSoldByModel.entrySet()) {
             System.out.printf("Car Model: %s, Sales: %d\n", entry.getKey(), entry.getValue());
         }
+        System.out.println("-------------------------------------------------");
 
+        System.out.println("\nCar Model with highest Revenue: " + highestRevenueCarModel);
+        System.out.println("Max Revenue: " + CurrencyFormat.format(maxRevenue));
+
+        System.out.println("-------------------------------------------------");
         System.out.println("Revenue by Car Model:");
         for (Map.Entry<String, Double> entry : revenueByCarModel.entrySet()) {
-            System.out.printf("Car Model: %s, Revenue: $%.2f\n", entry.getKey(), entry.getValue());
+            System.out.printf("Car Model: %s, Revenue: %s\n", entry.getKey(), CurrencyFormat.format(entry.getValue()));
         }
+        System.out.println("-------------------------------------------------");
         System.out.println("Total Cars in Repair:" + carsInRepair.size());
 
         System.out.println("Cars in Repair:");
         for (Map.Entry<String, Integer> entry : carsInRepair.entrySet()) {
-            System.out.printf("Car ID: %s, Services Count: %d\n", entry.getKey(), entry.getValue());
+            Car car = CarAndAutoPartMenu.findCarByID(entry.getKey());
+            System.out.printf("Car: %s, Services Count: %d\n", car.getCarMake() + " " + car.getCarModel() + " " + car.getCarYear(), entry.getValue());
         }
-
-        try{
+        System.out.println("-------------------------------------------------");
+        try {
             String activityName = "View car statistic";
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -362,13 +460,23 @@ public class StatisticsMenu extends Menu {
     }
 
     private void getAllCarsSoldInSpecificPeriod() {
-        System.out.println("Fetching all cars sold in a specific period...");
         // Add logic to fetch all cars sold
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                System.out.println("Fetching all cars sold...");
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                System.out.println("Fetching all cars sold in a specific period...");
+                break;
+        }
         CarAndAutoPartMenu.getAllCarsSoldInSpecificPeriod(startDate, endDate);
 
-        try{
+        try {
             String activityName = "View all cars sold from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -376,132 +484,23 @@ public class StatisticsMenu extends Menu {
         }
     }
 
-    private void getAllTransactionsInSpecificPeriod() {
-        // TODO: Implement this method (current implementation quick and dirty)
-        for (User user : UserMenu.getUserList()) {
-            if (user instanceof Salesperson salesperson) {
-                salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-            }
+    private void salespersonRevenue() {
+        Salesperson salesperson = (Salesperson) UserSession.getCurrentUser();
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
         }
+        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserID(), startDate, endDate);
+        System.out.println("\nTotal Revenue of Sales by " + salesperson.getName() + ": " + CurrencyFormat.format(result));
 
-        try{
-            String activityName = "View all transactions in a specific period";
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllServicesInSpecificPeriod() {
-        // TODO: Implement this method (current implementation quick and dirty)
-        for (User user : UserMenu.getUserList()) {
-            if (user instanceof Mechanic mechanic) {
-                mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-            }
-        }
-
-        try{
-            String activityName = "View all services in a specific period";
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllMechanicServices() {
-        String activityName = "";
-        User loggedInUser = UserSession.getCurrentUser();
-
-        if (loggedInUser instanceof Mechanic mechanic) {
-            mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-            activityName = "View all services made by me as a mechanic";
-        } else if (loggedInUser instanceof Manager) {
-           System.out.println( UserMenu.displayAllMechanics());
-            String mechanicId;
-            Mechanic mechanic;
-            Scanner input = new Scanner(System.in);
-            while (true) {
-                System.out.print("Enter mechanic ID: ");
-                mechanicId = input.nextLine();
-                if (!mechanicId.isEmpty()) {
-                    mechanic = (Mechanic) UserMenu.getUserById(mechanicId);
-                    if (mechanic != null) {
-                        break;
-                    } else {
-                        System.out.println("Mechanic not found. Please try again.");
-                    }
-                    System.out.println("Mechanic ID cannot be empty. Please try again.");
-                }
-            }
-            activityName = "View all services made by Mechanic named " + mechanic.getUserName() + " with ID " + mechanic.getUserID();
-            mechanic.servicesMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-        }
-
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllSalespersonSales() {
-        String activityName = "";
-
-        User loggedInUser = UserSession.getCurrentUser();
-        if (loggedInUser instanceof Salesperson salesperson) {
-            activityName = "View all sales made by me as a salesperson";
-            salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-        } else if (loggedInUser instanceof Manager) {
-            System.out.println(UserMenu.displayAllSalespersons());
-            String salespersonId;
-            Salesperson salesperson;
-            while (true) {
-                System.out.print("Enter salesperson ID: ");
-                salespersonId = input.nextLine();
-                if (!salespersonId.isEmpty()) {
-                    salesperson = (Salesperson) UserMenu.getUserById(salespersonId);
-                    if (salesperson != null) {
-                        break;
-                    } else {
-                        System.out.println("Salesperson not found. Please try again.");
-                    }
-                    System.out.println("Salesperson ID cannot be empty. Please try again.");
-                }
-            }
-            activityName = "View all sales made Salesperson named " + salesperson.getUserName() + " with ID " + salesperson.getUserID();
-            salesperson.saleTransactionMadeByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-        }
-
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-
-    // Salesperson functions
-    private void getAllTransactionsByMeInSpecificPeriod(User loggedInUser) {
-        Salesperson salesperson = (Salesperson) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        salesperson.saleTransactionMadeByMe(startDate, endDate);
-
-        try{
-            String activityName = "View all transaction made by me from " + startDate + " to " + endDate;
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-
-    }
-
-    private void SalespersonRevenue(User loggedInUser) {
-        Salesperson salesperson = (Salesperson) loggedInUser;
-        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), LocalDate.of(1970, 1, 1), LocalDate.now());
-        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
-
-        try{
+        try {
             String activityName = "View total revenue made by a salesperson named " + salesperson.getName() + " with ID: " + salesperson.getUserID();
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -509,42 +508,64 @@ public class StatisticsMenu extends Menu {
         }
     }
 
-    private void SalespersonRevenueInSpecificPeriod(User loggedInUser) {
-        Salesperson salesperson = (Salesperson) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        double result = SaleTransactionList.calculateSalespersonRevenue(salesperson.getUserName(), startDate, endDate);
-        System.out.println("Total Revenue of Sales by " + salesperson.getName() + ": " + result);
 
-
-        try{
-            String activityName = "View total revenue of a salesperson named " + salesperson.getName() + " with ID: " + salesperson.getUserID() + " from " + startDate + " to " + endDate;
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllCarsSoldBySalesperson(User loggedInUser) {
-        Salesperson salesperson = (Salesperson) loggedInUser;
-        salesperson.viewCarsSoldByMe(LocalDate.of(1970, 1, 1), LocalDate.now());
-
-        try{
-            String activityName = "View all cars sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID();
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+    private void getAllItemsSoldBySalesperson() {
+        Salesperson salesperson = (Salesperson) UserSession.getCurrentUser();
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+            default:
+                System.out.println("Invalid option selected.");
+                return;
         }
 
-    }
+        List<Car> carsSold = SaleTransactionList.listCarsSoldBySalePerson(salesperson.getUserID(), startDate, endDate);
 
-    private void getAllCarsSoldBySalespersonInSpecificPeriod(User loggedInUser) {
-        Salesperson salesperson = (Salesperson) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        salesperson.viewCarsSoldByMe(startDate, endDate);
+        List<autoPart> autoPartsSold = SaleTransactionList.listAutoPartsSoldBySalesPerson(salesperson.getUserID(), startDate, endDate);
 
-        try{
+        // Count the total number of cars and auto parts sold
+        int totalCarsSold = carsSold.size();
+        int totalPartsSold = autoPartsSold.size();
+
+        // Count the usage of each part
+        Map<String, Integer> partUsageCount = new HashMap<>();
+        for (autoPart part : autoPartsSold) {
+            partUsageCount.put(part.getPartName(), partUsageCount.getOrDefault(part.getPartName(), 0) + 1);
+        }
+
+        // Sort and get top 3 most sold parts
+        List<Map.Entry<String, Integer>> sortedParts = new ArrayList<>(partUsageCount.entrySet());
+        sortedParts.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).toList();
+
+        // Display sold cars
+        System.out.println("Cars sold by " + salesperson.getUserName() + " (" + salesperson.getUserID() + "):");
+        for (Car car : carsSold) {
+            System.out.println(car);
+        }
+        System.out.println("Total cars sold: " + totalCarsSold);
+        System.out.println("-------------------------------------------------");
+        // Display sold auto parts
+        System.out.println("\nAuto parts sold by " + salesperson.getUserName() + " (" + salesperson.getUserID() + "):");
+        for (autoPart part : autoPartsSold) {
+            System.out.println(part + " - Sold " + partUsageCount.get(part.getPartName()) + " times");
+        }
+        System.out.println("Total auto parts sold: " + totalPartsSold);
+
+        // Display top 3 most sold parts
+        System.out.println("\nTop 3 most sold parts:");
+        for (Map.Entry<String, Integer> entry : topParts) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " times");
+        }
+        System.out.println("-------------------------------------------------");
+        try {
             String activityName = "View all cars sold by a salesperson named " + salesperson.getUserName() + " with ID: " + salesperson.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -552,29 +573,104 @@ public class StatisticsMenu extends Menu {
         }
     }
 
-    // Mechanic functions
-    private void getAllMechanicServicesInSpecificPeriod(User loggedInUser) {
-        Mechanic mechanic = (Mechanic) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        mechanic.servicesMadeByMe(startDate, endDate);
 
-        try{
+    // Mechanic functions
+
+    private void allPartUsedByMechanic() {
+        Mechanic mechanic = (Mechanic) currentUser;
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
+        List<autoPart> autoPartUsage = ServiceList.listAutoPartUsedInMechanicService(mechanic.getUserID(), startDate, endDate);
+
+        // Count the usage of each part and total usage
+        Map<String, Integer> partUsageCount = new HashMap<>();
+        int totalPartUsage = 0;
+        for (autoPart part : autoPartUsage) {
+            partUsageCount.put(part.getPartName(), partUsageCount.getOrDefault(part.getPartName(), 0) + 1);
+            totalPartUsage++;
+        }
+
+        // Sort and get top 3 most used parts
+        List<Map.Entry<String, Integer>> sortedParts = new ArrayList<>(partUsageCount.entrySet());
+        sortedParts.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        List<Map.Entry<String, Integer>> topParts = sortedParts.stream().limit(3).toList();
+
+
+        System.out.println("\nTop 3 most used parts:");
+        for (Map.Entry<String, Integer> entry : topParts) {
+            System.out.println(entry.getKey() + ": " + entry.getValue() + " times");
+        }
+
+        System.out.println("\nTotal number of parts used: " + totalPartUsage);
+
+        System.out.println(mechanic.getName() + " (" + mechanic.getUserID() + ") used these auto parts in service:");
+
+        Set<String> displayedParts = new HashSet<>();
+
+        for (autoPart part : autoPartUsage) {
+            System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
+            if (!displayedParts.contains(part.getPartID())) {
+                System.out.println(part + " - Used " + partUsageCount.get(part.getPartName()) + " times");
+                displayedParts.add(part.getPartID());
+            }
+        }
+
+        try {
             String activityName = "View all services made by a mechanic named " + mechanic.getUserName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
+
     }
 
-    private void getRevenueOfServicesInSpecificPeriod(User loggedInUser) {
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), startDate, endDate);
-        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
+    private void allCarServicedByMechanic() {
+        Mechanic mechanic = (Mechanic) currentUser;
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
+        List<Car> walkInCars = ServiceList.listCarDoneServiceByMechanic(mechanic.getUserID(), startDate, endDate);
 
-        try{
+        // Count the service occurrences for each car
+        Map<String, Integer> carServiceCount = new HashMap<>();
+        for (Car car : walkInCars) {
+            carServiceCount.put(car.getCarID(), carServiceCount.getOrDefault(car.getCarID(), 0) + 1);
+        }
+
+        // Find the car with the most services
+        String mostServicedCar = Collections.max(carServiceCount.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        System.out.println(mechanic.getName() + " (" + mechanic.getUserID() + ") serviced these cars:");
+
+        Set<String> displayedCars = new HashSet<>();
+
+        for (Car car : walkInCars) {
+            if (!displayedCars.contains(car.getCarID())) {
+                System.out.println(car + " - Serviced " + carServiceCount.get(car.getCarID()) + " times");
+                displayedCars.add(car.getCarID());
+            }
+        }
+
+        System.out.println("\nThe car with the most services by this mechanic is: " + mostServicedCar + " with " + carServiceCount.get(mostServicedCar) + " services.");
+
+        try {
             String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID() + " from " + startDate + " to " + endDate;
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
@@ -582,18 +678,31 @@ public class StatisticsMenu extends Menu {
         }
     }
 
-    private void getRevenueOfServices(User loggedInUser) {
-        Mechanic mechanic = (Mechanic) loggedInUser;
-        double result = ServiceList.calculateMechanicRevenue(mechanic.getName(), LocalDate.of(1970, 1, 1), LocalDate.now());
-        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + result);
+    private void getRevenueOfServices() {
+        Mechanic mechanic = (Mechanic) currentUser;
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
+        double result = ServiceList.calculateMechanicRevenue(mechanic.getUserID(), startDate, endDate);
+        System.out.println("Total Revenue of Services by " + mechanic.getName() + ": " + CurrencyFormat.format(result));
 
-        try{
+        try {
             String activityName = "View Revenue of services made by a mechanic named " + mechanic.getName() + " with ID: " + mechanic.getUserID();
             ActivityLogMenu.addActivityLogForCurrentUser(activityName);
         } catch (Exception e) {
             System.out.println("Error logging statistic action history: " + e.getMessage());
         }
     }
+
+    // General Function
 
     private String promptForUserId(String role) {
         String userId;
@@ -611,62 +720,73 @@ public class StatisticsMenu extends Menu {
     }
 
     // Client functions
-    private void getAllClientTransactionsInSpecificPeriod(User loggedInUser) {
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        Client client = (Client) loggedInUser;
-        client.viewTransactionsHistory(startDate, endDate);
 
 
-        try{
-            String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+    private void getAllClientSalesTransactions() {
+        Client client = (Client) currentUser;
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                SaleTransactionList.transactions.stream().filter(transaction -> (transaction.getClientId().equals(client.getUserID()) && !transaction.isDeleted()))
+                        .forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
+                try {
+                    String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            case 2:
+                LocalDate startDate = DatePrompt.getDate("start");
+                LocalDate endDate = DatePrompt.getEndDate(startDate);
+                client.viewTransactionsHistory(startDate, endDate);
+
+                try {
+                    String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+
+            default:
+                System.out.println("Invalid option!");
+                break;
         }
     }
 
-    private void getAllClientSalesTransactions(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        SaleTransactionList.displayAllSaleTransactions();
 
-        try{
-            String activityName = "View all transactions of client named " + client.getName() + " with ID: " + client.getUserID();
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
+    private void getAllClientServices() {
+        Client client = (Client) currentUser;
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                ServiceList.services.stream().filter(service -> (service.getClientId().equals(client.getUserID()) && !service.isDeleted()))
+                        .forEach(service -> System.out.println(service.getFormattedServiceDetails()));
+                try {
+                    String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            case 2:
+                LocalDate startDate = DatePrompt.getDate("start");
+                LocalDate endDate = DatePrompt.getEndDate(startDate);
+                client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
+
+                try {
+                    String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;
+                    ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+                } catch (Exception e) {
+                    System.out.println("Error logging statistic action history: " + e.getMessage());
+                }
+                break;
+            default:
+                System.out.println("Invalid option!");
+                break;
         }
+
     }
-
-    private void getAllClientServicesInSpecificPeriod(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        LocalDate startDate = DatePrompt.getStartDate();
-        LocalDate endDate = DatePrompt.getEndDate(startDate);
-        client.viewServiceHistoryInSpecificPeriod(startDate, endDate);
-
-        try{
-            String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID() + " from " + startDate + " to " + endDate;;
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void getAllClientServices(User loggedInUser) {
-        Client client = (Client) loggedInUser;
-        ServiceList.displayAllServices();
-
-        try{
-            String activityName = "View all services of client named " + client.getName() + " with ID: " + client.getUserID();
-            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
-        } catch (Exception e) {
-            System.out.println("Error logging statistic action history: " + e.getMessage());
-        }
-    }
-
-    private void exit(Scanner s) {
-        System.out.println("Exiting...");
-    }
-
 
 }

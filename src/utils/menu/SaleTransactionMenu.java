@@ -1,13 +1,15 @@
 package utils.menu;
 
-import services.ServiceList;
 import transaction.SaleTransaction;
 import transaction.SaleTransactionList;
 import user.Manager;
 import user.Salesperson;
 import user.User;
+import utils.DatePrompt;
 import utils.UserSession;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class SaleTransactionMenu extends Menu {
@@ -27,17 +29,29 @@ public class SaleTransactionMenu extends Menu {
         switch (menuOption) {
             case MANAGER -> {
                 menuItems.put(1, "Display all transactions");
+                menuItems.put(2, "Search a transaction by ID");
+                menuItems.put(3, "Get Sales from a specific salesperson");
+                menuItems.put(4, "Delete a transaction");
+                menuItems.put(5, "Create a new transaction");
+                menuItems.put(6, "Update a transaction");
+                menuItems.put(0, "Exit");
 
-                menuActions.put(1, this::displayAllTransactions);
+                menuActions.put(1, this::getAllTransactionsInSpecificPeriod);
                 menuActions.put(2, this::searchTransactionById);
-                menuActions.put(3, this::deleteTransactionWrapper);
-                menuActions.put(4, this::createTransactionWrapper);
-                menuActions.put(5, this::updateTransactionWrapper);
+                menuActions.put(3, this::getAllSalespersonSales);
+                menuActions.put(4, this::deleteTransactionWrapper);
+                menuActions.put(5, this::createTransactionWrapper);
+                menuActions.put(6, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
+
             }
             case SALESPERSON -> {
                 menuItems.put(1, "Display all transactions by me");
-
+                menuItems.put(2, "Search a transaction by ID");
+                menuItems.put(3, "Delete a transaction");
+                menuItems.put(4, "Create a new transaction");
+                menuItems.put(5, "Update a transaction");
+                menuItems.put(0, "Exit");
 
                 menuActions.put(1, this::displayAllTransactions);
                 menuActions.put(2, this::searchTransactionById);
@@ -45,20 +59,16 @@ public class SaleTransactionMenu extends Menu {
                 menuActions.put(4, this::createTransactionWrapper);
                 menuActions.put(5, this::updateTransactionWrapper);
                 menuActions.put(0, this::exit);
+
             }
             case null, default -> System.out.print("");
         }
-        menuItems.put(2, "Search a transaction by ID");
-        menuItems.put(3, "Delete a transaction");
-        menuItems.put(4, "Create a new transaction");
-        menuItems.put(5, "Update a transaction");
-        menuItems.put(0, "Exit");
+
     }
 
     private void createTransactionWrapper() {
         try {
             createNewTransaction();
-            ActivityLogMenu.addActivityLogForCurrentUser("Create new transaction");
         } catch (Exception e) {
             System.out.println("Error creating transaction: " + e.getMessage());
         }
@@ -68,7 +78,6 @@ public class SaleTransactionMenu extends Menu {
 //        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             updateTransaction();
-            ActivityLogMenu.addActivityLogForCurrentUser("Update transaction wrapper");
         } catch (Exception e) {
             System.out.println("Error updating service: " + e.getMessage());
         }
@@ -78,7 +87,6 @@ public class SaleTransactionMenu extends Menu {
 //        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(transaction -> System.out.println(transaction.getFormattedSaleTransactionDetails()));
         try {
             deleteTransaction();
-            ActivityLogMenu.addActivityLogForCurrentUser("Delete transaction wrapper");
         } catch (Exception e) {
             System.out.println("Error deleting service: " + e.getMessage());
         }
@@ -87,72 +95,126 @@ public class SaleTransactionMenu extends Menu {
     private void displayAllTransactions() {
         System.out.println("Displaying all transactions...");
         SaleTransactionList.displayAllSaleTransactions();
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("View all transactions");
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Viewed all transactions");
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
     }
 
+    private void getAllTransactionsInSpecificPeriod() {
+        LocalDate startDate = LocalDate.of(1970, 1, 1);
+        LocalDate endDate = LocalDate.now();
+        int option = Menu.getFilteredOption();
+        switch (option) {
+            case 1:
+                break;
+            case 2:
+                startDate = DatePrompt.getDate("start");
+                endDate = DatePrompt.getEndDate(startDate);
+                break;
+        }
+        List<SaleTransaction> transactions = SaleTransactionList.getSaleTransactionsBetween(startDate, endDate);
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions found within the specified period.");
+        } else {
+            System.out.println("Transactions between " + startDate + " and " + endDate + ":");
+            for (SaleTransaction transaction : transactions) {
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+            }
+        }
+        try {
+            String activityName = "Viewed all Transactions between " + startDate + " and " + endDate;
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
+    }
+
+    private void getAllSalespersonSales() {
+        String activityName;
+        List<SaleTransaction> transactions;
+        UserMenu.displayAllSalespersons();
+        String salespersonId;
+        User salesperson;
+        input.nextLine();
+        while (true) {
+            System.out.print("Enter salesperson ID: ");
+            salespersonId = input.nextLine();
+            if (!salespersonId.isEmpty()) {
+                salesperson = UserMenu.getUserById(salespersonId);
+                if (salesperson instanceof Salesperson) {
+                    break;
+                } else {
+                    System.out.println("Salesperson not found. Please try again.");
+                }
+            } else {
+                System.out.println("Salesperson ID cannot be empty. Please try again.");
+            }
+        }
+        activityName = "View all sales made Salesperson named " + salesperson.getUserName() + " with ID " + salesperson.getUserID();
+        transactions = SaleTransactionList.getTransactionsBySalePerson(salespersonId);
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions was made by this salesperson.");
+        } else {
+            System.out.println("All available transactions of the salesperson : ");
+            for (SaleTransaction transaction : transactions) {
+                System.out.println(transaction.getFormattedSaleTransactionDetails());
+            }
+        }
+
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser(activityName);
+        } catch (Exception e) {
+            System.out.println("Error logging statistic action history: " + e.getMessage());
+        }
+    }
+
     private void searchTransactionById() {
-        SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(System.out::println);
+        if (currentUser instanceof Manager) {
+            SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted()).forEach(System.out::println);
+        } else if (currentUser instanceof Salesperson) {
+            SaleTransactionList.transactions.stream().filter(transaction -> !transaction.isDeleted() && transaction.getSalespersonId().equals(currentUser.getUserID())).forEach(System.out::println);
+        }
         System.out.println("Searching transaction by ID...");
         Scanner input = new Scanner(System.in);
         System.out.println("Enter transaction ID: ");
         String transactionID = input.nextLine();
-        User currentUser = UserSession.getCurrentUser();
         SaleTransaction transaction = SaleTransactionList.getSaleTransactionById(transactionID);
-        if (currentUser.getRole() == User.ROLE.MANAGER){
+        if (currentUser instanceof Manager) {
             if (transaction != null && !transaction.isDeleted()) {
                 System.out.println("Transaction found!");
                 System.out.println(transaction.getFormattedSaleTransactionDetails());
-            }
-            else {
+            } else {
                 System.out.println("No transaction found with ID: " + transactionID);
             }
-        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
-            if (currentUser instanceof Salesperson){
-                if(transaction != null && !transaction.isDeleted()){
-                    if(transaction.getSalespersonId().equals(currentUser.getUserID())){
-                        System.out.println("Transaction found!");
-                        System.out.println(transaction.getFormattedSaleTransactionDetails());
-                    } else {
-                        System.out.println("You are not allow to access this transaction: " + transactionID);
-                    }
+        } else if (currentUser instanceof Salesperson) {
+            if (transaction != null && !transaction.isDeleted()) {
+                if (transaction.getSalespersonId().equals(currentUser.getUserID())) {
+                    System.out.println("Transaction found!");
+                    System.out.println(transaction.getFormattedSaleTransactionDetails());
                 } else {
-                    System.out.println("No transaction found with ID: " + transactionID);
+                    System.out.println("You are not allow to access this transaction: " + transactionID);
                 }
+            } else {
+                System.out.println("No transaction found with ID: " + transactionID);
             }
         }
 
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("Search transaction by ID: " + transactionID);
+        try {
+            ActivityLogMenu.addActivityLogForCurrentUser("Searched for transaction by ID: " + transactionID);
         } catch (Exception e) {
             System.out.println("Error logging sale transaction action history: " + e.getMessage());
         }
     }
 
     private void deleteTransaction() throws Exception {
-        System.out.println("Deleting a transaction...");
-        User currentUser = UserSession.getCurrentUser();
-        if (currentUser.getRole() == User.ROLE.MANAGER){
-            SaleTransactionList.deleteSaleTransaction();
-        } else if (currentUser.getRole() == User.ROLE.EMPLOYEE){
-            if (currentUser instanceof Salesperson){
-                //TODO: 
-            }
-        }
-
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("Delete sale transaction");
-        } catch (Exception e) {
-            System.out.println("Error logging sale transaction action history: " + e.getMessage());
-        }
+        SaleTransactionList.deleteSaleTransaction();
     }
 
     private void createNewTransaction() throws Exception {
         System.out.println("Creating a new transaction...");
-        if (UserSession.getCurrentUser().getRole() == User.ROLE.MANAGER) {
+        if (UserSession.getCurrentUser() instanceof Manager) {
             Scanner input = new Scanner(System.in);
             User salesperson = null;
             while (salesperson == null) {
@@ -167,8 +229,8 @@ public class SaleTransactionMenu extends Menu {
                         .findFirst()
                         .orElse(null);
 
-                if (salesperson == null) {
-                    System.out.print("Invalid client ID. Please press enter to retype or 'quit' to exit: ");
+                if (!(salesperson instanceof Salesperson)) {
+                    System.out.print("Invalid salesperson ID. Please press enter to retype or 'quit' to exit: ");
                     salespersonId = input.nextLine();
                     if (salespersonId.equalsIgnoreCase("quit")) {
                         System.out.println("Exiting..");
@@ -178,26 +240,12 @@ public class SaleTransactionMenu extends Menu {
             }
             SaleTransactionList.addSaleTransaction(salesperson.getUserID());
         } else {
-            ServiceList.addService(UserSession.getCurrentUser().getUserName());
-        }
-
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("Create a new transaction");
-        } catch (Exception e) {
-            System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            SaleTransactionList.addSaleTransaction(currentUser.getUserID());
         }
     }
 
     private void updateTransaction() throws Exception {
         System.out.println("Updating a transaction...");
         SaleTransactionList.updateSaleTransaction();
-
-        try{
-            ActivityLogMenu.addActivityLogForCurrentUser("Update a new transaction");
-        } catch (Exception e) {
-            System.out.println("Error logging sale transaction action history: " + e.getMessage());
-        }
     }
-
-
 }

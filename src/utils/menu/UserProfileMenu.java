@@ -1,7 +1,6 @@
 package utils.menu;
 
 import user.User;
-import utils.UserSession;
 
 import java.util.Scanner;
 
@@ -15,7 +14,7 @@ public class UserProfileMenu extends Menu {
 
     @Override
     protected void initializeMenu(MenuOption menuOption) {
-        menuItems.put(1,"View User Info");
+        menuItems.put(1, "View User Info");
         menuItems.put(2, "Modify Account");
         menuItems.put(3, "Delete Account");
         menuItems.put(0, "Exit");
@@ -65,8 +64,14 @@ public class UserProfileMenu extends Menu {
         } while (continueUpdate);
     }
 
-    private  void UserInfo(){
-        System.out.println(UserSession.getCurrentUser().getUserInfo());
+    private void UserInfo() {
+        String currentUserID = currentUser.getUserID();
+        User user = UserMenu.getUserById(currentUserID);
+        if (user != null) {
+            System.out.println(user.getUserInfo());
+        } else {
+            System.out.println("No user found with ID " + currentUserID);
+        }
     }
 }
 

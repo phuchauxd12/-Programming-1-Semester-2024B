@@ -108,6 +108,14 @@ public class CarAndAutoPartMenu extends Menu {
         String carID = input.nextLine();
         Car car = findCarByID(carID);
         if (car != null) {
+            if (!(currentUser instanceof Manager) && car.isDeleted()) {
+                System.out.println("Car not found.");
+                return;
+            }
+            if (currentUser instanceof Mechanic && car.getClientID() == null) {
+                System.out.println("You are not authorized to view this car.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(car.toStringDetailed());
             System.out.println("----------------");
@@ -116,7 +124,7 @@ public class CarAndAutoPartMenu extends Menu {
         }
 
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Search for car with ID: " + carID);
+            ActivityLogMenu.addActivityLogForCurrentUser("Searched for car with ID: " + carID);
         } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
@@ -129,6 +137,10 @@ public class CarAndAutoPartMenu extends Menu {
         String partID = input.nextLine();
         autoPart part = findAutoPartByID(partID);
         if (part != null) {
+            if (!(currentUser instanceof Manager) && part.isDeleted()) {
+                System.out.println("Part not found.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(part.toStringDetailed());
             System.out.println("----------------");
@@ -138,7 +150,7 @@ public class CarAndAutoPartMenu extends Menu {
 
 
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Search for auto part with ID: " + partID);
+            ActivityLogMenu.addActivityLogForCurrentUser("Searched for auto part with ID: " + partID);
         } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
@@ -151,7 +163,7 @@ public class CarAndAutoPartMenu extends Menu {
     private void addCar() {
         Car car = createCar();
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Add new car");
+            ActivityLogMenu.addActivityLogForCurrentUser("Added new car with ID: " + car.getCarID());
             addCarToList(car);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -162,7 +174,7 @@ public class CarAndAutoPartMenu extends Menu {
         autoPart part = createPart();
         try {
             addPartToList(part);
-            ActivityLogMenu.addActivityLogForCurrentUser("Add new auto part");
+            ActivityLogMenu.addActivityLogForCurrentUser("Added new auto part with ID: " + part.getPartID());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -176,7 +188,7 @@ public class CarAndAutoPartMenu extends Menu {
             String carID = input.next();
             Car car = findCarByID(carID);
             deleteCar(car);
-            ActivityLogMenu.addActivityLogForCurrentUser("Delete car");
+            ActivityLogMenu.addActivityLogForCurrentUser("Deleted car with ID: " + carID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -190,7 +202,7 @@ public class CarAndAutoPartMenu extends Menu {
             String partID = input.next();
             autoPart part = CarAndAutoPartMenu.findAutoPartByID(partID);
             deletePart(part);
-            ActivityLogMenu.addActivityLogForCurrentUser("Delete auto part");
+            ActivityLogMenu.addActivityLogForCurrentUser("Deleted auto part with ID: " + partID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -209,7 +221,7 @@ public class CarAndAutoPartMenu extends Menu {
                 updateCar(car);
             }
 
-            ActivityLogMenu.addActivityLogForCurrentUser("Update car wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Attempted to update car with ID: " + carID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -228,7 +240,7 @@ public class CarAndAutoPartMenu extends Menu {
                 updatePart(part);
             }
 
-            ActivityLogMenu.addActivityLogForCurrentUser("Update auto part wrapper");
+            ActivityLogMenu.addActivityLogForCurrentUser("Attempted to update auto part with ID: " + partID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -317,9 +329,9 @@ public class CarAndAutoPartMenu extends Menu {
                         .forEach(System.out::println);
             }
         } else if (user instanceof Mechanic) {
-            System.out.println("Displaying all cars for repair:");
+            System.out.println("Displaying all cars that are available for repair:");
             carsList.stream()
-                    .filter(car -> car.getStatus() == Status.WALK_IN && !car.isDeleted())
+                    .filter(car -> car.getClientID() != null && !car.isDeleted())
                     .forEach(System.out::println);
         } else {
             System.out.println("Displaying all cars for sale:");
@@ -333,7 +345,7 @@ public class CarAndAutoPartMenu extends Menu {
 
 
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("View all cars");
+            ActivityLogMenu.addActivityLogForCurrentUser("Viewed all cars");
         } catch (Exception e) {
             System.out.println("Error logging car action history: " + e.getMessage());
         }
@@ -380,7 +392,7 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("To see detailed information of a specific part, please use the search function!");
 
         try {
-            ActivityLogMenu.addActivityLogForCurrentUser("View all auto parts");
+            ActivityLogMenu.addActivityLogForCurrentUser("Viewed all auto parts");
         } catch (Exception e) {
             System.out.println("Error logging auto part action history: " + e.getMessage());
         }
@@ -420,10 +432,25 @@ public class CarAndAutoPartMenu extends Menu {
         } else {
             status = Status.AVAILABLE;
         }
+        String clientID = null;
+        if (status == Status.WALK_IN) {
+            UserMenu.getUserList().stream().filter(users -> users instanceof Client).forEach(System.out::println);
+            System.out.println("Please input the client's ID of this car:");
+            while (true) {
+                clientID = input.next();
+                User client = UserMenu.getUserById(clientID);
+                if (client instanceof Client) {
+                    break;
+                } else {
+                    System.out.println("Invalid client ID. Please try again.");
+                }
+            }
+        }
+        input.nextLine();
         System.out.println("Please input the car's make:");
-        String carMake = input.next();
+        String carMake = input.nextLine();
         System.out.println("Please input the car's model:");
-        String carModel = input.next();
+        String carModel = input.nextLine();
         int carYear = CarAndAutoPartMenu.getNewCarYear(input);
         System.out.println("Please input the car's color:");
         String color = input.next().toUpperCase();
@@ -453,6 +480,9 @@ public class CarAndAutoPartMenu extends Menu {
         System.out.println("Please input any additional notes:");
         String addNotes = input.nextLine();
         Car newCar = new Car(carMake, carModel, carYear, color, mileage, price, addNotes, status);
+        if (status == Status.WALK_IN) {
+            newCar.setClientID(clientID);
+        }
         System.out.println("Car created successfully!");
         System.out.println(newCar);
         return newCar;
@@ -481,11 +511,12 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("7. Additional Notes");
             System.out.println("0. Exit");
             option = MainMenu.getOption(option, input);
+            input.nextLine();
             switch (option) {
                 case 1:
                     System.out.println("The current car's make: " + car.getCarMake());
                     System.out.println("Please input the car's make:");
-                    String newCarMake = input.next();
+                    String newCarMake = input.nextLine();
                     car.setCarMake(newCarMake);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
@@ -493,7 +524,7 @@ public class CarAndAutoPartMenu extends Menu {
                 case 2:
                     System.out.println("The current car's model: " + car.getCarModel());
                     System.out.println("Please input the car's model:");
-                    String newCarModel = input.next();
+                    String newCarModel = input.nextLine();
                     car.setCarModel(newCarModel);
                     System.out.println("Updated successfully!");
                     System.out.println(car);
@@ -595,9 +626,9 @@ public class CarAndAutoPartMenu extends Menu {
     public static autoPart createPart() {
         Scanner input = new Scanner(System.in);
         System.out.println("Enter part name: ");
-        String partName = input.next();
+        String partName = input.nextLine();
         System.out.println("Enter part manufacturer: ");
-        String partManufacturer = input.next();
+        String partManufacturer = input.nextLine();
         System.out.println("Enter part condition (NEW, USED, REFURBISHED): ");
         autoPart.Condition condition;
         try {
@@ -666,16 +697,17 @@ public class CarAndAutoPartMenu extends Menu {
             System.out.println("6. Additional Notes");
             System.out.println("7. Exit");
             option = MainMenu.getOption(option, input);
+            input.nextLine();
             switch (option) {
                 case 1:
                     System.out.println("Enter new part name: ");
-                    part.setPartName(input.next());
+                    part.setPartName(input.nextLine());
                     System.out.println("Part name updated successfully.");
                     System.out.println(part);
                     break;
                 case 2:
                     System.out.println("Enter new part manufacturer: ");
-                    part.setPartManufacturer(input.next());
+                    part.setPartManufacturer(input.nextLine());
                     System.out.println("Part manufacturer updated successfully.");
                     System.out.println(part);
                     break;
@@ -744,22 +776,18 @@ public class CarAndAutoPartMenu extends Menu {
     public static void getNumberOfCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         int carSold = 0;
         for (Car car : carsList) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && (car.getSoldDate().isBefore(endDate) || car.getSoldDate().isEqual(endDate))
+                    && (car.getSoldDate().isAfter(startDate) || car.getSoldDate().isEqual(startDate))) {
                 carSold += 1;
             }
         }
         System.out.println("Number of cars sold between " + startDate + " and " + endDate + ": " + carSold);
-
-        try {
-            ActivityLogMenu.addActivityLogForCurrentUser("View number of cars sold from" + startDate + " to " + endDate);
-        } catch (Exception e) {
-            System.out.println("Error logging car action history: " + e.getMessage());
-        }
     }
 
     public static void getAllCarsSoldInSpecificPeriod(LocalDate startDate, LocalDate endDate) {
         for (Car car : carsList) {
-            if (car.getStatus() == Status.SOLD && car.getSoldDate().isBefore(endDate) && car.getSoldDate().isAfter(startDate)) {
+            if (car.getStatus() == Status.SOLD && car.getSoldDate() != null && (car.getSoldDate().isBefore(endDate) || car.getSoldDate().isEqual(endDate)) && (car.getSoldDate().isAfter(startDate)
+                    || car.getSoldDate().isEqual(startDate))) {
                 System.out.println(car);
             }
         }
