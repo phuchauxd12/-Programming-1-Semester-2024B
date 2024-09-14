@@ -46,20 +46,20 @@ public class SaleTransaction implements Serializable {
         this.purchasedAutoParts = retrieveAutoParts(itemIds);
         this.discount = calculateDiscount(clientId);
         this.totalAmount = calculateTotalAmount(discount);
+        Client client = (Client) UserMenu.getUserById(clientId);
+        client.updateTotalSpending(totalAmount);
         this.additionalNotes = "";
         this.isDeleted = false;
     }
 
-    public static void addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
-        SaleTransactionList.transactions.add(saleTransaction);
-        for (User user : UserMenu.getUserList()) {
-            if (user.getUserID().equals(saleTransaction.clientId)) {
-                Client client = (Client) user;
-                client.updateTotalSpending(saleTransaction.totalAmount);
-                break;
-            }
+    public static boolean addSaleTransaction(SaleTransaction saleTransaction) throws Exception {
+        if (saleTransaction.purchasedCars.isEmpty() && saleTransaction.purchasedAutoParts.isEmpty()) {
+            System.out.println("No valid items found. Sale Transaction not added.");
+            return false;
         }
-        for (Car purchasedCar : saleTransaction.getPurchasedCars()) {
+        SaleTransactionList.transactions.add(saleTransaction);
+
+        for (Car purchasedCar : saleTransaction.purchasedCars) {
             for (Car car : CarAndAutoPartMenu.getCarsList()) {
                 if (car.getCarID().equals(purchasedCar.getCarID())) {
                     car.setStatus(Status.SOLD);
@@ -78,12 +78,12 @@ public class SaleTransaction implements Serializable {
                 }
             }
         }
-
         UserDatabase.saveUsersData(UserMenu.getUserList());
         SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
         CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
         System.out.println("SaleTransaction added successfully!");
+        return true;
     }
 
     public static void updateSaleTransaction() throws Exception {
@@ -93,16 +93,18 @@ public class SaleTransaction implements Serializable {
         System.out.print("Enter transaction ID to update: ");
         String transactionId = scanner.nextLine();
 
-        SaleTransaction transaction = null;
-        if (current.getRole().equals(User.ROLE.MANAGER)) {
+        SaleTransaction transaction;
+        if (current instanceof Manager) {
             transaction = SaleTransactionList.getSaleTransactionById(transactionId);
-        } else if (current.getRole().equals(User.ROLE.EMPLOYEE)) {
-            if (current instanceof Salesperson) {
-                SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
-                if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
-                    transaction = detectedTransaction;
-                }
+        } else if (current instanceof Salesperson) {
+            SaleTransaction detectedTransaction = SaleTransactionList.getSaleTransactionById(transactionId);
+            if (detectedTransaction.getSalespersonId().equals(current.getUserID())) {
+                transaction = detectedTransaction;
+            } else {
+                transaction = null;
             }
+        } else {
+            transaction = null;
         }
 
         if (transaction != null && !transaction.isDeleted()) {
@@ -126,6 +128,8 @@ public class SaleTransaction implements Serializable {
                         }
                         break;
                     case "2":
+                        List<Car> oldCars = transaction.getPurchasedCars();
+                        List<autoPart> oldParts = transaction.getPurchasedAutoParts();
                         // Set old cars' status to "AVAILABLE"
                         for (Car oldCar : transaction.getPurchasedCars()) {
                             for (Car car : CarAndAutoPartMenu.getCarsList()) {
@@ -137,7 +141,6 @@ public class SaleTransaction implements Serializable {
                                 }
                             }
                         }
-
                         for (autoPart oldPart : transaction.getPurchasedAutoParts()) {
                             for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
                                 if (autoPart.getPartID().equals(oldPart.getPartID())) {
@@ -147,7 +150,42 @@ public class SaleTransaction implements Serializable {
                                 }
                             }
                         }
+                        System.out.println("Car:");
+                        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
+                        System.out.println("Part:");
+                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
+                        System.out.println("Enter new item IDs purchased (separated by comma) (leave blank if you want to keep old items): ");
+                        String itemIdsInput = scanner.nextLine();
+                        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
+                                .map(String::trim)
+                                .map(item -> item.replaceAll(" +", " "))
+                                .collect(Collectors.toSet());
 
+                        List<Car> newPurchasedCars = transaction.retrieveCars(newItemIds);
+                        List<autoPart> newPurchasedAutoParts = transaction.retrieveAutoParts(newItemIds);
+                        if (newPurchasedCars.isEmpty() && newPurchasedAutoParts.isEmpty()) {
+                            for (Car oldCar : oldCars) {
+                                for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                                    if (car.getCarID().equals(oldCar.getCarID())) {
+                                        car.setStatus(Status.SOLD);
+                                        car.setSoldDate(transaction.transactionDate);
+                                        car.setClientID(transaction.clientId);
+                                        break;
+                                    }
+                                }
+                            }
+                            for (autoPart oldPart : oldParts) {
+                                for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
+                                    if (autoPart.getPartID().equals(oldPart.getPartID())) {
+                                        autoPart.setStatus(Status.SOLD);
+                                        autoPart.setSoldDate(transaction.transactionDate);
+                                        break;
+                                    }
+                                }
+                            }
+                            System.out.println("No valid items found. Sale Transaction not updated.");
+                            return;
+                        }
                         // Minus the old spending amount
                         for (User user : UserMenu.getUserList()) {
                             if (user.getUserID().equals(transaction.clientId)) {
@@ -157,19 +195,7 @@ public class SaleTransaction implements Serializable {
                                 break;
                             }
                         }
-                        System.out.println("Car:");
-                        CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
-                        System.out.println("Part:");
-                        CarAndAutoPartMenu.getAutoPartsList().stream().filter(part -> !part.isDeleted() && part.getStatus() == Status.AVAILABLE).forEach(System.out::println);
-                        System.out.println("Enter new item IDs purchased (separated by comma): ");
-                        String itemIdsInput = scanner.nextLine();
-                        Set<String> newItemIds = Arrays.stream(itemIdsInput.split(","))
-                                .map(String::trim)
-                                .map(item -> item.replaceAll(" +", " "))
-                                .collect(Collectors.toSet());
 
-                        List<Car> newPurchasedCars = transaction.retrieveCars(newItemIds);
-                        List<autoPart> newPurchasedAutoParts = transaction.retrieveAutoParts(newItemIds);
                         transaction.setPurchasedCars(newPurchasedCars);
                         transaction.setPurchasedAutoParts(newPurchasedAutoParts);
 
@@ -211,7 +237,6 @@ public class SaleTransaction implements Serializable {
                             }
                         }
 
-
                         AutoPartDatabase.saveAutoPartData(CarAndAutoPartMenu.getAutoPartsList());
                         CarDatabase.saveCarData(CarAndAutoPartMenu.getCarsList());
                         break;
@@ -226,7 +251,6 @@ public class SaleTransaction implements Serializable {
                 }
                 SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
             }
-
             System.out.println("Sale transaction updated successfully:");
             System.out.println(transaction.getFormattedSaleTransactionDetails());
             try {
@@ -306,10 +330,10 @@ public class SaleTransaction implements Serializable {
 
     private List<Car> retrieveCars(Set<String> itemIds) throws Exception {
         List<Car> cars = new ArrayList<>(); // check if we have the function to add the autoPart to the list or not
-        List<Car> allCars = CarDatabase.loadCars();
+        List<Car> allCars = CarAndAutoPartMenu.getCarsList();
         for (String itemId : itemIds) {
             Optional<Car> carOpt = allCars.stream()
-                    .filter(car -> car.getCarID().equalsIgnoreCase(itemId))
+                    .filter(car -> car.getCarID().equalsIgnoreCase(itemId) && car.getStatus() == Status.AVAILABLE)
                     .findFirst();
             carOpt.ifPresent(cars::add);
         }
@@ -318,11 +342,11 @@ public class SaleTransaction implements Serializable {
 
     private List<autoPart> retrieveAutoParts(Set<String> itemIds) throws Exception {
         List<autoPart> autoParts = new ArrayList<>();
-        List<autoPart> allAutoParts = AutoPartDatabase.loadAutoParts();
+        List<autoPart> allAutoParts = CarAndAutoPartMenu.getAutoPartsList();
 
         for (String itemId : itemIds) {
             Optional<autoPart> autoPartOpt = allAutoParts.stream()
-                    .filter(autoPart -> autoPart.getPartID().equalsIgnoreCase(itemId))
+                    .filter(autoPart -> autoPart.getPartID().equalsIgnoreCase(itemId) && autoPart.getStatus() == Status.AVAILABLE)
                     .findFirst();
             autoPartOpt.ifPresent(autoParts::add);
         }

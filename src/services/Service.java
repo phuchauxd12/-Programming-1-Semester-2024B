@@ -97,6 +97,8 @@ public class Service implements Serializable {
         this.carId = carId;
         this.serviceCost = serviceCost;
         this.totalCost = calculateTotalAmount(calculateDiscount(clientId));
+        Client client = (Client) UserMenu.getUserById(clientId);
+        client.updateTotalSpending(totalCost);
         this.additionalNotes = notes;
         this.isDeleted = false;
 
@@ -104,13 +106,6 @@ public class Service implements Serializable {
 
     public static void addService(Service service) throws Exception {
 
-        for (User user : UserMenu.getUserList()) {
-            if (user.getUserID().equals(service.clientId) && user instanceof Client) {
-                Client client = (Client) user;
-                client.updateTotalSpending(service.totalCost);
-                break;
-            }
-        }
 
         boolean carExists = false;
         for (Car car : CarAndAutoPartMenu.getCarsList()) {
@@ -280,8 +275,9 @@ public class Service implements Serializable {
                                 service.setCarId(newCarId);
                                 newCar.addServiceToHistory(service);
                                 oldCar.removeService(service.getServiceId());
+                            } else {
+                                System.out.println("Car not found");
                             }
-
                             break;
                         case "4":
                             // Mark old parts as available
@@ -376,6 +372,8 @@ public class Service implements Serializable {
                                 service.setCarId(newCarId);
                                 newCar.addServiceToHistory(service);
                                 oldCar.removeService(service.getServiceId());
+                            } else {
+                                System.out.println("Car not found");
                             }
 
                             break;

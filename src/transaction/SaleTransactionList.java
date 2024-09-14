@@ -72,13 +72,15 @@ public class SaleTransactionList {
                 .collect(Collectors.toSet());
 
         SaleTransaction transaction = new SaleTransaction(transactionDate, client.getUserID(), salespersonId, newItemIds);
-        SaleTransaction.addSaleTransaction(transaction);
-        System.out.println(transaction.getFormattedSaleTransactionDetails());
-
-        try {
-            ActivityLogMenu.addActivityLogForCurrentUser("Created a new transaction with ID: " + transaction.getTransactionId());
-        } catch (Exception e) {
-            System.out.println("Error logging sale transaction action history: " + e.getMessage());
+        boolean success = SaleTransaction.addSaleTransaction(transaction);
+        if (success) {
+            System.out.println("Sale transaction created successfully!");
+            System.out.println(transaction.getFormattedSaleTransactionDetails());
+            try {
+                ActivityLogMenu.addActivityLogForCurrentUser("Created a new transaction with ID: " + transaction.getTransactionId());
+            } catch (Exception e) {
+                System.out.println("Error logging sale transaction action history: " + e.getMessage());
+            }
         }
     }
 
