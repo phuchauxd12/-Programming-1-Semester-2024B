@@ -539,7 +539,7 @@ public class CarAndAutoPartMenu extends Menu {
                     System.out.println(car);
                     break;
                 case 3:
-                    System.out.println("The current car's year: " + car.getCarModel());
+                    System.out.println("The current car's year: " + car.getCarYear());
                     int newCarYear;
                     newCarYear = CarAndAutoPartMenu.getNewCarYear(input);
                     car.setCarYear(newCarYear);
