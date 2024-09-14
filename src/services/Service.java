@@ -270,20 +270,16 @@ public class Service implements Serializable {
                             CarAndAutoPartMenu.getCarsList().stream().filter(cars -> !cars.isDeleted() && cars.getClientID().equals(service.getClientId())).forEach(System.out::println);
                             System.out.print("Enter new car ID: ");
                             String newCarId = scanner.nextLine();
-                            service.setCarId(newCarId);
 
                             // Update the car ID and move the service history to the new car
                             Car oldCar = CarAndAutoPartMenu.findCarByID(service.getCarId());
                             Car newCar = CarAndAutoPartMenu.findCarByID(newCarId);
 
-                            if (oldCar != null) {
-                                oldCar.removeService(service.getServiceId());
-                            }
-
-                            service.setCarId(newCarId);
 
                             if (newCar != null) {
+                                service.setCarId(newCarId);
                                 newCar.addServiceToHistory(service);
+                                oldCar.removeService(service.getServiceId());
                             }
 
                             break;
@@ -371,20 +367,15 @@ public class Service implements Serializable {
                         case "3":
                             System.out.print("Enter new car ID: ");
                             String newCarId = scanner.nextLine();
-                            service.setCarId(newCarId);
 
                             // Update the car ID and move the service history to the new car
                             Car oldCar = CarAndAutoPartMenu.findCarByID(service.getCarId());
                             Car newCar = CarAndAutoPartMenu.findCarByID(newCarId);
 
-                            if (oldCar != null) {
-                                oldCar.removeService(service.getServiceId());
-                            }
-
-                            service.setCarId(newCarId);
-
                             if (newCar != null) {
+                                service.setCarId(newCarId);
                                 newCar.addServiceToHistory(service);
+                                oldCar.removeService(service.getServiceId());
                             }
 
                             break;

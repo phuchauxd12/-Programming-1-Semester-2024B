@@ -171,10 +171,9 @@ public class ActivityLogMenu extends Menu {
     }
 
     private void viewActivityLogsByUserID() {
+        UserMenu.getUserList().forEach(System.out::println);
         Scanner scanner = new Scanner(System.in);
         String userId;
-        System.out.print("Enter User ID: ");
-        userId = scanner.next();
         if (currentUser instanceof Manager) {
             System.out.print("Enter User ID: ");
             userId = scanner.next();

@@ -321,7 +321,7 @@ public class SaleTransactionList {
         int transactionCount = filteredTransactions.size();
         System.out.println("-------------------------------------------------");
         System.out.println("Sales Transactions for Salesperson: " + UserMenu.getUserById(salespersonId).getName());
-        System.out.println("Total Sales Revenue: " + String.format("%.2f", totalSalesRevenue));
+        System.out.println("Total Sales Revenue: " + String.format("%s", CurrencyFormat.format(totalSalesRevenue)));
         System.out.println("Total Number of Transactions: " + transactionCount);
         System.out.println("-------------------------------------------------");
         if (!filteredTransactions.isEmpty()) {
