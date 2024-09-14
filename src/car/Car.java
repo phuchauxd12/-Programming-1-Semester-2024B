@@ -4,6 +4,7 @@ import services.Service;
 import services.ServiceBy;
 import utils.CurrencyFormat;
 import utils.Status;
+import utils.menu.UserMenu;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -172,7 +173,7 @@ public class Car implements Serializable {
                 "Mileage: " + mileage + "\n" +
                 "Price: " + CurrencyFormat.format(price) + "\n" +
                 "Status: " + status + "\n" +
-                (status != Status.AVAILABLE ? "Client ID: " + clientID + "\n" : "") +
+                (status != Status.AVAILABLE ? "Client ID: " + UserMenu.getUserById(clientID).getName() + "\n" : "") +
                 "Additional Notes: " + addNotes + "\n" +
                 "Sold Date: " + soldDate + "\n" +
                 "Deleted: " + isDeleted + "\n" +
