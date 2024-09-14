@@ -59,17 +59,24 @@ public class SaleTransaction implements Serializable {
         }
         SaleTransactionList.transactions.add(saleTransaction);
 
-        for (Car car : saleTransaction.purchasedCars) {
-            car.setStatus(Status.SOLD);
-            car.setSoldDate(saleTransaction.transactionDate);
-            car.setClientID(saleTransaction.clientId);
-            break;
-
+        for (Car purchasedCar : saleTransaction.purchasedCars) {
+            for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                if (car.getCarID().equals(purchasedCar.getCarID())) {
+                    car.setStatus(Status.SOLD);
+                    car.setSoldDate(saleTransaction.transactionDate);
+                    car.setClientID(saleTransaction.clientId);
+                    break;
+                }
+            }
         }
-        for (autoPart parts : saleTransaction.purchasedAutoParts) {
-            parts.setStatus(Status.SOLD);
-            parts.setSoldDate(saleTransaction.transactionDate);
-            break;
+        for (autoPart autoPart : saleTransaction.purchasedAutoParts) {
+            for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                if (parts.getPartID().equals(autoPart.getPartID())) {
+                    parts.setStatus(Status.SOLD);
+                    parts.setSoldDate(saleTransaction.transactionDate);
+                    break;
+                }
+            }
         }
         UserDatabase.saveUsersData(UserMenu.getUserList());
         SaleTransactionDatabase.saveSaleTransaction(SaleTransactionList.transactions);
@@ -115,12 +122,6 @@ public class SaleTransaction implements Serializable {
                         try {
                             LocalDate newDate = DatePrompt.getDate("new transaction");
                             transaction.setTransactionDate(newDate);
-                            for (Car car : transaction.getPurchasedCars()) {
-                                car.setSoldDate(newDate);
-                            }
-                            for (autoPart part : transaction.getPurchasedAutoParts()) {
-                                part.setSoldDate(newDate);
-                            }
                         } catch (DateTimeParseException e) {
                             System.out.println("Invalid date format. Please enter a valid date (YYYY-MM-DD).");
                             return;
@@ -130,16 +131,24 @@ public class SaleTransaction implements Serializable {
                         List<Car> oldCars = transaction.getPurchasedCars();
                         List<autoPart> oldParts = transaction.getPurchasedAutoParts();
                         // Set old cars' status to "AVAILABLE"
-                        for (Car car : transaction.getPurchasedCars()) {
-                            car.setStatus(Status.AVAILABLE);
-                            car.setSoldDate(null);
-                            car.setClientID(null);
-                            break;
+                        for (Car oldCar : transaction.getPurchasedCars()) {
+                            for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                                if (car.getCarID().equals(oldCar.getCarID())) {
+                                    car.setStatus(Status.AVAILABLE);
+                                    car.setSoldDate(null);
+                                    car.setClientID(null);
+                                    break;
+                                }
+                            }
                         }
                         for (autoPart oldPart : transaction.getPurchasedAutoParts()) {
-                            oldPart.setStatus(Status.AVAILABLE);
-                            oldPart.setSoldDate(null);
-                            break;
+                            for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (autoPart.getPartID().equals(oldPart.getPartID())) {
+                                    autoPart.setStatus(Status.AVAILABLE);
+                                    autoPart.setSoldDate(null);
+                                    break;
+                                }
+                            }
                         }
                         System.out.println("Car:");
                         CarAndAutoPartMenu.getCarsList().stream().filter(car -> !car.isDeleted() && car.getStatus() == Status.AVAILABLE).forEach(System.out::println);
@@ -191,17 +200,25 @@ public class SaleTransaction implements Serializable {
                         transaction.setPurchasedAutoParts(newPurchasedAutoParts);
 
                         // Set new cars' status to "SOLD"
-                        for (Car car : newPurchasedCars) {
-                            car.setStatus(Status.SOLD);
-                            car.setSoldDate(transaction.transactionDate);
-                            car.setClientID(transaction.clientId);
-                            break;
+                        for (Car newCar : newPurchasedCars) {
+                            for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                                if (car.getCarID().equals(newCar.getCarID())) {
+                                    car.setStatus(Status.SOLD);
+                                    car.setSoldDate(transaction.transactionDate);
+                                    car.setClientID(transaction.clientId);
+                                    break;
+                                }
+                            }
                         }
 
                         for (autoPart newPart : newPurchasedAutoParts) {
-                            newPart.setStatus(Status.SOLD);
-                            newPart.setSoldDate(transaction.transactionDate);
-                            break;
+                            for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
+                                if (autoPart.getPartID().equals(newPart.getPartID())) {
+                                    autoPart.setStatus(Status.SOLD);
+                                    autoPart.setSoldDate(transaction.transactionDate);
+                                    break;
+                                }
+                            }
                         }
 
                         // Update total amount and discount based on new cars
@@ -266,18 +283,25 @@ public class SaleTransaction implements Serializable {
             transaction.markAsDeleted();
 
             // Set purchased items in the transaction to be available
-            for (Car car : transaction.getPurchasedCars()) {
-                car.setStatus(Status.AVAILABLE);
-                car.setSoldDate(null);
-                car.setClientID(null);
-                break;
-
+            for (Car oldCar : transaction.getPurchasedCars()) {
+                for (Car car : CarAndAutoPartMenu.getCarsList()) {
+                    if (car.getCarID().equals(oldCar.getCarID())) {
+                        car.setStatus(Status.AVAILABLE);
+                        car.setSoldDate(null);
+                        car.setClientID(null);
+                        break;
+                    }
+                }
             }
 
             for (autoPart oldPart : transaction.getPurchasedAutoParts()) {
-                oldPart.setStatus(Status.AVAILABLE);
-                oldPart.setSoldDate(null);
-                break;
+                for (autoPart autoPart : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (autoPart.getPartID().equals(oldPart.getPartID())) {
+                        autoPart.setStatus(Status.AVAILABLE);
+                        autoPart.setSoldDate(null);
+                        break;
+                    }
+                }
             }
 
             // Minus the old spending amount

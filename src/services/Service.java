@@ -167,8 +167,12 @@ public class Service implements Serializable {
         ServiceList.services.add(service);
         if (!service.replacedParts.isEmpty()) {
             for (autoPart part : service.replacedParts) {
-                part.setStatus(Status.SOLD);
-                part.setSoldDate(service.getServiceDate());
+                for (autoPart parts : CarAndAutoPartMenu.getAutoPartsList()) {
+                    if (parts.getPartID().equals(part.getPartID())) {
+                        part.setStatus(Status.SOLD);
+                        part.setSoldDate(service.getServiceDate());
+                    }
+                }
             }
         }
 
@@ -225,9 +229,6 @@ public class Service implements Serializable {
                         case "1":
                             LocalDate newDate = DatePrompt.getDate("new service");
                             service.setServiceDate(newDate);
-                            for (autoPart part : service.getReplacedParts()) {
-                                part.setSoldDate(newDate);
-                            }
                             break;
                         case "2":
                             System.out.println("Available service types:");
@@ -374,6 +375,7 @@ public class Service implements Serializable {
                             } else {
                                 System.out.println("Car not found");
                             }
+
                             break;
                         case "5":
                             System.out.print("Enter additional notes (or leave blank): ");
