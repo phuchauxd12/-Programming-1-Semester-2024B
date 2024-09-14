@@ -292,7 +292,7 @@ public class Service implements Serializable {
                                     }
                                 }
                             }
-
+                            CarAndAutoPartMenu.getAutoPartsList().stream().filter(parts -> parts.getStatus() == Status.AVAILABLE).forEach(System.out::println);
                             // Get new parts
                             System.out.println("Enter new replaced parts (part IDs separated by comma, leave blank if none): ");
                             String partIdsInput = scanner.nextLine();
@@ -493,7 +493,7 @@ public class Service implements Serializable {
 
         for (String partId : partIds) {
             Optional<autoPart> partOpt = CarAndAutoPartMenu.getAutoPartsList().stream()
-                    .filter(part -> part.getPartID().equalsIgnoreCase(partId))
+                    .filter(part -> part.getPartID().equalsIgnoreCase(partId) && part.getStatus() == Status.AVAILABLE)
                     .findFirst();
             partOpt.ifPresent(parts::add);
         }
