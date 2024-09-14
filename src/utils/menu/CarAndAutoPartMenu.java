@@ -116,6 +116,10 @@ public class CarAndAutoPartMenu extends Menu {
                 System.out.println("You are not authorized to view this car.");
                 return;
             }
+            if (currentUser instanceof Client && !car.getClientID().equals(currentUser.getUserID())) {
+                System.out.println("You are not authorized to view this car.");
+                return;
+            }
             System.out.println("----------------");
             System.out.println(car.toStringDetailed());
             System.out.println("----------------");
@@ -338,7 +342,12 @@ public class CarAndAutoPartMenu extends Menu {
             carsList.stream()
                     .filter(car -> car.getStatus() == Status.AVAILABLE && !car.isDeleted())
                     .forEach(System.out::println);
-
+            if (user instanceof Client) {
+                System.out.println("Displaying all cars that you own:");
+                carsList.stream()
+                        .filter(car -> car.getClientID() != null && car.getClientID().equals(user.getUserID()))
+                        .forEach(System.out::println);
+            }
         }
         System.out.println("----------------");
         System.out.println("To see detailed information of a specific car, please use the search function!");
