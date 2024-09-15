@@ -1,4 +1,8 @@
-# -Programming-1-Semester-2024B
+# Auto136 Car Dealership Management System
+
+## Demo Video
+
+[Watch the demo](https://youtu.be/EX_9ASPu0nM)
 
 ## Project Overview
 
@@ -36,6 +40,15 @@ Employee-specific functionalities:
 Daily, weekly, and monthly revenue calculations.
 Listings of cars managed and services performed (daily, weekly, monthly).
 
+### Contributors
+
+| Name                 | Student ID | GitHub Profile                                | Contribution (%) |
+|----------------------|------------|-----------------------------------------------|------------------|
+| Nguyen Phuc Doan     | s3979030   | [nskadk](https://github.com/nskadk)           | 25%              |
+| Doan Nguyen Phu Chau | s3975133   | [phuchauxd12](https://github.com/phuchauxd12) | 25%              |
+| Cao Ngoc Phuong Uyen | s3919659   | [ceepu8](https://github.com/ceepu8)           | 25%              |
+| Ton That Huu Luan    | s3958304   | [VNOsST](https://github.com/VNOsST)           | 25%              |
+
 ## Installation
 
 To run this project on your local machine:
@@ -61,3 +74,6 @@ Below are the predefined usernames, passwords, and their respective roles:
 | im\_nayeon  | password012  | Client      |
 | kim\_minji  | password678  | Client      |
 | young\_k    | password678  | Client      |
+
+
+
