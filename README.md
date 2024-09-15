@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-This project implements a comprehensive Car Dealership Management System (CDMS) for Auto136, a family-owned dealership striving to streamline operations and enhance customer service. The system focuses on efficient management of service appointments, sales transactions, and accurate recordkeeping.
+This project implements a comprehensive Car Dealership Management System (CDMS) for Auto136, a family-owned dealership
+striving to streamline operations and enhance customer service. The system focuses on efficient management of service
+appointments, sales transactions, and accurate recordkeeping.
 
 ## Features
 
@@ -11,7 +13,6 @@ This project implements a comprehensive Car Dealership Management System (CDMS) 
 CRUD operations (Create, Read, Update, Delete) for Cars, Parts, Services, Transactions, Employees, and Clients.
 Soft delete functionality for Cars and Employees.
 Data loaded from input files initially, with updates instantly reflected in the files.
-Interface implementation for entities, enabling extensibility.
 
 ### User Management:
 
@@ -44,3 +45,19 @@ To run this project on your local machine:
     git clonehttps://github.com/phuchauxd12/-Programming-1-Semester-2024B.git
     ```
 2. Run the project at Main.java
+
+## Users
+
+Below are the predefined usernames, passwords, and their respective roles:
+
+| Username    | Password     | Role        |
+|-------------|--------------|-------------|
+| manager     | pass123      | Manager     |
+| m\_chris    | password123  | Mechanic    |
+| m\_toto     | password123  | Mechanic    |
+| s\_jackson  | password123  | Salesperson |
+| s\_mina     | password123  | Salesperson |
+| park\_jihyo | password1234 | Client      |
+| im\_nayeon  | password012  | Client      |
+| kim\_minji  | password678  | Client      |
+| young\_k    | password678  | Client      |

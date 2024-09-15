@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-//        utils.SampleData.importData(); // Import sample data (ONLY RUN ONCE)
         System.out.println();
         System.out.println("COSC2081 GROUP ASSIGNMENT");
         System.out.println("AUTO136 CAR DEALERSHIP MANAGEMENT SYSTEM");
@@ -19,11 +18,6 @@ public class Main {
         System.out.println("s3919659, Cao Ngoc Phuong Uyen");
         System.out.println("s3975133, Doan Nguyen Phu Chau");
         System.out.println();
-//        UserDatabase.loadUsers().stream().forEach(System.out::println);
-//        AutoPartDatabase.loadAutoParts().stream().forEach(System.out::println);
-//        CarDatabase.loadCars().stream().forEach(System.out::println);
-//        ServiceDatabase.loadService().stream().forEach(System.out::println);
-//        SaleTransactionDatabase.loadSaleTransaction().stream().forEach(System.out::println);
 
         /* Login */
         Scanner scanner = new Scanner(System.in);
